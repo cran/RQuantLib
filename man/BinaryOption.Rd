@@ -1,4 +1,4 @@
-% $Id: BinaryOption.Rd,v 1.3 2003/12/05 01:46:59 edd Exp $
+% $Id: BinaryOption.Rd,v 1.4 2004/05/27 02:08:08 edd Exp $
 \name{BinaryOption}
 \alias{BinaryOption}
 \alias{BinaryOption.default}
@@ -30,11 +30,16 @@ maturity, volatility, cashPayoff)
   \code{\link{Option}}) is returned. It contains a list with the
   following components: 
   \item{value}{Value of option}
-  \item{delta}{Change in value for a change in the underlying}
-  \item{gamma}{Change in value for a change in delta}
-  \item{vega}{Change in value for a change in the underlying's volatility}
-  \item{theta}{Change in value for a change in delta}
-  \item{rho}{Change in value for a change in time to maturity (\"time decay\")}  \item{dividendRho}{Change in value for a change in delta}
+  \item{delta}{Sensitivity of the option value for a change in the underlying}
+  \item{gamma}{Sensitivity of the option delta for a change in the underlying}
+  \item{vega}{Sensitivity of the option value for a change in the
+    underlying's volatility} 
+  \item{theta}{Sensitivity of the option value for a change in t, the
+    remaining time to maturity}
+  \item{rho}{Sensitivity of the option value for a change in the
+    risk-free interest rate}
+  \item{dividendRho}{Sensitivity of the option value for a change in the
+    dividend yield}
   \item{parameters}{List with parameters with which object was created}
 }
 \details{

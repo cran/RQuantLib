@@ -1,3 +1,10 @@
+2004-05-26  Dirk Eddelbuettel  <edd@debian.org>
+
+	* Release 0.1.9
+
+	* man/EuropeanOption.Rd: Added corrections for the issues raised
+	  by Ajay Shah in the Debian bug report #249240
+
 2004-04-05  Dirk Eddelbuettel  <edd@debian.org>
 
 	* Release 0.1.8

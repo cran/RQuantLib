@@ -1,4 +1,4 @@
-% $Id: EuropeanOption.Rd,v 1.2 2003/08/01 01:09:22 edd Exp $
+% $Id: EuropeanOption.Rd,v 1.3 2004/05/27 02:04:58 edd Exp $
 \name{EuropeanOption}
 \alias{EuropeanOption}
 \alias{EuropeanOption.default}
@@ -30,14 +30,18 @@ EuropeanOption.default(type, underlying, strike, dividendYield, riskFreeRate, ma
   The \code{EuropeanOption} function returns an object of class
   \code{EuropeanOption} (which inherits from class 
   \code{\link{Option}}). It contains a list with the following
-  components can be returned: 
+  components:
   \item{value}{Value of option}
-  \item{delta}{Change in value for a change in the underlying}
-  \item{gamma}{Change in value for a change in delta}
-  \item{vega}{Change in value for a change in the underlying's volatility}
-  \item{theta}{Change in value for a change in delta}
-  \item{rho}{Change in value for a change in time to maturity}
-  \item{dividendRho}{Change in value for a change in delta}
+  \item{delta}{Sensitivity of the option value for a change in the underlying}
+  \item{gamma}{Sensitivity of the option delta for a change in the underlying}
+  \item{vega}{Sensitivity of the option value for a change in the
+    underlying's volatility} 
+  \item{theta}{Sensitivity of the option value for a change in t, the
+    remaining time to maturity}
+  \item{rho}{Sensitivity of the option value for a change in the
+    risk-free interest rate}
+  \item{dividendRho}{Sensitivity of the option value for a change in the
+    dividend yield}
   \item{parameters}{List with parameters with which object was created}
 
 }
@@ -62,8 +66,9 @@ EuropeanOption.default(type, underlying, strike, dividendYield, riskFreeRate, ma
 \examples{
 # simple call with unnamed parameters
 EuropeanOption("call", 100, 100, 0.01, 0.03, 0.5, 0.4)
-# simple call with some explicit parameters
-EuropeanOption("call",100, 100, 0.01, 0.03, 0.5, 0.4)
+# simple call with some explicit parameters, and slightly increased vol:
+EuropeanOption(type="call", underlying=100, strike=100, dividendYield=0.01, 
+riskFreeRate=0.03, maturity=0.5, volatility=0.5)
 }
 \keyword{misc}
 
