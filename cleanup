@@ -15,4 +15,6 @@ for f in src/*.o src/*.so; do
     rm -f $f
 done
 find . -name \*~ | xargs rm -f
+#rm -vf configure 
+rm -vf config.log config.status
 exit 0

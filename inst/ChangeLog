@@ -1,3 +1,23 @@
+2003-11-28  Dirk Eddelbuettel  <edd@debian.org>
+
+	* Release 0.1.7
+
+	* src/barrier_binary.cc: 
+	  -- split off from RQuantLib.cc
+	  -- added three more greeks to Barrier Option
+	  -- reflected small change in QuantLib types for Barrier Options
+
+	* src/implieds.cc
+	  -- split off from RQuantLib.cc
+	  -- rewritten functions for implied volatility on European and
+	     American options using new QuantLib framework
+	
+	* src/utils.cc
+	  -- split off from RQuantLib.cc
+
+	* src/vanilla.cc
+	  -- rump of RQuantLib.cc, renamed
+	
 2003-07-31  Dirk Eddelbuettel  <edd@debian.org>
 
 	* Release 0.1.6

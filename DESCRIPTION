@@ -1,7 +1,7 @@
 Package: RQuantLib
 Title: R interface to the QuantLib libraries
-Version: 0.1.6
-Date: $Date: 2003/08/01 01:24:09 $
+Version: 0.1.7
+Date: $Date: 2003/11/26 04:40:43 $
 Maintainer: Dirk Eddelbuettel <edd@debian.org>
 Author: Dirk Eddelbuettel <edd@debian.org> for the R interface, the QuantLib
 	group for QuantLib (http://www.quantlib.org/html/group.html)
