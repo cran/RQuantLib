@@ -2,7 +2,7 @@
 ##
 ## Copyright 2002 Dirk Eddelbuettel <edd@debian.org>
 ##
-## $Id: option.R,v 1.3 2002/11/15 01:52:17 edd Exp $
+## $Id: option.R,v 1.4 2003/06/01 04:27:40 edd Exp $
 ##
 ## This file is part of the RQuantLib library for GNU R.
 ## It is made available under the terms of the GNU General Public
@@ -20,10 +20,12 @@
 ## Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ## MA 02111-1307, USA
 
-EuropeanOption <- function(x, ...) {
-  if (is.null(class(x)))
-    class(x) <- data.class(x)
-  UseMethod("EuropeanOption", x, ...)
+EuropeanOption <- function(type, underlying, strike, dividendYield,
+                           riskFreeRate, maturity, volatility) {
+  #if (is.null(class(x)))
+  #  class(x) <- data.class(x)
+  #UseMethod("EuropeanOption", x, ...)
+  UseMethod("EuropeanOption")
 }
 
 EuropeanOption.default <- function(type, underlying, strike, dividendYield,
@@ -41,10 +43,13 @@ EuropeanOption.default <- function(type, underlying, strike, dividendYield,
   val
 }
 
-AmericanOption <- function(x, ...) {
-  if (is.null(class(x)))
-    class(x) <- data.class(x)
-  UseMethod("AmericanOption", x, ...)
+AmericanOption <- function(type, underlying, strike, dividendYield,
+                           riskFreeRate, maturity, volatility,
+                           timeSteps=150, gridPoints=151) {
+  #if (is.null(class(x)))
+  #  class(x) <- data.class(x)
+  #UseMethod("AmericanOption", x, ...)
+  UseMethod("AmericanOption")
 }
 
 AmericanOption.default <- function(type, underlying, strike, dividendYield,
@@ -65,10 +70,13 @@ AmericanOption.default <- function(type, underlying, strike, dividendYield,
   val
 }
 
-BinaryOption <- function(x, ...) {
-  if (is.null(class(x)))
-    class(x) <- data.class(x)
-  UseMethod("BinaryOption", x, ...)
+BinaryOption <- function(type, underlying, strike, dividendYield,
+                         riskFreeRate, maturity, volatility,
+                         cashPayoff) {
+  #if (is.null(class(x)))
+  #  class(x) <- data.class(x)
+  #UseMethod("BinaryOption", x, ...)
+  UseMethod("BinaryOption")
 }
 
 BinaryOption.default <- function(type, underlying, strike, dividendYield,
@@ -88,10 +96,13 @@ BinaryOption.default <- function(type, underlying, strike, dividendYield,
   val
 }
 
-BarrierOption <- function(x, ...) {
-  if (is.null(class(x)))
-    class(x) <- data.class(x)
-  UseMethod("BarrierOption", x, ...)
+BarrierOption <- function(barrType, type, underlying, strike,
+                          dividendYield, riskFreeRate, maturity,
+                          volatility, barrier, rebate=0.0) {
+  #if (is.null(class(x)))
+  #  class(x) <- data.class(x)
+  #UseMethod("BarrierOption", x, ...)
+  UseMethod("BarrierOption")
 }
 
 BarrierOption.default <- function(barrType, type, underlying, strike,

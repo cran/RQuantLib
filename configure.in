@@ -52,7 +52,7 @@ else
   Your installation does not appear to have QuantLib installed as the
   quantlib-config utility script could not be found. 
 
-  Please make sure that QuantLib installed and working properly.
+  Please make sure that QuantLib is installed before building RQuantLib.
 "
     exit 1
 fi
