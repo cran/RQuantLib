@@ -1,4 +1,4 @@
-% $Id: ImpliedVolatility.Rd,v 1.1 2002/02/26 03:48:53 edd Exp $
+% $Id: ImpliedVolatility.Rd,v 1.2 2003/08/01 01:23:48 edd Exp $
 \name{ImpliedVolatility}
 \alias{ImpliedVolatility}
 \alias{print.ImpliedVolatility}
@@ -12,7 +12,7 @@
 \method{summary}{ImpliedVolatility}
 }
 \arguments{
-  \item{AnImpliedVol}{Any option-price implied volatility object derived
+  \item{}{Any option-price implied volatility object derived
     from this base class} 
 }
 \value{

@@ -1,4 +1,4 @@
-% $Id: EuropeanOption.Rd,v 1.1 2002/02/26 03:48:30 edd Exp $
+% $Id: EuropeanOption.Rd,v 1.2 2003/08/01 01:09:22 edd Exp $
 \name{EuropeanOption}
 \alias{EuropeanOption}
 \alias{EuropeanOption.default}
@@ -19,7 +19,6 @@ EuropeanOption.default(type, underlying, strike, dividendYield, riskFreeRate, ma
 \arguments{
   \item{type}{A string with one of the values \code{call}, \code{put} or
     \code{straddle}}
-  \item{value}{Value of the option (used only for ImpliedVolatility calculation)}
   \item{underlying}{Current price of the underlying stock}
   \item{strike}{Strike price of the option}
   \item{dividendYield}{Continuous dividend yield (as a fraction) of the stock}

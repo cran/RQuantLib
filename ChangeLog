@@ -1,3 +1,10 @@
+2003-07-31  Dirk Eddelbuettel  <edd@debian.org>
+
+	* Release 0.1.6
+
+	* man/{EuropeanOption,ImpliedVolatility}: Two small corrections
+	  to argument call mismatches found by R CMD check
+
 2003-05-31  Dirk Eddelbuettel  <edd@debian.org>
 
 	* Release 0.1.5
