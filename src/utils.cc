@@ -3,7 +3,7 @@
 //
 // Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: utils.cc,v 1.4 2004/09/12 18:54:53 edd Exp $
+// $Id: utils.cc,v 1.5 2004/12/22 04:09:48 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -111,9 +111,9 @@ extern "C" {
     }
 
 
-    boost::shared_ptr<BlackScholesStochasticProcess> 
+    boost::shared_ptr<BlackScholesProcess> 
       stochProcess(new
-         BlackScholesStochasticProcess(
+         BlackScholesProcess(
 	     RelinkableHandle<Quote>(u),
 	     RelinkableHandle<TermStructure>(q),
 	     RelinkableHandle<TermStructure>(r),

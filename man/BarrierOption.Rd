@@ -1,4 +1,4 @@
-% $Id: BarrierOption.Rd,v 1.4 2004/05/27 02:08:31 edd Exp $
+% $Id: BarrierOption.Rd,v 1.5 2004/12/28 03:17:35 edd Exp $
 \name{BarrierOption}
 \alias{BarrierOption}
 \alias{BarrierOption.default}
@@ -18,8 +18,7 @@ BarrierOption.default(barrType, type, underlying, strike, dividendYield,
 \arguments{
   \item{barrType}{A string with one of the values \code{downin},
     \code{downout}, \code{upin} or \code{upout}}
-  \item{type}{A string with one of the values \code{call}, \code{put} or
-    \code{straddle}}
+  \item{type}{A string with one of the values \code{call} or \code{put}}
   \item{underlying}{Current price of the underlying stock}
   \item{strike}{Strike price of the option}
   \item{dividendYield}{Continuous dividend yield (as a fraction) of the stock}

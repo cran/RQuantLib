@@ -1,7 +1,10 @@
 # RQuantLib configure.in by Dirk Eddelbuettel <edd@debian.org>
-# Borrowed pieces from RPgSQL, GNU Gretl and GNU R
+# Borrowed pieces from RPgSQL, GNU Gretl, GNU R and QuantLib
+#
 # Greatly simplified thanks to quantlib-config
 # Another contribution by Kurt Hornik gratefully acknowledged
+#
+# $Id: configure.in,v 1.1 2004/12/22 04:07:57 edd Exp $
 
 # require at least autoconf 2.13
 # requirements inflation: now require 2.50
@@ -9,7 +12,7 @@ AC_PREREQ(2.50)
 
 # Process this file with autoconf to produce a configure script.
 # AC_INIT(src/RQuantLib.cc)
-AC_INIT(RQuantlib, 0.1.8)
+AC_INIT(RQuantlib, 0.1.11)
 
 # We are using C++
 AC_LANG(C++)
@@ -56,6 +59,74 @@ else
 "
     exit 1
 fi
+
+## check for boost, this segment as well as segment below are 
+## from QuantLib's configure.ac
+## 
+##
+## Help the compiler find external software
+AC_ARG_WITH([boost-include],
+            AC_HELP_STRING([--with-boost-include=INCLUDE_PATH],
+                           [Supply the location of Boost header files]),
+            [ql_boost_include_path=$withval],
+            [ql_boost_include_path=""])
+if test [ -n "$ql_boost_include_path" ] ; then
+   AC_SUBST([CPPFLAGS],["${CPPFLAGS} -I${ql_boost_include_path}"])
+fi
+AC_ARG_WITH([boost-lib],
+            AC_HELP_STRING([--with-boost-lib=LIB_PATH],
+                           [Supply the location of Boost libraries]),
+            [ql_boost_lib_path=$withval],
+            [ql_boost_lib_path=""])
+if test [ -n "$ql_boost_lib_path" ] ; then
+   AC_SUBST([LDFLAGS],["${LDFLAGS} -L${ql_boost_lib_path}"])
+fi
+##
+## Check for Boost components
+# QL_CHECK_BOOST_DEVEL
+# --------------------
+# Check whether the Boost headers are available
+AC_DEFUN([QL_CHECK_BOOST_DEVEL],
+[AC_MSG_CHECKING([for Boost development files])
+ AC_TRY_COMPILE(
+    [@%:@include <boost/version.hpp>
+     @%:@include <boost/shared_ptr.hpp>
+     @%:@include <boost/assert.hpp>
+     @%:@include <boost/current_function.hpp>],
+    [],
+    [AC_MSG_RESULT([yes])],
+    [AC_MSG_RESULT([no])
+     AC_MSG_ERROR([Boost development files not found])
+    ])
+])
+
+# QL_CHECK_BOOST_VERSION
+# ----------------------
+# Check whether the Boost installation is up to date
+AC_DEFUN([QL_CHECK_BOOST_VERSION],
+[AC_MSG_CHECKING([Boost version])
+ AC_REQUIRE([QL_CHECK_BOOST_DEVEL])
+ AC_TRY_COMPILE(
+    [@%:@include <boost/version.hpp>],
+    [@%:@if BOOST_VERSION < 103100
+     @%:@error too old
+     @%:@endif],
+    [AC_MSG_RESULT([yes])],
+    [AC_MSG_RESULT([no])
+     AC_MSG_ERROR([outdated Boost installation])
+    ])
+])
+
+# QL_CHECK_BOOST
+# ------------------------
+# Boost-related tests
+AC_DEFUN([QL_CHECK_BOOST],
+[AC_REQUIRE([QL_CHECK_BOOST_DEVEL])
+ AC_REQUIRE([QL_CHECK_BOOST_VERSION])
+])
+QL_CHECK_BOOST
+
+
 
 # also test for quantlib version using result from quantlib-config --version
 case ${pkg_version} in

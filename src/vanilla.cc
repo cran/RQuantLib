@@ -2,7 +2,7 @@
 //
 // Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: vanilla.cc,v 1.12 2004/09/12 18:54:40 edd Exp $
+// $Id: vanilla.cc,v 1.14 2004/12/28 03:23:40 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -60,8 +60,6 @@ extern "C" {
       optionType = Option::Call;
     } else if (!strcmp(type, "put")) {
       optionType = Option::Put;
-    } else if (!strcmp(type, "straddle")) {
-      optionType = Option::Straddle;
     } else {
       error("Unexpected option type %s, aborting\n", type);
     }
@@ -80,10 +78,11 @@ extern "C" {
     boost::shared_ptr<TermStructure> rTS = makeFlatCurve(today, rRate, dc);
 
     Date exDate = today.plusDays(length);
-    Handle<Exercise> exercise(new EuropeanExercise(exDate));
-    Handle<StrikedTypePayoff> 
+    boost::shared_ptr<Exercise> exercise(new EuropeanExercise(exDate));
+
+    boost::shared_ptr<StrikedTypePayoff> 
       payoff(new PlainVanillaPayoff(optionType, strike));
-    Handle<VanillaOption> 
+    boost::shared_ptr<VanillaOption>
       option = makeOption(payoff, exercise, spot, qTS, rTS, volTS);
 
     spot->setValue(underlying);
@@ -134,8 +133,6 @@ extern "C" {
       optionType = Option::Call;
     } else if (!strcmp(type, "put")) {
       optionType = Option::Put;
-    } else if (!strcmp(type, "straddle")) {
-      optionType = Option::Straddle;
     } else {
       error("Unexpected option type %s, aborting\n", type);
     }

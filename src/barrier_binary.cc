@@ -2,7 +2,7 @@
 //
 // Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: barrier_binary.cc,v 1.4 2004/09/12 18:54:32 edd Exp $
+// $Id: barrier_binary.cc,v 1.7 2004/12/28 03:28:02 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -56,8 +56,6 @@ extern "C" {
       optionType = Option::Call;
     } else if (!strcmp(type, "put")) {
       optionType = Option::Put;
-    } else if (!strcmp(type, "straddle")) {
-      optionType = Option::Straddle;
     } else {
       error("Unexpected option type %s, aborting\n", type);
     }
@@ -87,8 +85,8 @@ extern "C" {
     rRate->setValue(riskFreeRate);
     vol  ->setValue(volatility);
 
-    boost::shared_ptr<BlackScholesStochasticProcess> 
-      stochProcess(new BlackScholesStochasticProcess(
+    boost::shared_ptr<BlackScholesProcess> 
+      stochProcess(new BlackScholesProcess(
                 RelinkableHandle<Quote>(spot),
                 RelinkableHandle<TermStructure>(qTS),
                 RelinkableHandle<TermStructure>(rTS),
@@ -140,8 +138,6 @@ extern "C" {
       optionType = Option::Call;
     } else if (!strcmp(type, "put")) {
       optionType = Option::Put;
-    } else if (!strcmp(type, "straddle")) {
-      optionType = Option::Straddle;
     } else {
       error("Unexpected option type %s, aborting\n", type);
     }
@@ -232,8 +228,6 @@ extern "C" {
       optionType = Option::Call;
     } else if (!strcmp(type, "put")) {
       optionType = Option::Put;
-    } else if (!strcmp(type, "straddle")) {
-      optionType = Option::Straddle;
     } else {
       error("Unexpected option type %s, aborting\n", type);
     }
@@ -262,8 +256,8 @@ extern "C" {
     boost::shared_ptr<StrikedTypePayoff> 
       payoff(new PlainVanillaPayoff(optionType, strike));
 
-    boost::shared_ptr<BlackScholesStochasticProcess> 
-      stochProcess(new BlackScholesStochasticProcess(
+    boost::shared_ptr<BlackScholesProcess> 
+      stochProcess(new BlackScholesProcess(
                 RelinkableHandle<Quote>(spot),
                 RelinkableHandle<TermStructure>(qTS),
                 RelinkableHandle<TermStructure>(rTS),
@@ -278,11 +272,6 @@ extern "C" {
     bool isBiased = false;
 
     boost::shared_ptr<PricingEngine> engine(new AnalyticBarrierEngine);
-    boost::shared_ptr<PricingEngine> mcEngine(
-        new MCBarrierEngine<PseudoRandom>(timeSteps, antitheticVariate,
-                                          controlVariate, requiredSamples,
-                                          requiredTolerance, maxSamples,
-                                          isBiased, 5));
 
     BarrierOption barrierOption(barrierType,
 				barrier,

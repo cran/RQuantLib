@@ -3,7 +3,7 @@
 //
 // Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: implieds.cc,v 1.5 2004/09/12 18:51:20 edd Exp $
+// $Id: implieds.cc,v 1.7 2004/12/28 03:23:03 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -59,8 +59,6 @@ extern "C" {
       optionType = Option::Call;
     } else if (!strcmp(type, "put")) {
       optionType = Option::Put;
-    } else if (!strcmp(type, "straddle")) {
-      optionType = Option::Straddle;
     } else {
       error("Unexpected option type %s, aborting\n", type);
     }
@@ -137,8 +135,6 @@ extern "C" {
       optionType = Option::Call;
     } else if (!strcmp(type, "put")) {
       optionType = Option::Put;
-    } else if (!strcmp(type, "straddle")) {
-      optionType = Option::Straddle;
     } else {
       error("Unexpected option type %s, aborting\n", type);
     }

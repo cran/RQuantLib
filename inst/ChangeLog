@@ -1,3 +1,19 @@
+2004-12-27  Dirk Eddelbuettel  <edd@debian.org>
+
+	* Release 0.1.11 matching the new QuantLib 0.3.8 release
+
+	* configure.in: Added tests for Boost headers, with thanks and
+	  a nod to QuantLib for the actual autoconf code
+
+	* src/{barrier_binary.cc,implieds.cc,vanilla.cc}: Option type 
+	  'Straddle' now unsupported, hence commented out
+	* man/*.Rd: Similarly removed reference to straddle from docs
+	
+	* src/{barrier_binary.cc,implieds.cc,utils.cc,vanilla.cc}: 
+	  Renamed BlackScholesStochasticProcess to BlackScholesProcess 
+
+	* src/vanilla.cc: Changed Handle to boost::shared_ptr 
+	
 2004-09-12  Dirk Eddelbuettel  <edd@debian.org>
 
 	* Release 0.1.10

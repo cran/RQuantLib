@@ -1,4 +1,4 @@
-% $Id: AmericanOption.Rd,v 1.4 2004/05/27 02:06:19 edd Exp $
+% $Id: AmericanOption.Rd,v 1.5 2004/12/28 03:13:45 edd Exp $
 \name{AmericanOption}
 \alias{AmericanOption}
 \alias{AmericanOption.default}
@@ -15,8 +15,7 @@ maturity, volatility, timeSteps=150, gridPoints=151)
 \method{summary}{Option}
 }
 \arguments{
-  \item{type}{A string with one of the values \code{call}, \code{put} or
-    \code{straddle}}
+  \item{type}{A string with one of the values \code{call} or \code{put}}
   \item{underlying}{Current price of the underlying stock}
   \item{strike}{Strike price of the option}
   \item{dividendYield}{Continuous dividend yield (as a fraction) of the stock}

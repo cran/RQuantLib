@@ -1,4 +1,4 @@
-% $Id: EuropeanOptionArrays.Rd,v 1.3 2002/11/14 01:05:55 edd Exp $
+% $Id: EuropeanOptionArrays.Rd,v 1.4 2004/12/28 03:20:07 edd Exp $
 \name{EuropeanOptionArrays}
 \alias{EuropeanOptionArrays}
 \title{European Option evaluation using Closed-Form solution}
@@ -13,8 +13,7 @@
 EuropeanOptionArrays(type, underlying, strike, dividendYield, riskFreeRate, maturity, volatility)
 }
 \arguments{
-  \item{type}{A string with one of the values \code{call}, \code{put} or
-    \code{straddle}}
+  \item{type}{A string with one of the values \code{call} or \code{put}}
   \item{underlying}{(Scalar or list) current price(s) of the underlying stock}
   \item{strike}{(Scalar or list) strike price(s) of the option}
   \item{dividendYield}{(Scalar or list) continuous dividend yield(s) (as a fraction) of the stock}

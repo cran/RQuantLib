@@ -1,4 +1,4 @@
-% $Id: EuropeanOptionImpliedVolatility.Rd,v 1.3 2004/09/12 19:00:29 edd Exp $
+% $Id: EuropeanOptionImpliedVolatility.Rd,v 1.4 2004/12/28 03:18:29 edd Exp $
 \name{EuropeanOptionImpliedVolatility}
 \alias{EuropeanOptionImpliedVolatility}
 \alias{EuropeanOptionImpliedVolatility.default}
@@ -17,8 +17,7 @@ EuropeanOptionImpliedVolatility.default(type, value, underlying, strike, dividen
 \method{summary}{ImpliedVolatility}
 }
 \arguments{
-  \item{type}{A string with one of the values \code{call}, \code{put} or
-    \code{straddle}}
+  \item{type}{A string with one of the values \code{call} or \code{put}}
   \item{value}{Value of the option (used only for ImpliedVolatility calculation)}
   \item{underlying}{Current price of the underlying stock}
   \item{strike}{Strike price of the option}

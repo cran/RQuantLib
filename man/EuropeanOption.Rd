@@ -1,4 +1,4 @@
-% $Id: EuropeanOption.Rd,v 1.3 2004/05/27 02:04:58 edd Exp $
+% $Id: EuropeanOption.Rd,v 1.4 2004/12/28 03:18:47 edd Exp $
 \name{EuropeanOption}
 \alias{EuropeanOption}
 \alias{EuropeanOption.default}
@@ -17,8 +17,7 @@ EuropeanOption.default(type, underlying, strike, dividendYield, riskFreeRate, ma
 \method{summary}{Option}
 }
 \arguments{
-  \item{type}{A string with one of the values \code{call}, \code{put} or
-    \code{straddle}}
+  \item{type}{A string with one of the values \code{call} or \code{put}}
   \item{underlying}{Current price of the underlying stock}
   \item{strike}{Strike price of the option}
   \item{dividendYield}{Continuous dividend yield (as a fraction) of the stock}
