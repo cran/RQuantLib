@@ -2,7 +2,7 @@
 //
 // Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: barrier_binary.cc,v 1.3 2004/04/06 03:38:54 edd Exp $
+// $Id: barrier_binary.cc,v 1.4 2004/09/12 18:54:32 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -62,32 +62,32 @@ extern "C" {
       error("Unexpected option type %s, aborting\n", type);
     }
 
-    // new QuantLib 0.3.5 framework: digitals
-    DayCounter dc = Actual360();
-    Handle<SimpleQuote> spot(new SimpleQuote(0.0));
-    Handle<SimpleQuote> qRate(new SimpleQuote(0.0));
-    Handle<TermStructure> qTS = makeFlatCurve(qRate, dc);
-    Handle<SimpleQuote> rRate(new SimpleQuote(0.0));
-    Handle<TermStructure> rTS = makeFlatCurve(rRate, dc);
-    Handle<SimpleQuote> vol(new SimpleQuote(0.0));
-    Handle<BlackVolTermStructure> volTS = makeFlatVolatility(vol, dc);
-    Handle<PricingEngine> engine(new AnalyticEuropeanEngine);
-
+    // new QuantLib 0.3.5 framework: digitals, updated for 0.3.7
     Date today = Date::todaysDate();
+    DayCounter dc = Actual360();
+    boost::shared_ptr<SimpleQuote> spot(new SimpleQuote(0.0));
+    boost::shared_ptr<SimpleQuote> qRate(new SimpleQuote(0.0));
+    boost::shared_ptr<TermStructure> qTS = makeFlatCurve(today, qRate, dc);
+    boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(0.0));
+    boost::shared_ptr<TermStructure> rTS = makeFlatCurve(today, rRate, dc);
+    boost::shared_ptr<SimpleQuote> vol(new SimpleQuote(0.0));
+    boost::shared_ptr<BlackVolTermStructure> volTS = 
+      makeFlatVolatility(today, vol, dc);
+    boost::shared_ptr<PricingEngine> engine(new AnalyticEuropeanEngine);
 
-    Handle<StrikedTypePayoff> 
+    boost::shared_ptr<StrikedTypePayoff> 
       payoff(new CashOrNothingPayoff(optionType, strike, cashPayoff));
 
     Date exDate = today.plusDays(length);
 
-    Handle<Exercise> exercise(new EuropeanExercise(exDate));
+    boost::shared_ptr<Exercise> exercise(new EuropeanExercise(exDate));
 
     spot->setValue(underlying);
     qRate->setValue(dividendYield);
     rRate->setValue(riskFreeRate);
     vol  ->setValue(volatility);
 
-    Handle<BlackScholesStochasticProcess> 
+    boost::shared_ptr<BlackScholesStochasticProcess> 
       stochProcess(new BlackScholesStochasticProcess(
                 RelinkableHandle<Quote>(spot),
                 RelinkableHandle<TermStructure>(qTS),
@@ -146,30 +146,31 @@ extern "C" {
       error("Unexpected option type %s, aborting\n", type);
     }
 
-    // new QuantLib 0.3.5 framework: digitals
-    DayCounter dc = Actual360();
-    Handle<SimpleQuote> spot(new SimpleQuote(0.0));
-    Handle<SimpleQuote> qRate(new SimpleQuote(0.0));
-    Handle<TermStructure> qTS = makeFlatCurve(qRate, dc);
-    Handle<SimpleQuote> rRate(new SimpleQuote(0.0));
-    Handle<TermStructure> rTS = makeFlatCurve(rRate, dc);
-    Handle<SimpleQuote> vol(new SimpleQuote(0.0));
-    Handle<BlackVolTermStructure> volTS = makeFlatVolatility(vol, dc);
-    Handle<PricingEngine> engine(new AnalyticEuropeanEngine);
-
+    // new QuantLib 0.3.5 framework: digitals, updated for 0.3.7
     Date today = Date::todaysDate();
-    Handle<StrikedTypePayoff> 
+    DayCounter dc = Actual360();
+    boost::shared_ptr<SimpleQuote> spot(new SimpleQuote(0.0));
+    boost::shared_ptr<SimpleQuote> qRate(new SimpleQuote(0.0));
+    boost::shared_ptr<TermStructure> qTS = makeFlatCurve(today, qRate, dc);
+    boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(0.0));
+    boost::shared_ptr<TermStructure> rTS = makeFlatCurve(today, rRate, dc);
+    boost::shared_ptr<SimpleQuote> vol(new SimpleQuote(0.0));
+    boost::shared_ptr<BlackVolTermStructure> volTS = 
+      makeFlatVolatility(today, vol, dc);
+    boost::shared_ptr<PricingEngine> engine(new AnalyticEuropeanEngine);
+
+    boost::shared_ptr<StrikedTypePayoff> 
       payoff(new CashOrNothingPayoff(optionType, strike, cashPayoff));
     Date exDate = today.plusDays(length);
 
-    Handle<Exercise> exercise(new EuropeanExercise(exDate));
+    boost::shared_ptr<Exercise> exercise(new EuropeanExercise(exDate));
 
     spot->setValue(underlying);
     qRate->setValue(dividendYield);
     rRate->setValue(riskFreeRate);
     vol  ->setValue(volatility);
 
-    Handle<BlackScholesStochasticProcess> 
+    boost::shared_ptr<BlackScholesStochasticProcess> 
       stochProcess(new BlackScholesStochasticProcess(
                 RelinkableHandle<Quote>(spot),
                 RelinkableHandle<TermStructure>(qTS),
@@ -237,31 +238,31 @@ extern "C" {
       error("Unexpected option type %s, aborting\n", type);
     }
 
-    // new QuantLib 0.3.5 framework
-    DayCounter dc = Actual360();
-    Handle<SimpleQuote> spot(new SimpleQuote(0.0));
-    Handle<SimpleQuote> qRate(new SimpleQuote(0.0));
-    Handle<TermStructure> qTS = makeFlatCurve(qRate, dc);
-    Handle<SimpleQuote> rRate(new SimpleQuote(0.0));
-    Handle<TermStructure> rTS = makeFlatCurve(rRate, dc);
-
-    Handle<SimpleQuote> vol(new SimpleQuote(0.0));
-    Handle<BlackVolTermStructure> volTS = makeFlatVolatility(vol, dc);
-
+    // new QuantLib 0.3.5 framework, updated for 0.3.7
     Date today = Date::todaysDate();
+    DayCounter dc = Actual360();
+    boost::shared_ptr<SimpleQuote> spot(new SimpleQuote(0.0));
+    boost::shared_ptr<SimpleQuote> qRate(new SimpleQuote(0.0));
+    boost::shared_ptr<TermStructure> qTS = makeFlatCurve(today, qRate, dc);
+    boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(0.0));
+    boost::shared_ptr<TermStructure> rTS = makeFlatCurve(today, rRate, dc);
+
+    boost::shared_ptr<SimpleQuote> vol(new SimpleQuote(0.0));
+    boost::shared_ptr<BlackVolTermStructure> volTS = 
+      makeFlatVolatility(today, vol, dc);
 
     Date exDate = today.plusDays(length);
-    Handle<Exercise> exercise(new EuropeanExercise(exDate));
+    boost::shared_ptr<Exercise> exercise(new EuropeanExercise(exDate));
 
     spot ->setValue(underlying);
     qRate->setValue(dividendYield);
     rRate->setValue(riskFreeRate);
     vol  ->setValue(volatility);
 
-    Handle<StrikedTypePayoff> 
+    boost::shared_ptr<StrikedTypePayoff> 
       payoff(new PlainVanillaPayoff(optionType, strike));
 
-    Handle<BlackScholesStochasticProcess> 
+    boost::shared_ptr<BlackScholesStochasticProcess> 
       stochProcess(new BlackScholesStochasticProcess(
                 RelinkableHandle<Quote>(spot),
                 RelinkableHandle<TermStructure>(qTS),
@@ -276,8 +277,8 @@ extern "C" {
     Size maxSamples = 1000000;
     bool isBiased = false;
 
-    Handle<PricingEngine> engine(new AnalyticBarrierEngine);
-    Handle<PricingEngine> mcEngine(
+    boost::shared_ptr<PricingEngine> engine(new AnalyticBarrierEngine);
+    boost::shared_ptr<PricingEngine> mcEngine(
         new MCBarrierEngine<PseudoRandom>(timeSteps, antitheticVariate,
                                           controlVariate, requiredSamples,
                                           requiredTolerance, maxSamples,

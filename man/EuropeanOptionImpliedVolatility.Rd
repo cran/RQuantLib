@@ -1,4 +1,4 @@
-% $Id: EuropeanOptionImpliedVolatility.Rd,v 1.2 2004/04/06 03:46:24 edd Exp $
+% $Id: EuropeanOptionImpliedVolatility.Rd,v 1.3 2004/09/12 19:00:29 edd Exp $
 \name{EuropeanOptionImpliedVolatility}
 \alias{EuropeanOptionImpliedVolatility}
 \alias{EuropeanOptionImpliedVolatility.default}
@@ -7,7 +7,9 @@
   The \code{EuropeanOptionImpliedVolatility} function solves for the
   (unobservable) implied volatility, given an option price as well as
   the other required parameters to value an option.
-}
+
+  The code is currently (QuantLib 0.3.7) broken and NA is
+  returned. Debugging help would be welcome.}
 \usage{
 EuropeanOptionImpliedVolatility.default(type, value, underlying, strike, dividendYield, riskFreeRate, maturity, volatility)
 

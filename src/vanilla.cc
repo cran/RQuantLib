@@ -2,7 +2,7 @@
 //
 // Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: vanilla.cc,v 1.10 2004/04/06 03:34:36 edd Exp $
+// $Id: vanilla.cc,v 1.12 2004/09/12 18:54:40 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -28,6 +28,8 @@
 #include <ql/TermStructures/flatforward.hpp>
 #include <ql/Volatilities/blackconstantvol.hpp>
 #include <ql/Calendars/target.hpp>
+
+#include <ql/PricingEngines/Vanilla/baroneadesiwhaleyengine.hpp>
 
 using namespace QuantLib;
 
@@ -68,13 +70,14 @@ extern "C" {
 
     // new framework as per QuantLib 0.3.5
     DayCounter dc = Actual360();
-    Handle<SimpleQuote> spot(new SimpleQuote(0.0));
-    Handle<SimpleQuote> vol(new SimpleQuote(0.0));
-    Handle<BlackVolTermStructure> volTS = makeFlatVolatility(vol,dc);
-    Handle<SimpleQuote> qRate(new SimpleQuote(0.0));
-    Handle<TermStructure> qTS = makeFlatCurve(qRate, dc);
-    Handle<SimpleQuote> rRate(new SimpleQuote(0.0));
-    Handle<TermStructure> rTS = makeFlatCurve(rRate, dc);
+    boost::shared_ptr<SimpleQuote> spot(new SimpleQuote(0.0));
+    boost::shared_ptr<SimpleQuote> vol(new SimpleQuote(0.0));
+    boost::shared_ptr<BlackVolTermStructure> volTS = 
+      makeFlatVolatility(today, vol, dc);
+    boost::shared_ptr<SimpleQuote> qRate(new SimpleQuote(0.0));
+    boost::shared_ptr<TermStructure> qTS = makeFlatCurve(today, qRate, dc);
+    boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(0.0));
+    boost::shared_ptr<TermStructure> rTS = makeFlatCurve(today, rRate, dc);
 
     Date exDate = today.plusDays(length);
     Handle<Exercise> exercise(new EuropeanExercise(exDate));
@@ -139,33 +142,46 @@ extern "C" {
 
     Date today = Date::todaysDate();
 
-    // new framework as per QuantLib 0.3.5
+    // new framework as per QuantLib 0.3.5, updated for 0.3.7
     DayCounter dc = Actual360();
-    Handle<SimpleQuote> spot(new SimpleQuote(0.0));
-    Handle<SimpleQuote> vol(new SimpleQuote(0.0));
-    Handle<BlackVolTermStructure> volTS = makeFlatVolatility(vol,dc);
-    Handle<SimpleQuote> qRate(new SimpleQuote(0.0));
-    Handle<TermStructure> qTS = makeFlatCurve(qRate, dc);
-    Handle<SimpleQuote> rRate(new SimpleQuote(0.0));
-    Handle<TermStructure> rTS = makeFlatCurve(rRate, dc);
-
+    boost::shared_ptr<SimpleQuote> spot(new SimpleQuote(0.0));
+    boost::shared_ptr<SimpleQuote> vol(new SimpleQuote(0.0));
+    boost::shared_ptr<BlackVolTermStructure> volTS = 
+      makeFlatVolatility(today, vol, dc);
+    boost::shared_ptr<SimpleQuote> qRate(new SimpleQuote(0.0));
+    boost::shared_ptr<TermStructure> qTS = makeFlatCurve(today, qRate, dc);
+    boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(0.0));
+    boost::shared_ptr<TermStructure> rTS = makeFlatCurve(today, rRate, dc);
     Date exDate = today.plusDays(length);
-    Handle<Exercise> exercise(new AmericanExercise(today, exDate));
-    Handle<StrikedTypePayoff> 
+    boost::shared_ptr<Exercise> exercise(new AmericanExercise(today, exDate));
+    boost::shared_ptr<StrikedTypePayoff> 
       payoff(new PlainVanillaPayoff(optionType, strike));
-    Handle<VanillaOption> option = makeOption(payoff, exercise, spot,
-					      qTS, rTS, volTS,
-					      JR); // engine
-					      //TGEO); // engine
+//  boost::shared_ptr<VanillaOption> option = makeOption(payoff, exercise, spot,
+// 					      qTS, rTS, volTS,
+// 					      JR); // engine
+// 					      //TGEO); // engine
     spot->setValue(underlying);
     qRate->setValue(dividendYield);
     rRate->setValue(riskFreeRate);
     vol->setValue(volatility);
 
+    // new from 0.3.7 BaroneAdesiWhaley
+    boost::shared_ptr<PricingEngine> engine(
+				    new BaroneAdesiWhaleyApproximationEngine);
+    boost::shared_ptr<BlackScholesProcess> stochProcess(new
+	BlackScholesProcess(
+                RelinkableHandle<Quote>(spot),
+                RelinkableHandle<TermStructure>(qTS),
+                RelinkableHandle<TermStructure>(rTS),
+                RelinkableHandle<BlackVolTermStructure>(volTS)));
+
+    VanillaOption option(stochProcess, payoff, exercise,
+			 engine);
+
     SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
     SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
 
-    insertListElement(rl, nm, 0, option->NPV(), "value");
+    insertListElement(rl, nm, 0, option.NPV(), "value");
 //     insertListElement(rl, nm, 1, option->delta(), "delta");
 //     insertListElement(rl, nm, 2, option->gamma(), "gamma");
 //     insertListElement(rl, nm, 3, option->vega(), "vega");

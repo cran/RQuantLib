@@ -1,4 +1,4 @@
-% $Id: AmericanOptionImpliedVolatility.Rd,v 1.2 2004/04/06 03:45:41 edd Exp $
+% $Id: AmericanOptionImpliedVolatility.Rd,v 1.3 2004/09/12 19:00:14 edd Exp $
 \name{AmericanOptionImpliedVolatility}
 \alias{AmericanOptionImpliedVolatility}
 \alias{AmericanOptionImpliedVolatility.default}
@@ -6,7 +6,10 @@
 \description{
   The \code{AmericanOptionImpliedVolatility} function solves for the
   (unobservable) implied volatility, given an option price as well as
-  the other required parameters to value an option.}
+  the other required parameters to value an option.
+
+  The code is currently (QuantLib 0.3.7) broken and NA is
+  returned. Debugging help would be welcome.}
 \usage{
 AmericanOptionImpliedVolatility.default(type, value, underlying, strike,
 		dividendYield, riskFreeRate, maturity, volatility,

@@ -3,7 +3,7 @@
 //
 // Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: implieds.cc,v 1.3 2004/04/06 03:34:16 edd Exp $
+// $Id: implieds.cc,v 1.5 2004/09/12 18:51:20 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -25,6 +25,7 @@
 
 #include <ql/quantlib.hpp>	// make QuantLib known
 
+#include <ql/PricingEngines/Vanilla/analyticeuropeanengine.hpp>
 #include <ql/Instruments/vanillaoption.hpp>
 #include <ql/TermStructures/flatforward.hpp>
 #include <ql/Volatilities/blackconstantvol.hpp>
@@ -36,10 +37,22 @@ extern "C" {
 
 #include "rquantlib.h"
 
+  // Dumps core
+
   SEXP QL_EuropeanOptionImpliedVolatility(SEXP optionParameters) {
     const Size maxEvaluations = 100;
     const double tolerance = 1.0e-6;
     const int nret = 2;		// dimension of return list
+
+    SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
+    SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
+    insertListElement(rl, nm, 0, NA_REAL, "impliedVol");
+    SET_VECTOR_ELT(rl, 1, optionParameters);
+    SET_STRING_ELT(nm, 1, mkChar("parameters"));
+    setAttrib(rl, R_NamesSymbol, nm);
+    UNPROTECT(2);
+    return(rl);
+
     char *type = CHAR(STRING_ELT(getListElement(optionParameters, "type"),0));
     Option::Type optionType;
     if (!strcmp(type, "call")) {
@@ -52,59 +65,72 @@ extern "C" {
       error("Unexpected option type %s, aborting\n", type);
     }
 
+    double underlying = REAL(getListElement(optionParameters, "underlying"))[0];
     double strike = REAL(getListElement(optionParameters,"strike"))[0];	
-    
+    double dividendYield = 
+      REAL(getListElement(optionParameters, "dividendYield"))[0];
+    double riskFreeRate = 
+      REAL(getListElement(optionParameters, "riskFreeRate"))[0];
+    double volatility = REAL(getListElement(optionParameters, "volatility"))[0];
     Time maturity = REAL(getListElement(optionParameters, "maturity"))[0];
     int length = int(maturity * 360); // FIXME: this could be better
 
     Date today = Date::todaysDate();
 
     // new framework as per QuantLib 0.3.5
+    // updated for 0.3.7
     DayCounter dc = Actual360();
-    Handle<SimpleQuote> spot(new SimpleQuote(0.0));
-    Handle<SimpleQuote> vol(new SimpleQuote(0.0));
-    Handle<BlackVolTermStructure> volTS = makeFlatVolatility(vol,dc);
-    Handle<SimpleQuote> qRate(new SimpleQuote(0.0));
-    Handle<TermStructure> qTS = makeFlatCurve(qRate, dc);
-    Handle<SimpleQuote> rRate(new SimpleQuote(0.0));
-    Handle<TermStructure> rTS = makeFlatCurve(rRate, dc);
 
+    boost::shared_ptr<SimpleQuote> spot(new SimpleQuote(0.0));
+    boost::shared_ptr<SimpleQuote> vol(new SimpleQuote(0.0));
+    boost::shared_ptr<BlackVolTermStructure> volTS = 
+      makeFlatVolatility(today, vol, dc);
+    boost::shared_ptr<SimpleQuote> qRate(new SimpleQuote(0.0));
+    boost::shared_ptr<TermStructure> qTS = makeFlatCurve(today, qRate, dc);
+    boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(0.0));
+    boost::shared_ptr<TermStructure> rTS = makeFlatCurve(today, rRate, dc);
     Date exDate = today.plusDays(length);
-    Handle<Exercise> exercise(new EuropeanExercise(exDate));
-    Handle<StrikedTypePayoff> 
+    boost::shared_ptr<Exercise> exercise(new EuropeanExercise(exDate));
+    boost::shared_ptr<StrikedTypePayoff> 
       payoff(new PlainVanillaPayoff(optionType, strike));
-    Handle<VanillaOption> option = makeOption(payoff, exercise, spot,
+    boost::shared_ptr<VanillaOption> option = makeOption(payoff, exercise, spot,
 					      qTS, rTS, volTS);
 
-    spot->setValue(REAL(getListElement(optionParameters, "underlying"))[0]);
-    qRate->setValue(REAL(getListElement(optionParameters, 
-					"dividendYield"))[0]);
-    rRate->setValue(REAL(getListElement(optionParameters,
-					"dividendYield"))[0]);
-    double volguess = REAL(getListElement(optionParameters, "volatility"))[0];
+    spot->setValue(underlying);
+    qRate->setValue(dividendYield);
+    rRate->setValue(riskFreeRate);
+    double volguess = volatility;
     vol->setValue(volguess);
-
     double value = option->NPV();
     double implVol = 0.0; // just to remove a warning...
     if (value != 0.0) {
       vol->setValue(volguess*1.5);	// shift guess somehow
       implVol = option->impliedVolatility(value, tolerance, maxEvaluations);
     }
-
-    SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
-    SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
-    insertListElement(rl, nm, 0, implVol, "impliedVol");
-    SET_VECTOR_ELT(rl, 1, optionParameters);
-    SET_STRING_ELT(nm, 1, mkChar("parameters"));
-    setAttrib(rl, R_NamesSymbol, nm);
-    UNPROTECT(2);
-    return(rl);
+//     SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
+//     SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
+//     insertListElement(rl, nm, 0, implVol, "impliedVol");
+//     SET_VECTOR_ELT(rl, 1, optionParameters);
+//     SET_STRING_ELT(nm, 1, mkChar("parameters"));
+//     setAttrib(rl, R_NamesSymbol, nm);
+//     UNPROTECT(2);
+//     return(rl);
   }
 
   SEXP QL_AmericanOptionImpliedVolatility(SEXP optionParameters) {
     const Size maxEvaluations = 100;
     const double tolerance = 1.0e-6;
     const int nret = 2;		// dimension of return list
+
+    SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
+    SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
+    insertListElement(rl, nm, 0, NA_REAL, "impliedVol");
+    SET_VECTOR_ELT(rl, 1, optionParameters);
+    SET_STRING_ELT(nm, 1, mkChar("parameters"));
+    setAttrib(rl, R_NamesSymbol, nm);
+    UNPROTECT(2);
+    return(rl);
+
     char *type = CHAR(STRING_ELT(getListElement(optionParameters, "type"),0));
     Option::Type optionType;
     if (!strcmp(type, "call")) {
@@ -126,20 +152,21 @@ extern "C" {
 
     // new framework as per QuantLib 0.3.5
     DayCounter dc = Actual360();
-    Handle<SimpleQuote> spot(new SimpleQuote(0.0));
-    Handle<SimpleQuote> vol(new SimpleQuote(0.0));
-    Handle<BlackVolTermStructure> volTS = makeFlatVolatility(vol,dc);
-    Handle<SimpleQuote> qRate(new SimpleQuote(0.0));
-    Handle<TermStructure> qTS = makeFlatCurve(qRate, dc);
-    Handle<SimpleQuote> rRate(new SimpleQuote(0.0));
-    Handle<TermStructure> rTS = makeFlatCurve(rRate, dc);
+    boost::shared_ptr<SimpleQuote> spot(new SimpleQuote(0.0));
+    boost::shared_ptr<SimpleQuote> vol(new SimpleQuote(0.0));
+    boost::shared_ptr<BlackVolTermStructure> volTS = 
+      makeFlatVolatility(today, vol,dc);
+    boost::shared_ptr<SimpleQuote> qRate(new SimpleQuote(0.0));
+    boost::shared_ptr<TermStructure> qTS = makeFlatCurve(today, qRate, dc);
+    boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(0.0));
+    boost::shared_ptr<TermStructure> rTS = makeFlatCurve(today, rRate, dc);
 
     Date exDate = today.plusDays(length);
-    //Handle<Exercise> exercise(new EuropeanExercise(exDate));
-    Handle<Exercise> exercise(new AmericanExercise(today, exDate));
-    Handle<StrikedTypePayoff> 
+    //boost::shared_ptr<Exercise> exercise(new EuropeanExercise(exDate));
+    boost::shared_ptr<Exercise> exercise(new AmericanExercise(today, exDate));
+    boost::shared_ptr<StrikedTypePayoff> 
       payoff(new PlainVanillaPayoff(optionType, strike));
-    Handle<VanillaOption> option = makeOption(payoff, exercise, spot,
+    boost::shared_ptr<VanillaOption> option = makeOption(payoff, exercise, spot,
 					      qTS, rTS, volTS,
 					      JR);
 
@@ -158,14 +185,14 @@ extern "C" {
       implVol = option->impliedVolatility(value, tolerance, maxEvaluations);
     }
 
-    SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
-    SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
-    insertListElement(rl, nm, 0, implVol, "impliedVol");
-    SET_VECTOR_ELT(rl, 1, optionParameters);
-    SET_STRING_ELT(nm, 1, mkChar("parameters"));
-    setAttrib(rl, R_NamesSymbol, nm);
-    UNPROTECT(2);
-    return(rl);
+//     SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
+//     SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
+//     insertListElement(rl, nm, 0, implVol, "impliedVol");
+//     SET_VECTOR_ELT(rl, 1, optionParameters);
+//     SET_STRING_ELT(nm, 1, mkChar("parameters"));
+//     setAttrib(rl, R_NamesSymbol, nm);
+//     UNPROTECT(2);
+//     return(rl);
   }
  
 }

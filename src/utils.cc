@@ -3,7 +3,7 @@
 //
 // Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: utils.cc,v 1.3 2004/04/06 03:39:10 edd Exp $
+// $Id: utils.cc,v 1.4 2004/09/12 18:54:53 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -58,43 +58,43 @@ extern "C" {
     return elmt;
   }
 
-  Handle<VanillaOption>
-  makeOption(const Handle<StrikedTypePayoff>& payoff,
-	     const Handle<Exercise>& exercise,
-	     const Handle<Quote>& u,
-	     const Handle<TermStructure>& q,
-	     const Handle<TermStructure>& r,
-	     const Handle<BlackVolTermStructure>& vol,
+  boost::shared_ptr<VanillaOption>
+  makeOption(const boost::shared_ptr<StrikedTypePayoff>& payoff,
+	     const boost::shared_ptr<Exercise>& exercise,
+	     const boost::shared_ptr<Quote>& u,
+	     const boost::shared_ptr<TermStructure>& q,
+	     const boost::shared_ptr<TermStructure>& r,
+	     const boost::shared_ptr<BlackVolTermStructure>& vol,
 	     EngineType engineType) {
 
     Size binomialSteps = 251;
-    Handle<PricingEngine> engine;
+    boost::shared_ptr<PricingEngine> engine;
     switch (engineType) {
     case Analytic:
-      engine = Handle<PricingEngine>(new AnalyticEuropeanEngine);
+      engine = boost::shared_ptr<PricingEngine>(new AnalyticEuropeanEngine);
       break;
     case JR:
-      engine = Handle<PricingEngine>(
+      engine = boost::shared_ptr<PricingEngine>(
 	         new BinomialVanillaEngine<JarrowRudd>(binomialSteps));
       break;
     case CRR:
-      engine = Handle<PricingEngine>(
+      engine = boost::shared_ptr<PricingEngine>(
                 new BinomialVanillaEngine<CoxRossRubinstein>(binomialSteps));
     case EQP:
-      engine = Handle<PricingEngine>(
+      engine = boost::shared_ptr<PricingEngine>(
                 new BinomialVanillaEngine<AdditiveEQPBinomialTree>(
 							   binomialSteps));
       break;
     case TGEO:
-      engine = Handle<PricingEngine>(
+      engine = boost::shared_ptr<PricingEngine>(
                 new BinomialVanillaEngine<Trigeorgis>(binomialSteps));
       break;
     case TIAN:
-      engine = Handle<PricingEngine>(
+      engine = boost::shared_ptr<PricingEngine>(
                 new BinomialVanillaEngine<Tian>(binomialSteps));
       break;
     case LR:
-      engine = Handle<PricingEngine>(
+      engine = boost::shared_ptr<PricingEngine>(
                 new BinomialVanillaEngine<LeisenReimer>(binomialSteps));
       break;
     case PseudoMonteCarlo:
@@ -111,7 +111,7 @@ extern "C" {
     }
 
 
-    Handle<BlackScholesStochasticProcess> 
+    boost::shared_ptr<BlackScholesStochasticProcess> 
       stochProcess(new
          BlackScholesStochasticProcess(
 	     RelinkableHandle<Quote>(u),
@@ -120,7 +120,7 @@ extern "C" {
 	     RelinkableHandle<BlackVolTermStructure>(vol)));
 
     return 
-      Handle<VanillaOption>(new
+      boost::shared_ptr<VanillaOption>(new
 	    VanillaOption(stochProcess, payoff, exercise, engine));
   }
 
@@ -128,21 +128,27 @@ extern "C" {
 
   // QuantLib option setup utils, copied from the test-suite sources
 
-  Handle<TermStructure> makeFlatCurve(const Handle<Quote>& forward,
-				      DayCounter dc) {
-    Date today = Date::todaysDate();
-    return Handle<TermStructure>(
+  boost::shared_ptr<TermStructure> 
+    makeFlatCurve(const Date& today,
+		  const boost::shared_ptr<Quote>& forward,
+		  DayCounter dc) {
+    return boost::shared_ptr<TermStructure>(
 	 new FlatForward(today, today, 
 			 RelinkableHandle<Quote>(forward), dc));
   }
 
-  Handle<BlackVolTermStructure> makeFlatVolatility(const Handle<Quote>& vol,
-                                                     DayCounter dc) {
-    Date today = Date::todaysDate();
-    return Handle<BlackVolTermStructure>(
+  boost::shared_ptr<BlackVolTermStructure> 
+    makeFlatVolatility(const Date& today,
+			const boost::shared_ptr<Quote>& vol,
+			DayCounter dc) {
+    return boost::shared_ptr<BlackVolTermStructure>(
          new BlackConstantVol(today, 
 			      RelinkableHandle<Quote>(vol), dc));
   }
+
+
+
+
 
 
 }

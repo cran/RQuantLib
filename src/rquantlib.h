@@ -2,7 +2,7 @@
 //
 // Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: rquantlib.h,v 1.2 2004/04/06 03:38:25 edd Exp $
+// $Id: rquantlib.h,v 1.3 2004/09/12 18:55:28 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -34,21 +34,25 @@ extern "C" {
 			 const char *label);
   SEXP getListElement(SEXP list, char *str);
 
-  Handle<TermStructure> makeFlatCurve(const Handle<Quote>& forward,
-				      DayCounter dc);
-  Handle<BlackVolTermStructure> makeFlatVolatility(const Handle<Quote>& vol,
-						   DayCounter dc);
+  boost::shared_ptr<TermStructure> 
+     makeFlatCurve(const Date& today,
+		   const boost::shared_ptr<Quote>& forward,
+		   DayCounter dc);
+  boost::shared_ptr<BlackVolTermStructure> 
+     makeFlatVolatility(const Date& today,
+			const boost::shared_ptr<Quote>& vol,
+			DayCounter dc);
 
   enum EngineType { Analytic,
 		    JR, CRR, EQP, TGEO, TIAN, LR,
 		    PseudoMonteCarlo, QuasiMonteCarlo };
 
-  Handle<VanillaOption>
-  makeOption(const Handle<StrikedTypePayoff>& payoff,
-	     const Handle<Exercise>& exercise,
-	     const Handle<Quote>& u,
-	     const Handle<TermStructure>& q,
-	     const Handle<TermStructure>& r,
-	     const Handle<BlackVolTermStructure>& vol,
+  boost::shared_ptr<VanillaOption>
+  makeOption(const boost::shared_ptr<StrikedTypePayoff>& payoff,
+	     const boost::shared_ptr<Exercise>& exercise,
+	     const boost::shared_ptr<Quote>& u,
+	     const boost::shared_ptr<TermStructure>& q,
+	     const boost::shared_ptr<TermStructure>& r,
+	     const boost::shared_ptr<BlackVolTermStructure>& vol,
 	     EngineType engineType = Analytic);
 }

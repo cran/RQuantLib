@@ -1,9 +1,29 @@
+2004-09-12  Dirk Eddelbuettel  <edd@debian.org>
+
+	* Release 0.1.10
+
+	* Switched to using Boost library as per QuantLin 0.3.7
+
+        * AmericanOption now uses the Barone-Adesi-Whaley approximation
+	
+	* Implied volatility for both European and American options
+	  currently segfaults when called from R, though the code itself
+	  works as standalon. The code also works from R when the implied
+	  calculation call is skipped. Something is corrupting memory
+	  somewhere. For now, we return NA for either function.
+
+2004-08-06  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Added SystemRequirements for QuantLib
+
 2004-05-26  Dirk Eddelbuettel  <edd@debian.org>
 
 	* Release 0.1.9
 
 	* man/EuropeanOption.Rd: Added corrections for the issues raised
 	  by Ajay Shah in the Debian bug report #249240
+
+	* man/{AmericanOption,BarrierOption,BinaryOption}.Rd: Idem
 
 2004-04-05  Dirk Eddelbuettel  <edd@debian.org>
 

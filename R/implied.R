@@ -2,7 +2,7 @@
 ##
 ## Copyright 2002 Dirk Eddelbuettel <edd@debian.org>
 ##
-## $Id: implied.R,v 1.4 2003/06/01 04:27:30 edd Exp $
+## $Id: implied.R,v 1.6 2004/09/12 18:53:27 edd Exp $
 ##
 ## This file is part of the RQuantLib library for GNU R.
 ## It is made available under the terms of the GNU General Public
@@ -20,6 +20,7 @@
 ## Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 ## MA 02111-1307, USA
 
+## also dumps core (0.3.7)
 EuropeanOptionImpliedVolatility <-
   function(type, value, underlying, strike, dividendYield,
            riskFreeRate, maturity, volatility) {
@@ -43,15 +44,17 @@ EuropeanOptionImpliedVolatility.default <-
                     volatility=as.double(volatility)),
                PACKAGE="RQuantLib")
   class(val) <- c("EuropeanOptionImpliedVolatility","ImpliedVolatility")
+  warning("EuropeanOptionImpliedVolatility currently disabled.\nDebugging help on this segfaults would be appreciated.\n")
   val
 }
 
+# also dumps core (0.3.7)
 AmericanOptionImpliedVolatility <-
   function(type, value, underlying, strike, dividendYield, riskFreeRate,
            maturity, volatility, timeSteps=150, gridPoints=151) {
-#  if (is.null(class(x)))
-#    class(x) <- data.class(x)
-#  UseMethod("AmericanOptionImpliedVolatility", x, ...)
+  #if (is.null(class(x)))
+  #  class(x) <- data.class(x)
+  #UseMethod("AmericanOptionImpliedVolatility", x, ...)
   UseMethod("AmericanOptionImpliedVolatility")
 }
 
@@ -71,6 +74,7 @@ AmericanOptionImpliedVolatility.default <-
                     gridPoints=as.integer(gridPoints)),
                PACKAGE="RQuantLib")
   class(val) <- c("AmericanOptionImpliedVolatility","ImpliedVolatility")
+  warning("AmericanOptionImpliedVolatility currently disabled.\nDebugging help on this segfaults would be appreciated.\n")
   val
 }
 
