@@ -1,47 +1,78 @@
-dnl RQuantLib configure.in by Dirk Eddelbuettel <edd@debian.org>
-dnl Borrowed pieces from RPgSQL, GNU Gretl and GNU R
-dnl Greatly simplified thanks to quantlib-config
+# RQuantLib configure.in by Dirk Eddelbuettel <edd@debian.org>
+# Borrowed pieces from RPgSQL, GNU Gretl and GNU R
+# Greatly simplified thanks to quantlib-config
+# Another contribution by Kurt Hornik gratefully acknowledged
 
-dnl require at least autoconf 2.13
-AC_PREREQ(2.13)
+# require at least autoconf 2.13
+# requirements inflation: now require 2.50
+AC_PREREQ(2.50)
 
-dnl Process this file with autoconf to produce a configure script.
-AC_INIT(src/RQuantLib.cc)
+# Process this file with autoconf to produce a configure script.
+# AC_INIT(src/RQuantLib.cc)
+AC_INIT(RQuantlib, 0.1.4)
 
-dnl borrowed from a check for gnome in GNU gretl
-dnl define a check for quantlib-config
-AC_DEFUN(AC_PROG_QUANTLIB,
-	[AC_CHECK_PROG(QUANTLIB,quantlib-config,yes)])
-dnl and use it
-AC_PROG_QUANTLIB
-if test x"${QUANTLIB}" == x"yes" ; then
-	#echo "*** Found quantlib-config, using it for header and lib flags"
-	have_quantlib=yes
-	PKG_CXXFLAGS=`quantlib-config --cflags`
-	PKG_LIBS=`quantlib-config --libs`
-fi
-
-dnl Check for g++
-AC_PROG_CXX
-
-dnl We are using C++
-dnl autoconf2.50: AC_LANG(C++)
-AC_LANG_CPLUSPLUS
+# We are using C++
+AC_LANG(C++)
+# autoconf2.13: AC_LANG_CPLUSPLUS
 AC_REQUIRE_CPP
 
-if test "${have_quantlibl}" = "no"  
-then
-	echo "
+# Next segment by Kurt
+: ${R_HOME=`R RHOME`}
+if test -z "${R_HOME}"; then
+    echo "could not determine R_HOME"
+    exit 1
+fi
+CXX=`${R_HOME}/bin/R CMD config CXX`
+
+AC_PROG_CXX
+
+if test "${GXX}" = yes; then
+    gxx_version=`${CXX} -v 2>&1 | grep "^.*g.. version" | \\
+		       sed -e 's/^.*g.. version *//'`
+    case ${gxx_version} in
+        1.*|2.*)
+	     AC_MSG_WARN([Only g++ version 3.0 or greater can be used with RQuantib.])
+	     AC_MSG_ERROR([Please use a different compiler.])   
+        ;;
+    esac
+fi
+
+# borrowed from a check for gnome in GNU gretl
+# define a check for quantlib-config
+AC_DEFUN(AC_PROG_QUANTLIB, [AC_CHECK_PROG(QUANTLIB,quantlib-config,yes)])
+# and use it
+AC_PROG_QUANTLIB
+if test x"${QUANTLIB}" == x"yes" ; then
+    #echo "*** Found quantlib-config, using it for header and lib flags"
+    pkg_cxxflags=`quantlib-config --cflags`
+    pkg_libs=`quantlib-config --libs`
+    pkg_version=`quantlib-config --version`
+else
+    echo "
   Your installation does not appear to have QuantLib installed as the
   quantlib-config utility script could not be found. 
 
   Please make sure that QuantLib installed and working properly.
 "
-else
-	AC_SUBST(PKG_CXXFLAGS)
-	AC_SUBST(PKG_LIBS)
-	AC_OUTPUT(src/Makevars)
-	echo "Completed configuration and ready to build."
+    exit 1
 fi
+
+# also test for quantlib version using result from quantlib-config --version
+case ${pkg_version} in
+     0.1.*|0.2.*)
+	 AC_MSG_WARN([RQuantLib requires QuantLib version 0.3.0 or later.])
+	 AC_MSG_ERROR([Please upgrade to a more recent version.])
+     ;;
+esac
+
+AC_SUBST(pkg_cxxflags)
+AC_SUBST(pkg_libs)
+AC_OUTPUT(src/Makevars)
+echo "Completed configuration and ready to build."
+
+### Local Variables: ***
+### mode: autoconf ***
+### autoconf-indentation: 4 ***
+### End: ***
 
 

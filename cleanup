@@ -8,6 +8,9 @@ fi
 if [ -e src/Makevars ]; then
     rm -f src/Makevars
 fi
+if [ -e autom4te.cache ]; then
+    rm -rf autom4te.cache
+fi
 for f in src/*.o src/*.so; do
     rm -f $f
 done

@@ -1,6 +1,19 @@
-2002-11-25  Dirk Eddelbuettel  <edd@debian.org>
+2003-03-25  Dirk Eddelbuettel  <edd@debian.org>
 
-	* Release 0.1.3 (in progress)
+	* Release 0.1.4
+	
+	* data/:  Removed empty directory as suggested by Kurt
+
+	* configure.in: Several additions:
+	  - test for g++ >= 3.0, kindly provided by Kurt
+	  - test for QuantLib >= 0.3, along the same lines
+	  - converted from autoconf 2.13 to 2.50
+	
+	* cleanup: Remove temp dir created by autoconf
+
+2003-02-05  Dirk Eddelbuettel  <edd@debian.org>
+
+	* Release 0.1.3 
 
 	* R/*.R: Added PACKAGE="RQuantLib" to .Call() as suggested by Kurt
 
