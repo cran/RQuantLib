@@ -1,4 +1,4 @@
-% $Id: AmericanOption.Rd,v 1.2 2002/11/11 02:32:08 edd Exp $
+% $Id: AmericanOption.Rd,v 1.3 2004/04/06 03:49:54 edd Exp $
 \name{AmericanOption}
 \alias{AmericanOption}
 \alias{AmericanOption.default}
@@ -39,6 +39,10 @@ maturity, volatility, timeSteps=150, gridPoints=151)
   \item{theta}{Change in value for a change in delta}
   \item{rho}{Change in value for a change in time to maturity (\"time decay\")}  \item{dividendRho}{Change in value for a change in delta}
   \item{parameters}{List with parameters with which object was created}
+
+  Note that under the new pricing framework used in QuantLib, binary
+  pricers do not provide analytics for 'Greeks'. This is expected to be
+  addressed in future releases of QuantLib.
 }
 \details{
   The Finite Differences method is used to value the American Option.

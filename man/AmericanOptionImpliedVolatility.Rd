@@ -1,4 +1,4 @@
-% $Id: AmericanOptionImpliedVolatility.Rd,v 1.1 2002/02/26 03:42:55 edd Exp $
+% $Id: AmericanOptionImpliedVolatility.Rd,v 1.2 2004/04/06 03:45:41 edd Exp $
 \name{AmericanOptionImpliedVolatility}
 \alias{AmericanOptionImpliedVolatility}
 \alias{AmericanOptionImpliedVolatility.default}
@@ -57,8 +57,9 @@ AmericanOptionImpliedVolatility.default(type, value, underlying, strike,
 \seealso{\code{\link{EuropeanOption}},\code{\link{AmericanOption}},\code{\link{BinaryOption}}}
 
 \examples{
-AmericanOptionImpliedVolatility("call", value=11.10, strike=100, 100,
-0.01, 0.03, 0.5, 0.4)
+AmericanOptionImpliedVolatility(type="call", value=11.10, underlying=100,
+	strike=100, dividendYield=0.01, riskFreeRate=0.03,
+	maturity=0.5, volatility=0.4)
 }
 \keyword{misc}
 

@@ -9,7 +9,7 @@ AC_PREREQ(2.50)
 
 # Process this file with autoconf to produce a configure script.
 # AC_INIT(src/RQuantLib.cc)
-AC_INIT(RQuantlib, 0.1.4)
+AC_INIT(RQuantlib, 0.1.8)
 
 # We are using C++
 AC_LANG(C++)
@@ -59,8 +59,8 @@ fi
 
 # also test for quantlib version using result from quantlib-config --version
 case ${pkg_version} in
-     0.1.*|0.2.*)
-	 AC_MSG_WARN([RQuantLib requires QuantLib version 0.3.0 or later.])
+     0.1.*|0.2.*|0.3.1|0.3.2|0.3.3|0.3.4)
+	 AC_MSG_WARN([RQuantLib requires QuantLib version 0.3.5 or later.])
 	 AC_MSG_ERROR([Please upgrade to a more recent version.])
      ;;
 esac

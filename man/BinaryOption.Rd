@@ -1,4 +1,4 @@
-% $Id: BinaryOption.Rd,v 1.2 2002/11/11 02:54:55 edd Exp $
+% $Id: BinaryOption.Rd,v 1.3 2003/12/05 01:46:59 edd Exp $
 \name{BinaryOption}
 \alias{BinaryOption}
 \alias{BinaryOption.default}
@@ -9,7 +9,7 @@ using a closed-form solution. The option value as well as the common first
 derivatives (\"Greeks\") are returned.}
 \usage{
 BinaryOption.default(type, underlying, strike, dividendYield, riskFreeRate,
-maturity, volatility, cashPayoff=1.0)
+maturity, volatility, cashPayoff)
 
 \method{print}{Option}
 \method{summary}{Option}
@@ -23,7 +23,7 @@ maturity, volatility, cashPayoff=1.0)
   \item{riskFreeRate}{Risk-free rate}
   \item{maturity}{Time to maturity (in fractional years)}
   \item{volatility}{Volatility of the underlying stock}
-  \item{cashPayoff}{Payout amount, defaults to 1.0}
+  \item{cashPayoff}{Payout amount}
 }
 \value{
   An object of class \code{BinaryOption} (which inherits from class

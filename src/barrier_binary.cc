@@ -1,8 +1,8 @@
 // RQuantLib -- R interface to the QuantLib libraries
 //
-// Copyright 2002 Dirk Eddelbuettel <edd@debian.org>
+// Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: barrier_binary.cc,v 1.1 2003/11/29 01:10:15 edd Exp $
+// $Id: barrier_binary.cc,v 1.3 2004/04/06 03:38:54 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -23,11 +23,8 @@
 // NB can be build standalone as   PKG_LIBS=-lQuantLib R CMD SHLIB RQuantLib.cc
 
 #include <ql/quantlib.hpp>	// make QuantLib known
+
 using namespace QuantLib;
-using QuantLib::Pricers::EuropeanOption;
-using QuantLib::Pricers::FdAmericanOption;
-using QuantLib::Pricers::BinaryOption;
-using QuantLib::Pricers::BarrierOption;
 
 extern "C" {
 
@@ -47,6 +44,8 @@ extern "C" {
     Rate riskFreeRate = REAL(getListElement(optionParameters, 
 					    "riskFreeRate"))[0];
     Time maturity = REAL(getListElement(optionParameters, "maturity"))[0];
+    int length = int(maturity * 360); // FIXME: this could be better
+
     double volatility = REAL(getListElement(optionParameters, 
 					    "volatility"))[0];
     double cashPayoff = REAL(getListElement(optionParameters, 
@@ -63,31 +62,64 @@ extern "C" {
       error("Unexpected option type %s, aborting\n", type);
     }
 
-    BinaryOption BO = BinaryOption(optionType, underlying, strike,
-				   dividendYield, riskFreeRate, maturity, 
-				   volatility, cashPayoff);
+    // new QuantLib 0.3.5 framework: digitals
+    DayCounter dc = Actual360();
+    Handle<SimpleQuote> spot(new SimpleQuote(0.0));
+    Handle<SimpleQuote> qRate(new SimpleQuote(0.0));
+    Handle<TermStructure> qTS = makeFlatCurve(qRate, dc);
+    Handle<SimpleQuote> rRate(new SimpleQuote(0.0));
+    Handle<TermStructure> rTS = makeFlatCurve(rRate, dc);
+    Handle<SimpleQuote> vol(new SimpleQuote(0.0));
+    Handle<BlackVolTermStructure> volTS = makeFlatVolatility(vol, dc);
+    Handle<PricingEngine> engine(new AnalyticEuropeanEngine);
 
+    Date today = Date::todaysDate();
+
+    Handle<StrikedTypePayoff> 
+      payoff(new CashOrNothingPayoff(optionType, strike, cashPayoff));
+
+    Date exDate = today.plusDays(length);
+
+    Handle<Exercise> exercise(new EuropeanExercise(exDate));
+
+    spot->setValue(underlying);
+    qRate->setValue(dividendYield);
+    rRate->setValue(riskFreeRate);
+    vol  ->setValue(volatility);
+
+    Handle<BlackScholesStochasticProcess> 
+      stochProcess(new BlackScholesStochasticProcess(
+                RelinkableHandle<Quote>(spot),
+                RelinkableHandle<TermStructure>(qTS),
+                RelinkableHandle<TermStructure>(rTS),
+                RelinkableHandle<BlackVolTermStructure>(volTS)));
+
+    VanillaOption opt(stochProcess, payoff, exercise, engine);
+
+    // now prepare R structure for return of results
     SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
     SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
 
-    insertListElement(rl, nm, 0, BO.value(), "value");
-    insertListElement(rl, nm, 1, BO.delta(), "delta");
-    insertListElement(rl, nm, 2, BO.gamma(), "gamma");
-    insertListElement(rl, nm, 3, BO.vega(), "vega");
-    insertListElement(rl, nm, 4, BO.theta(), "theta");
-    insertListElement(rl, nm, 5, BO.rho(),   "rho");
-    insertListElement(rl, nm, 6, BO.dividendRho(), "divRho");
+    insertListElement(rl, nm, 0, opt.NPV(), "value");
+    insertListElement(rl, nm, 1, opt.delta(), "delta");
+    insertListElement(rl, nm, 2, opt.gamma(), "gamma");
+    insertListElement(rl, nm, 3, opt.vega(), "vega");
+    insertListElement(rl, nm, 4, opt.theta(), "theta");
+    insertListElement(rl, nm, 5, opt.rho(),   "rho");
+    insertListElement(rl, nm, 6, opt.dividendRho(), "divRho");
 
     SET_VECTOR_ELT(rl, 7, optionParameters);
     SET_STRING_ELT(nm, 7, mkChar("parameters"));
 
     setAttrib(rl, R_NamesSymbol, nm);
-    //    setAttrib(rl, R_ClassSymbol, ScalarString(mkChar("EuropeanOption")));
+    // setAttrib(rl, R_ClassSymbol, ScalarString(mkChar("EuropeanOption")));
 
     UNPROTECT(2);
     return(rl);
   }
 
+  // dumped core when we tried last
+#if 0
   SEXP QL_BinaryOptionImpliedVolatility(SEXP optionParameters) {
     const int nret = 2;		// dimension of return list
     char *type = CHAR(STRING_ELT(getListElement(optionParameters, "type"),0));
@@ -99,6 +131,7 @@ extern "C" {
     Rate riskFreeRate = REAL(getListElement(optionParameters, 
 					    "riskFreeRate"))[0];
     Time maturity = REAL(getListElement(optionParameters, "maturity"))[0];
+    int length = int(maturity * 360); // FIXME: this could be better
     double volatility = REAL(getListElement(optionParameters,"volatility"))[0];
     double cashPayoff = REAL(getListElement(optionParameters,"cashPayoff"))[0];
 
@@ -113,13 +146,41 @@ extern "C" {
       error("Unexpected option type %s, aborting\n", type);
     }
 
-    BinaryOption BO = BinaryOption(optionType, underlying, strike,
-					   dividendYield, riskFreeRate, 
-					   maturity, volatility,
-				   	   cashPayoff);
+    // new QuantLib 0.3.5 framework: digitals
+    DayCounter dc = Actual360();
+    Handle<SimpleQuote> spot(new SimpleQuote(0.0));
+    Handle<SimpleQuote> qRate(new SimpleQuote(0.0));
+    Handle<TermStructure> qTS = makeFlatCurve(qRate, dc);
+    Handle<SimpleQuote> rRate(new SimpleQuote(0.0));
+    Handle<TermStructure> rTS = makeFlatCurve(rRate, dc);
+    Handle<SimpleQuote> vol(new SimpleQuote(0.0));
+    Handle<BlackVolTermStructure> volTS = makeFlatVolatility(vol, dc);
+    Handle<PricingEngine> engine(new AnalyticEuropeanEngine);
+
+    Date today = Date::todaysDate();
+    Handle<StrikedTypePayoff> 
+      payoff(new CashOrNothingPayoff(optionType, strike, cashPayoff));
+    Date exDate = today.plusDays(length);
+
+    Handle<Exercise> exercise(new EuropeanExercise(exDate));
+
+    spot->setValue(underlying);
+    qRate->setValue(dividendYield);
+    rRate->setValue(riskFreeRate);
+    vol  ->setValue(volatility);
+
+    Handle<BlackScholesStochasticProcess> 
+      stochProcess(new BlackScholesStochasticProcess(
+                RelinkableHandle<Quote>(spot),
+                RelinkableHandle<TermStructure>(qTS),
+                RelinkableHandle<TermStructure>(rTS),
+                RelinkableHandle<BlackVolTermStructure>(volTS)));
+
+    VanillaOption opt(stochProcess, payoff, exercise, engine);
+
     SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
     SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
-    insertListElement(rl, nm, 0, BO.impliedVolatility(value), "impliedVol");
+//     insertListElement(rl, nm, 0, BO.impliedVolatility(value), "impliedVol");
     SET_VECTOR_ELT(rl, 1, optionParameters);
     SET_STRING_ELT(nm, 1, mkChar("parameters"));
     setAttrib(rl, R_NamesSymbol, nm);
@@ -128,6 +189,7 @@ extern "C" {
     UNPROTECT(2);
     return(rl);
   }
+#endif
 
   SEXP QL_BarrierOption(SEXP optionParameters) {
 
@@ -145,6 +207,7 @@ extern "C" {
     Rate riskFreeRate = REAL(getListElement(optionParameters, 
 					    "riskFreeRate"))[0];
     Time maturity = REAL(getListElement(optionParameters, "maturity"))[0];
+    int length = int(maturity * 360); // FIXME: this could be better
     double volatility = REAL(getListElement(optionParameters, 
 					    "volatility"))[0];
     double barrier = REAL(getListElement(optionParameters, 
@@ -174,22 +237,72 @@ extern "C" {
       error("Unexpected option type %s, aborting\n", type);
     }
 
-    BarrierOption BO = BarrierOption(barrierType, optionType,
-				     underlying, strike,
-				     dividendYield, riskFreeRate,
-				     maturity, volatility, 
-				     barrier, rebate);
+    // new QuantLib 0.3.5 framework
+    DayCounter dc = Actual360();
+    Handle<SimpleQuote> spot(new SimpleQuote(0.0));
+    Handle<SimpleQuote> qRate(new SimpleQuote(0.0));
+    Handle<TermStructure> qTS = makeFlatCurve(qRate, dc);
+    Handle<SimpleQuote> rRate(new SimpleQuote(0.0));
+    Handle<TermStructure> rTS = makeFlatCurve(rRate, dc);
 
+    Handle<SimpleQuote> vol(new SimpleQuote(0.0));
+    Handle<BlackVolTermStructure> volTS = makeFlatVolatility(vol, dc);
+
+    Date today = Date::todaysDate();
+
+    Date exDate = today.plusDays(length);
+    Handle<Exercise> exercise(new EuropeanExercise(exDate));
+
+    spot ->setValue(underlying);
+    qRate->setValue(dividendYield);
+    rRate->setValue(riskFreeRate);
+    vol  ->setValue(volatility);
+
+    Handle<StrikedTypePayoff> 
+      payoff(new PlainVanillaPayoff(optionType, strike));
+
+    Handle<BlackScholesStochasticProcess> 
+      stochProcess(new BlackScholesStochasticProcess(
+                RelinkableHandle<Quote>(spot),
+                RelinkableHandle<TermStructure>(qTS),
+                RelinkableHandle<TermStructure>(rTS),
+                RelinkableHandle<BlackVolTermStructure>(volTS)));
+
+    Size timeSteps = 1;
+    bool antitheticVariate = false;
+    bool controlVariate = false;
+    Size requiredSamples = 10000;
+    double requiredTolerance = 0.02;
+    Size maxSamples = 1000000;
+    bool isBiased = false;
+
+    Handle<PricingEngine> engine(new AnalyticBarrierEngine);
+    Handle<PricingEngine> mcEngine(
+        new MCBarrierEngine<PseudoRandom>(timeSteps, antitheticVariate,
+                                          controlVariate, requiredSamples,
+                                          requiredTolerance, maxSamples,
+                                          isBiased, 5));
+
+    BarrierOption barrierOption(barrierType,
+				barrier,
+				rebate,
+				stochProcess,
+				payoff,
+				exercise,
+				//mcEngine);
+				engine);
+
+    double calculated = barrierOption.NPV();
     SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
     SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
 
-    insertListElement(rl, nm, 0, BO.value(), "value");
-    insertListElement(rl, nm, 1, BO.delta(), "delta");
-    insertListElement(rl, nm, 2, BO.gamma(), "gamma");
-    insertListElement(rl, nm, 3, BO.vega(), "vega");
-    insertListElement(rl, nm, 4, BO.theta(), "theta");
-    insertListElement(rl, nm, 5, BO.rho(),   "rho");
-    insertListElement(rl, nm, 6, BO.dividendRho(), "divRho");
+    insertListElement(rl, nm, 0, barrierOption.NPV(), "value");
+    //insertListElement(rl, nm, 1, barrierOption.delta(), "delta");
+    //insertListElement(rl, nm, 2, barrierOption.gamma(), "gamma");
+    //insertListElement(rl, nm, 3, barrierOption.vega(), "vega");
+    //insertListElement(rl, nm, 4, barrierOption.theta(), "theta");
+    //insertListElement(rl, nm, 5, barrierOption.rho(), "rho");
+    //insertListElement(rl, nm, 6, barrierOption.dividendRho(), "divRho");
 
     SET_VECTOR_ELT(rl, 7, optionParameters);
     SET_STRING_ELT(nm, 7, mkChar("parameters"));
@@ -198,5 +311,4 @@ extern "C" {
     UNPROTECT(2);
     return(rl);
   }
-
 }

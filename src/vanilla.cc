@@ -1,8 +1,8 @@
 // RQuantLib -- R interface to the QuantLib libraries
 //
-// Copyright 2002, 2003 Dirk Eddelbuettel <edd@debian.org>
+// Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: vanilla.cc,v 1.9 2003/11/29 00:36:34 edd Exp edd $
+// $Id: vanilla.cc,v 1.10 2004/04/06 03:34:36 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -24,9 +24,12 @@
 
 #include <ql/quantlib.hpp>	// make QuantLib known
 
+#include <ql/Instruments/vanillaoption.hpp>
+#include <ql/TermStructures/flatforward.hpp>
+#include <ql/Volatilities/blackconstantvol.hpp>
+#include <ql/Calendars/target.hpp>
+
 using namespace QuantLib;
-using QuantLib::Pricers::EuropeanOption;
-using QuantLib::Pricers::FdAmericanOption;
 
 extern "C" {
 
@@ -46,9 +49,9 @@ extern "C" {
     Rate riskFreeRate = REAL(getListElement(optionParameters, 
 					    "riskFreeRate"))[0];
     Time maturity = REAL(getListElement(optionParameters, "maturity"))[0];
+    int length = int(maturity * 360); // FIXME: this could be better
     double volatility = REAL(getListElement(optionParameters, 
 					    "volatility"))[0];
-
 
     Option::Type optionType;
     if (!strcmp(type, "call")) {
@@ -61,21 +64,40 @@ extern "C" {
       error("Unexpected option type %s, aborting\n", type);
     }
 
-    EuropeanOption EO = EuropeanOption(optionType, underlying, strike,
-				       dividendYield, riskFreeRate, maturity, 
-				       volatility);
+    Date today = Date::todaysDate();
 
+    // new framework as per QuantLib 0.3.5
+    DayCounter dc = Actual360();
+    Handle<SimpleQuote> spot(new SimpleQuote(0.0));
+    Handle<SimpleQuote> vol(new SimpleQuote(0.0));
+    Handle<BlackVolTermStructure> volTS = makeFlatVolatility(vol,dc);
+    Handle<SimpleQuote> qRate(new SimpleQuote(0.0));
+    Handle<TermStructure> qTS = makeFlatCurve(qRate, dc);
+    Handle<SimpleQuote> rRate(new SimpleQuote(0.0));
+    Handle<TermStructure> rTS = makeFlatCurve(rRate, dc);
+
+    Date exDate = today.plusDays(length);
+    Handle<Exercise> exercise(new EuropeanExercise(exDate));
+    Handle<StrikedTypePayoff> 
+      payoff(new PlainVanillaPayoff(optionType, strike));
+    Handle<VanillaOption> 
+      option = makeOption(payoff, exercise, spot, qTS, rTS, volTS);
+
+    spot->setValue(underlying);
+    qRate->setValue(dividendYield);
+    rRate->setValue(riskFreeRate);
+    vol->setValue(volatility);
 
     SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
     SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
 
-    insertListElement(rl, nm, 0, EO.value(), "value");
-    insertListElement(rl, nm, 1, EO.delta(), "delta");
-    insertListElement(rl, nm, 2, EO.gamma(), "gamma");
-    insertListElement(rl, nm, 3, EO.vega(), "vega");
-    insertListElement(rl, nm, 4, EO.theta(), "theta");
-    insertListElement(rl, nm, 5, EO.rho(),   "rho");
-    insertListElement(rl, nm, 6, EO.dividendRho(), "divRho");
+    insertListElement(rl, nm, 0, option->NPV(), "value");
+    insertListElement(rl, nm, 1, option->delta(), "delta");
+    insertListElement(rl, nm, 2, option->gamma(), "gamma");
+    insertListElement(rl, nm, 3, option->vega(), "vega");
+    insertListElement(rl, nm, 4, option->theta(), "theta");
+    insertListElement(rl, nm, 5, option->rho(),   "rho");
+    insertListElement(rl, nm, 6, option->dividendRho(), "divRho");
 
     SET_VECTOR_ELT(rl, 7, optionParameters);
     SET_STRING_ELT(nm, 7, mkChar("parameters"));
@@ -99,6 +121,7 @@ extern "C" {
     Rate riskFreeRate = REAL(getListElement(optionParameters, 
 					    "riskFreeRate"))[0];
     Time maturity = REAL(getListElement(optionParameters,"maturity"))[0];
+    int length = int(maturity * 360); // FIXME: this could be better
     double volatility = REAL(getListElement(optionParameters,"volatility"))[0];
     int timeSteps = INTEGER(getListElement(optionParameters,"timeSteps"))[0];
     int gridPoints = INTEGER(getListElement(optionParameters,"gridPoints"))[0];
@@ -114,21 +137,41 @@ extern "C" {
       error("Unexpected option type %s, aborting\n", type);
     }
 
-    FdAmericanOption AO = FdAmericanOption(optionType, underlying, strike,
-					   dividendYield, riskFreeRate, 
-					   maturity, volatility, 
-					   timeSteps, gridPoints);
+    Date today = Date::todaysDate();
+
+    // new framework as per QuantLib 0.3.5
+    DayCounter dc = Actual360();
+    Handle<SimpleQuote> spot(new SimpleQuote(0.0));
+    Handle<SimpleQuote> vol(new SimpleQuote(0.0));
+    Handle<BlackVolTermStructure> volTS = makeFlatVolatility(vol,dc);
+    Handle<SimpleQuote> qRate(new SimpleQuote(0.0));
+    Handle<TermStructure> qTS = makeFlatCurve(qRate, dc);
+    Handle<SimpleQuote> rRate(new SimpleQuote(0.0));
+    Handle<TermStructure> rTS = makeFlatCurve(rRate, dc);
+
+    Date exDate = today.plusDays(length);
+    Handle<Exercise> exercise(new AmericanExercise(today, exDate));
+    Handle<StrikedTypePayoff> 
+      payoff(new PlainVanillaPayoff(optionType, strike));
+    Handle<VanillaOption> option = makeOption(payoff, exercise, spot,
+					      qTS, rTS, volTS,
+					      JR); // engine
+					      //TGEO); // engine
+    spot->setValue(underlying);
+    qRate->setValue(dividendYield);
+    rRate->setValue(riskFreeRate);
+    vol->setValue(volatility);
 
     SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
     SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
 
-    insertListElement(rl, nm, 0, AO.value(), "value");
-    insertListElement(rl, nm, 1, AO.delta(), "delta");
-    insertListElement(rl, nm, 2, AO.gamma(), "gamma");
-    insertListElement(rl, nm, 3, AO.vega(), "vega");
-    insertListElement(rl, nm, 4, AO.theta(), "theta");
-    insertListElement(rl, nm, 5, AO.rho(),   "rho");
-    insertListElement(rl, nm, 6, AO.dividendRho(), "divRho");
+    insertListElement(rl, nm, 0, option->NPV(), "value");
+//     insertListElement(rl, nm, 1, option->delta(), "delta");
+//     insertListElement(rl, nm, 2, option->gamma(), "gamma");
+//     insertListElement(rl, nm, 3, option->vega(), "vega");
+//     insertListElement(rl, nm, 4, option->theta(), "theta");
+//     insertListElement(rl, nm, 5, option->rho(),   "rho");
+//     insertListElement(rl, nm, 6, option->dividendRho(), "divRho");
 
     SET_VECTOR_ELT(rl, 7, optionParameters);
     SET_STRING_ELT(nm, 7, mkChar("parameters"));

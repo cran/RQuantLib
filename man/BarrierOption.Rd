@@ -1,4 +1,4 @@
-% $Id: BarrierOption.Rd,v 1.1 2003/11/29 01:09:06 edd Exp $
+% $Id: BarrierOption.Rd,v 1.2 2004/04/06 03:49:38 edd Exp $
 \name{BarrierOption}
 \alias{BarrierOption}
 \alias{BarrierOption.default}
@@ -40,7 +40,11 @@ BarrierOption.default(barrType, type, underlying, strike, dividendYield,
   \item{theta}{Change in value for a change in delta}
   \item{rho}{Change in value for a change in time to maturity}
   \item{dividendRho}{Change in value for a change in delta}
-  \item{parameters}{List with parameters with which object was created}
+  \item{parameters}{List with parameters with which object was created}.
+
+  Note that under the new pricing framework used in QuantLib, binary
+  pricers do not provide analytics for 'Greeks'. This is expected to be
+  addressed in future releases of QuantLib.
 }
 \details{
   A closed-form solution is used to value the Barrier Option. In the
@@ -59,7 +63,9 @@ BarrierOption.default(barrType, type, underlying, strike, dividendYield,
 \seealso{\code{\link{AmericanOption}},\code{\link{EuropeanOption}}}
 
 \examples{
-BarrierOption("downin", "call", 100, 100, 0.02, 0.03, 0.5, 0.4, 90)
+BarrierOption(barrType="downin", type="call", underlying=100,
+	strike=100, dividendYield=0.02, riskFreeRate=0.03,
+	maturity=0.5, volatility=0.4, barrier=90)
 }
 \keyword{misc}
 

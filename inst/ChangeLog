@@ -1,3 +1,16 @@
+2004-04-05  Dirk Eddelbuettel  <edd@debian.org>
+
+	* Release 0.1.8
+
+	* src/{barrier_binary,implieds,utils,vanilla}.cc: Updated to the 
+	  new QuantLib 0.3.5 pricer framework.  This currently implies
+	  that options priced using the binomial engines do not have
+	  Greeks; this should be addressed in a future QuantLib release.
+
+	* man/{BarrierOption,AmericanOption}.Rd: Note that Greeks are
+	  currently unavailable with binary pricers
+	 
+
 2003-11-28  Dirk Eddelbuettel  <edd@debian.org>
 
 	* Release 0.1.7

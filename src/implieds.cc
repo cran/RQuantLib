@@ -1,8 +1,9 @@
+
 // RQuantLib -- R interface to the QuantLib libraries
 //
-// Copyright 2002, 2003 Dirk Eddelbuettel <edd@debian.org>
+// Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: implieds.cc,v 1.1 2003/11/29 01:09:51 edd Exp $
+// $Id: implieds.cc,v 1.3 2004/04/06 03:34:16 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -20,39 +21,24 @@
 // Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 // MA 02111-1307, USA
 
-// NB can be build standalone as   PKG_LIBS=-lQuantLib R CMD SHLIB RQuantLib.cc
+// NB can be build standalone as   PKG_LIBS=-lQuantLib R CMD SHLIB implieds.cc
 
 #include <ql/quantlib.hpp>	// make QuantLib known
 
 #include <ql/Instruments/vanillaoption.hpp>
-#include <ql/PricingEngines/mceuropeanengine.hpp>
-#include <ql/Pricers/fdamericanoption.hpp>
 #include <ql/TermStructures/flatforward.hpp>
 #include <ql/Volatilities/blackconstantvol.hpp>
 #include <ql/Calendars/target.hpp>
 
 using namespace QuantLib;
-// using QuantLib::Pricers::EuropeanOption;
-// using QuantLib::Pricers::FdAmericanOption;
-// using QuantLib::Pricers::BinaryOption;
-// using QuantLib::Pricers::BarrierOption;
-
-using namespace QuantLib::Math;
-using namespace QuantLib::MonteCarlo;
-using namespace QuantLib::RandomNumbers;
-using namespace QuantLib::Pricers;
-using namespace QuantLib::PricingEngines;
-using namespace QuantLib::Instruments;
-using namespace QuantLib::TermStructures;
-using namespace QuantLib::VolTermStructures;
-using namespace QuantLib::DayCounters;
-using namespace QuantLib::Calendars;
 
 extern "C" {
 
 #include "rquantlib.h"
 
   SEXP QL_EuropeanOptionImpliedVolatility(SEXP optionParameters) {
+    const Size maxEvaluations = 100;
+    const double tolerance = 1.0e-6;
     const int nret = 2;		// dimension of return list
     char *type = CHAR(STRING_ELT(getListElement(optionParameters, "type"),0));
     Option::Type optionType;
@@ -72,63 +58,52 @@ extern "C" {
     int length = int(maturity * 360); // FIXME: this could be better
 
     Date today = Date::todaysDate();
-    Date reference = TARGET().advance(today,2,Days);
 
-    // now create handles
-    Handle<SimpleMarketElement> underlying(new SimpleMarketElement(0.0));
-    Handle<SimpleMarketElement> volatility(new SimpleMarketElement(0.0));
-    Handle<BlackVolTermStructure> 
-      volCurve(new BlackConstantVol(reference,
-				    RelinkableHandle<MarketElement>(volatility),
-				    Actual365()));
-    Handle<SimpleMarketElement> divYield(new SimpleMarketElement(0.0));
-    Handle<TermStructure> 
-      divCurve(new FlatForward(today, reference,
-			       RelinkableHandle<MarketElement>(divYield),
-			       Actual365()));
-    Handle<SimpleMarketElement> rfRate(new SimpleMarketElement(0.0));
-    Handle<TermStructure> 
-      rfCurve(new FlatForward(today, reference,
-			      RelinkableHandle<MarketElement>(rfRate),
-			      Actual365()));
-    Handle<PricingEngine> engine(new AnalyticEuropeanEngine);
-    
+    // new framework as per QuantLib 0.3.5
+    DayCounter dc = Actual360();
+    Handle<SimpleQuote> spot(new SimpleQuote(0.0));
+    Handle<SimpleQuote> vol(new SimpleQuote(0.0));
+    Handle<BlackVolTermStructure> volTS = makeFlatVolatility(vol,dc);
+    Handle<SimpleQuote> qRate(new SimpleQuote(0.0));
+    Handle<TermStructure> qTS = makeFlatCurve(qRate, dc);
+    Handle<SimpleQuote> rRate(new SimpleQuote(0.0));
+    Handle<TermStructure> rTS = makeFlatCurve(rRate, dc);
+
     Date exDate = today.plusDays(length);
-    Handle<VanillaOption> 
-      option(new VanillaOption(optionType, 
-   			       RelinkableHandle<MarketElement>(underlying), 
-			       strike,
-			       RelinkableHandle<TermStructure>(divCurve), 
-			       RelinkableHandle<TermStructure>(rfCurve), 
-			       EuropeanExercise(exDate), 
-			       RelinkableHandle<BlackVolTermStructure>(volCurve),
-			       engine));
-    underlying->setValue( REAL(getListElement(optionParameters,
- 					      "underlying"))[0] );
-    divYield->setValue( REAL(getListElement(optionParameters, 
-					       "dividendYield"))[0] );
-    rfRate->setValue( REAL(getListElement(optionParameters, 
-					 "riskFreeRate"))[0] );
-    volatility->setValue( REAL(getListElement(optionParameters,
-					      "volatility"))[0] );
-    
-    double implVol =		// compute implied vol. given parameters
-      option->impliedVolatility( REAL(getListElement(optionParameters, 
-						     "value"))[0] );
-    
+    Handle<Exercise> exercise(new EuropeanExercise(exDate));
+    Handle<StrikedTypePayoff> 
+      payoff(new PlainVanillaPayoff(optionType, strike));
+    Handle<VanillaOption> option = makeOption(payoff, exercise, spot,
+					      qTS, rTS, volTS);
+
+    spot->setValue(REAL(getListElement(optionParameters, "underlying"))[0]);
+    qRate->setValue(REAL(getListElement(optionParameters, 
+					"dividendYield"))[0]);
+    rRate->setValue(REAL(getListElement(optionParameters,
+					"dividendYield"))[0]);
+    double volguess = REAL(getListElement(optionParameters, "volatility"))[0];
+    vol->setValue(volguess);
+
+    double value = option->NPV();
+    double implVol = 0.0; // just to remove a warning...
+    if (value != 0.0) {
+      vol->setValue(volguess*1.5);	// shift guess somehow
+      implVol = option->impliedVolatility(value, tolerance, maxEvaluations);
+    }
+
     SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
     SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
     insertListElement(rl, nm, 0, implVol, "impliedVol");
     SET_VECTOR_ELT(rl, 1, optionParameters);
     SET_STRING_ELT(nm, 1, mkChar("parameters"));
     setAttrib(rl, R_NamesSymbol, nm);
-    //    setAttrib(rl, R_ClassSymbol, 
-    //      ScalarString(mkChar("EuropeanOptionImpliedVolatility")));
     UNPROTECT(2);
     return(rl);
   }
 
   SEXP QL_AmericanOptionImpliedVolatility(SEXP optionParameters) {
+    const Size maxEvaluations = 100;
+    const double tolerance = 1.0e-6;
     const int nret = 2;		// dimension of return list
     char *type = CHAR(STRING_ELT(getListElement(optionParameters, "type"),0));
     Option::Type optionType;
@@ -148,61 +123,47 @@ extern "C" {
     int length = int(maturity * 360); // FIXME: this could be better
 
     Date today = Date::todaysDate();
-    Date reference = TARGET().advance(today,2,Days);
 
-    // now create handles
-    Handle<SimpleMarketElement> underlying(new SimpleMarketElement(0.0));
-    Handle<SimpleMarketElement> volatility(new SimpleMarketElement(0.0));
-    Handle<BlackVolTermStructure> 
-      volCurve(new BlackConstantVol(reference,
-				    RelinkableHandle<MarketElement>(volatility),
-				    Actual365()));
-    Handle<SimpleMarketElement> divYield(new SimpleMarketElement(0.0));
-    Handle<TermStructure> 
-      divCurve(new FlatForward(today, reference,
-			       RelinkableHandle<MarketElement>(divYield),
-			       Actual365()));
-    Handle<SimpleMarketElement> rfRate(new SimpleMarketElement(0.0));
-    Handle<TermStructure> 
-      rfCurve(new FlatForward(today, reference,
-			      RelinkableHandle<MarketElement>(rfRate),
-			      Actual365()));
-    int timeSteps = 800;
-    Handle<PricingEngine> 
-      engine(new BinomialVanillaEngine(BinomialVanillaEngine::EQP, timeSteps));
-    
+    // new framework as per QuantLib 0.3.5
+    DayCounter dc = Actual360();
+    Handle<SimpleQuote> spot(new SimpleQuote(0.0));
+    Handle<SimpleQuote> vol(new SimpleQuote(0.0));
+    Handle<BlackVolTermStructure> volTS = makeFlatVolatility(vol,dc);
+    Handle<SimpleQuote> qRate(new SimpleQuote(0.0));
+    Handle<TermStructure> qTS = makeFlatCurve(qRate, dc);
+    Handle<SimpleQuote> rRate(new SimpleQuote(0.0));
+    Handle<TermStructure> rTS = makeFlatCurve(rRate, dc);
+
     Date exDate = today.plusDays(length);
-    Handle<VanillaOption> 
-      option(new VanillaOption(optionType, 
-			       RelinkableHandle<MarketElement>(underlying), 
-			       strike,
-			       RelinkableHandle<TermStructure>(divCurve), 
-			       RelinkableHandle<TermStructure>(rfCurve), 
-			       AmericanExercise(today, exDate),
-			       RelinkableHandle<BlackVolTermStructure>(volCurve),
-			       engine));
-    underlying->setValue( REAL(getListElement(optionParameters,
-					      "underlying"))[0] );
-    divYield->setValue( REAL(getListElement(optionParameters, 
-					       "dividendYield"))[0] );
-    rfRate->setValue( REAL(getListElement(optionParameters, 
-					 "riskFreeRate"))[0] );
-    volatility->setValue( REAL(getListElement(optionParameters,
-					      "volatility"))[0] );
-    
-    //    double computedValue = option->NPV(); // do we need this?
-    double implVol = 
-      option->impliedVolatility( REAL(getListElement(optionParameters, 
-						     "value"))[0] );
-    
+    //Handle<Exercise> exercise(new EuropeanExercise(exDate));
+    Handle<Exercise> exercise(new AmericanExercise(today, exDate));
+    Handle<StrikedTypePayoff> 
+      payoff(new PlainVanillaPayoff(optionType, strike));
+    Handle<VanillaOption> option = makeOption(payoff, exercise, spot,
+					      qTS, rTS, volTS,
+					      JR);
+
+    spot->setValue(REAL(getListElement(optionParameters, "underlying"))[0]);
+    qRate->setValue(REAL(getListElement(optionParameters, 
+					"dividendYield"))[0]);
+    rRate->setValue(REAL(getListElement(optionParameters,
+					"dividendYield"))[0]);
+    double volguess = REAL(getListElement(optionParameters, "volatility"))[0];
+    vol->setValue(volguess);
+
+    double value = option->NPV();
+    double implVol = 0.0; // just to remove a warning...
+    if (value != 0.0) {
+      vol->setValue(volguess*1.5);	// shift guess somehow
+      implVol = option->impliedVolatility(value, tolerance, maxEvaluations);
+    }
+
     SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
     SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
     insertListElement(rl, nm, 0, implVol, "impliedVol");
     SET_VECTOR_ELT(rl, 1, optionParameters);
     SET_STRING_ELT(nm, 1, mkChar("parameters"));
     setAttrib(rl, R_NamesSymbol, nm);
-    //    setAttrib(rl, R_ClassSymbol, 
-    //      ScalarString(mkChar("EuropeanOptionImpliedVolatility")));
     UNPROTECT(2);
     return(rl);
   }
