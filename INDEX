@@ -9,7 +9,7 @@ BinaryOption            Binary Option evaluation using Closed-Form
                         solution
 EuropeanOption          European Option evaluation using Closed-Form
                         solution
-EuropeanOption          European Option evaluation using Closed-Form
+EuropeanOptionArrays    European Option evaluation using Closed-Form
                         solution
 EuropeanOptionImpliedVolatility
                         Implied Volatility calculation for European

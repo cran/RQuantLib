@@ -1,10 +1,16 @@
+2002-11-13  Dirk Eddelbuettel  <edd@debian.org>
+
+	* Release 0.1.2
+
+	* Minor correction to EuropeanOptionArrays manual page indexing
+
 2002-11-11  Dirk Eddelbuettel  <edd@debian.org>
 
 	* Release 0.1.1 
 
 	* Added barrier option
 
-	* Minor corrections and completions to documentation
+	* Several small corrections and completions to documentation
 	  
 2002-02-25  Dirk Eddelbuettel  <edd@debian.org>
 

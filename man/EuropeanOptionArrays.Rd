@@ -1,5 +1,5 @@
-% $Id: EuropeanOptionArrays.Rd,v 1.2 2002/11/11 16:39:34 edd Exp $
-\name{EuropeanOption}
+% $Id: EuropeanOptionArrays.Rd,v 1.3 2002/11/14 01:05:55 edd Exp $
+\name{EuropeanOptionArrays}
 \alias{EuropeanOptionArrays}
 \title{European Option evaluation using Closed-Form solution}
 \description{
