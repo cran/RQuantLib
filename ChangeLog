@@ -1,0 +1,11 @@
+2002-11-11  Dirk Eddelbuettel  <edd@debian.org>
+
+	* Release 0.1.1 
+
+	* Added barrier option
+
+	* Minor corrections and completions to documentation
+	  
+2002-02-25  Dirk Eddelbuettel  <edd@debian.org>
+
+	* Initial 0.1.0 release

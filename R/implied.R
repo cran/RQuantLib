@@ -2,7 +2,7 @@
 ##
 ## Copyright 2002 Dirk Eddelbuettel <edd@debian.org>
 ##
-## $Id: implied.R,v 1.2 2002/02/26 03:38:59 edd Exp $
+## $Id: implied.R,v 1.2 2002/02/26 03:38:59 edd Exp edd $
 ##
 ## This file is part of the RQuantLib library for GNU R.
 ## It is made available under the terms of the GNU General Public
@@ -66,6 +66,7 @@ AmericanOptionImpliedVolatility.default <-
   val
 }
 
+# dumps core :-/
 #BinaryOptionImpliedVolatility <- function(x, ...) {
 #  if (is.null(class(x)))
 #    class(x) <- data.class(x)

@@ -2,7 +2,7 @@
 //
 // Copyright 2002 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: RQuantLib.cc,v 1.3 2002/02/26 03:53:06 edd Exp $
+// $Id: RQuantLib.cc,v 1.4 2002/03/16 03:30:58 edd Exp edd $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -27,6 +27,7 @@ using namespace QuantLib;
 using QuantLib::Pricers::EuropeanOption;
 using QuantLib::Pricers::FdAmericanOption;
 using QuantLib::Pricers::BinaryOption;
+using QuantLib::Pricers::BarrierOption;
 
 extern "C" {
 
@@ -303,45 +304,116 @@ extern "C" {
     return(rl);
   }
 
-//   SEXP QL_BinaryOptionImpliedVolatility(SEXP optionParameters) {
-//     const int nret = 2;		// dimension of return list
-//     char *type = CHAR(STRING_ELT(getListElement(optionParameters, "type"),0));
-//     double value = REAL(getListElement(optionParameters, "value"))[0];
-//     double underlying = REAL(getListElement(optionParameters,"underlying"))[0];
-//     double strike = REAL(getListElement(optionParameters,"strike"))[0];	
-//     Spread dividendYield = REAL(getListElement(optionParameters, 
-// 					       "dividendYield"))[0];
-//     Rate riskFreeRate = REAL(getListElement(optionParameters, 
-// 					    "riskFreeRate"))[0];
-//     Time maturity = REAL(getListElement(optionParameters, "maturity"))[0];
-//     double volatility = REAL(getListElement(optionParameters,"volatility"))[0];
-//     double cashPayoff = REAL(getListElement(optionParameters,"cashPayoff"))[0];
+  SEXP QL_BinaryOptionImpliedVolatility(SEXP optionParameters) {
+    const int nret = 2;		// dimension of return list
+    char *type = CHAR(STRING_ELT(getListElement(optionParameters, "type"),0));
+    double value = REAL(getListElement(optionParameters, "value"))[0];
+    double underlying = REAL(getListElement(optionParameters,"underlying"))[0];
+    double strike = REAL(getListElement(optionParameters,"strike"))[0];	
+    Spread dividendYield = REAL(getListElement(optionParameters, 
+					       "dividendYield"))[0];
+    Rate riskFreeRate = REAL(getListElement(optionParameters, 
+					    "riskFreeRate"))[0];
+    Time maturity = REAL(getListElement(optionParameters, "maturity"))[0];
+    double volatility = REAL(getListElement(optionParameters,"volatility"))[0];
+    double cashPayoff = REAL(getListElement(optionParameters,"cashPayoff"))[0];
 
-//     Option::Type optionType;
-//     if (!strcmp(type, "call")) {
-//       optionType = Option::Call;
-//     } else if (!strcmp(type, "put")) {
-//       optionType = Option::Put;
-//     } else if (!strcmp(type, "straddle")) {
-//       optionType = Option::Straddle;
-//     } else {
-//       error("Unexpected option type %s, aborting\n", type);
-//     }
+    Option::Type optionType;
+    if (!strcmp(type, "call")) {
+      optionType = Option::Call;
+    } else if (!strcmp(type, "put")) {
+      optionType = Option::Put;
+    } else if (!strcmp(type, "straddle")) {
+      optionType = Option::Straddle;
+    } else {
+      error("Unexpected option type %s, aborting\n", type);
+    }
 
-//     BinaryOption BO = BinaryOption(optionType, underlying, strike,
-// 					   dividendYield, riskFreeRate, 
-// 					   maturity, volatility,
-// 				   	   cashPayoff);
-//     SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
-//     SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
-//     insertListElement(rl, nm, 0, BO.impliedVolatility(value), "impliedVol");
-//     SET_VECTOR_ELT(rl, 1, optionParameters);
-//     SET_STRING_ELT(nm, 1, mkChar("parameters"));
-//     setAttrib(rl, R_NamesSymbol, nm);
-//     //    setAttrib(rl, R_ClassSymbol, 
-//     //      ScalarString(mkChar("EuropeanOptionImpliedVolatility")));
-//     UNPROTECT(2);
-//     return(rl);
-//   }
+    BinaryOption BO = BinaryOption(optionType, underlying, strike,
+					   dividendYield, riskFreeRate, 
+					   maturity, volatility,
+				   	   cashPayoff);
+    SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
+    SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
+    insertListElement(rl, nm, 0, BO.impliedVolatility(value), "impliedVol");
+    SET_VECTOR_ELT(rl, 1, optionParameters);
+    SET_STRING_ELT(nm, 1, mkChar("parameters"));
+    setAttrib(rl, R_NamesSymbol, nm);
+    //    setAttrib(rl, R_ClassSymbol, 
+    //      ScalarString(mkChar("EuropeanOptionImpliedVolatility")));
+    UNPROTECT(2);
+    return(rl);
+  }
+
+  SEXP QL_BarrierOption(SEXP optionParameters) {
+
+    const int nret = 8;		// dimension of return list
+
+    char *barrType = CHAR(STRING_ELT( getListElement(optionParameters, 
+						     "barrType"), 0));
+    char *type = CHAR(STRING_ELT( getListElement(optionParameters, 
+						 "type"), 0));
+    double underlying = REAL(getListElement(optionParameters, 
+					    "underlying"))[0];
+    double strike = REAL(getListElement(optionParameters, "strike"))[0];
+    Spread dividendYield = REAL(getListElement(optionParameters, 
+					       "dividendYield"))[0];
+    Rate riskFreeRate = REAL(getListElement(optionParameters, 
+					    "riskFreeRate"))[0];
+    Time maturity = REAL(getListElement(optionParameters, "maturity"))[0];
+    double volatility = REAL(getListElement(optionParameters, 
+					    "volatility"))[0];
+    double barrier = REAL(getListElement(optionParameters, 
+					 "barrier"))[0];
+    double rebate = REAL(getListElement(optionParameters, 
+					"rebate"))[0];
+
+    BarrierOption::BarrierType barrierType;
+    if (!strcmp(barrType, "downin")) {
+      barrierType = BarrierOption::DownIn;
+    } else if (!strcmp(barrType, "upin")) {
+      barrierType = BarrierOption::UpIn;
+    } else if (!strcmp(barrType, "downout")) {
+      barrierType = BarrierOption::DownOut;
+    } else if (!strcmp(barrType, "upout")) {
+      barrierType = BarrierOption::UpOut;
+    } else {
+      error("Unexpected barrier type %s, aborting\n", barrType);
+    }
+    Option::Type optionType;
+    if (!strcmp(type, "call")) {
+      optionType = Option::Call;
+    } else if (!strcmp(type, "put")) {
+      optionType = Option::Put;
+    } else if (!strcmp(type, "straddle")) {
+      optionType = Option::Straddle;
+    } else {
+      error("Unexpected option type %s, aborting\n", type);
+    }
+
+    BarrierOption BO = BarrierOption(barrierType, optionType,
+				     underlying, strike,
+				     dividendYield, riskFreeRate,
+				     maturity, volatility, 
+				     barrier, rebate);
+
+    SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
+    SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
+
+    insertListElement(rl, nm, 0, BO.value(), "value");
+    insertListElement(rl, nm, 1, BO.delta(), "delta");
+    insertListElement(rl, nm, 2, BO.gamma(), "gamma");
+    insertListElement(rl, nm, 3, BO.vega(), "vega");
+    insertListElement(rl, nm, 4, BO.theta(), "theta");
+    insertListElement(rl, nm, 5, BO.rho(),   "rho");
+    insertListElement(rl, nm, 6, BO.dividendRho(), "divRho");
+
+    SET_VECTOR_ELT(rl, 7, optionParameters);
+    SET_STRING_ELT(nm, 7, mkChar("parameters"));
+
+    setAttrib(rl, R_NamesSymbol, nm);
+    UNPROTECT(2);
+    return(rl);
+  }
 
 }

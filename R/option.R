@@ -2,7 +2,7 @@
 ##
 ## Copyright 2002 Dirk Eddelbuettel <edd@debian.org>
 ##
-## $Id: option.R,v 1.2 2002/02/26 03:40:05 edd Exp $
+## $Id: option.R,v 1.2 2002/02/26 03:40:05 edd Exp edd $
 ##
 ## This file is part of the RQuantLib library for GNU R.
 ## It is made available under the terms of the GNU General Public
@@ -27,7 +27,7 @@ EuropeanOption <- function(x, ...) {
 }
 
 EuropeanOption.default <- function(type, underlying, strike, dividendYield,
-                                     riskFreeRate, maturity, volatility) {
+                                   riskFreeRate, maturity, volatility) {
   val <- .Call("QL_EuropeanOption",
                list(type=as.character(type),
                     underlying=as.double(underlying),
@@ -47,8 +47,8 @@ AmericanOption <- function(x, ...) {
 }
 
 AmericanOption.default <- function(type, underlying, strike, dividendYield,
-                                     riskFreeRate, maturity, volatility,
-                                     timeSteps=150, gridPoints=151) {
+                                   riskFreeRate, maturity, volatility,
+                                   timeSteps=150, gridPoints=151) {
   val <- .Call("QL_AmericanOption",
                list(type=as.character(type),
                     underlying=as.double(underlying),
@@ -70,8 +70,8 @@ BinaryOption <- function(x, ...) {
 }
 
 BinaryOption.default <- function(type, underlying, strike, dividendYield,
-                                   riskFreeRate, maturity, volatility,
-                                   cashPayoff) {
+                                 riskFreeRate, maturity, volatility,
+                                 cashPayoff) {
   val <- .Call("QL_BinaryOption",
                list(type=as.character(type),
                     underlying=as.double(underlying),
@@ -85,6 +85,29 @@ BinaryOption.default <- function(type, underlying, strike, dividendYield,
   val
 }
 
+BarrierOption <- function(x, ...) {
+  if (is.null(class(x)))
+    class(x) <- data.class(x)
+  UseMethod("BarrierOption", x, ...)
+}
+
+BarrierOption.default <- function(barrType, type, underlying, strike,
+                                  dividendYield, riskFreeRate, maturity,
+                                  volatility, barrier, rebate=0.0) {
+  val <- .Call("QL_BarrierOption",
+               list(barrType=as.character(barrType),
+                    type=as.character(type),
+                    underlying=as.double(underlying),
+                    strike=as.double(strike),
+                    dividendYield=as.double(dividendYield),
+                    riskFreeRate=as.double(riskFreeRate),
+                    maturity=as.double(maturity),
+                    volatility=as.double(volatility),
+                    barrier=as.double(barrier),
+                    rebate=as.double(rebate)))
+  class(val) <- c("BarrierOption", "Option")
+  val
+}
 
 plot.Option <- function(x, ...) {
   warning(paste("No plotting available for class", class(x)[1],"\n"))

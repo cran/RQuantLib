@@ -1,17 +1,19 @@
-AmericanOption           American Option evaluation using Finite
-                         Differences
+AmericanOption          American Option evaluation using Finite
+                        Differences
 AmericanOptionImpliedVolatility
-                         Implied Volatility calculation for American
-                         Option
-BinaryOption             Binary Option evaluation using Closed-Form
-                         solution
-EuropeanOption           European Option evaluation using Closed-Form
-                         solution
-EuropeanOption           European Option evaluation using Closed-Form
-                         solution
+                        Implied Volatility calculation for American
+                        Option
+BarrierOption           Barrier Option evaluation using Closed-Form
+                        solution
+BinaryOption            Binary Option evaluation using Closed-Form
+                        solution
+EuropeanOption          European Option evaluation using Closed-Form
+                        solution
+EuropeanOption          European Option evaluation using Closed-Form
+                        solution
 EuropeanOptionImpliedVolatility
-                         Implied Volatility calculation for European
-                         Option
-ImpliedVolatility        Base class for option-price implied volatility
-                         evalution
-Option                   Base class for option price evalution
+                        Implied Volatility calculation for European
+                        Option
+ImpliedVolatility       Base class for option-price implied volatility
+                        evalution
+Option                  Base class for option price evalution

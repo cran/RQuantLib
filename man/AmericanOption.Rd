@@ -1,4 +1,4 @@
-% $Id: AmericanOption.Rd,v 1.1 2002/02/26 03:43:55 edd Exp $
+% $Id: AmericanOption.Rd,v 1.2 2002/11/11 02:32:08 edd Exp $
 \name{AmericanOption}
 \alias{AmericanOption}
 \alias{AmericanOption.default}
@@ -56,9 +56,9 @@ maturity, volatility, timeSteps=150, gridPoints=151)
 
 \examples{
 # simple call with unnamed parameters
-AmericanOption("call", 100, 100, 0.01, 0.03, 0.5, 0.4)
+AmericanOption("call", 100, 100, 0.02, 0.03, 0.5, 0.4)
 # simple call with some explicit parameters
-AmericanOption("put", strike=100, volatility=0.4, 100, 0.01, 0.03, 0.5)
+AmericanOption("put", strike=100, volatility=0.4, 100, 0.02, 0.03, 0.5)
 }
 \keyword{misc}
 
