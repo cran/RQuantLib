@@ -1,0 +1,13 @@
+This file contains any messages produced by compilers while
+running configure, to aid debugging if configure makes a mistake.
+
+configure:530: checking for quantlib-config
+configure:568: checking for c++
+configure:600: checking whether the C++ compiler (c++  ) works
+configure:616: c++ -o conftest    conftest.C  1>&5
+configure:642: checking whether the C++ compiler (c++  ) is a cross-compiler
+configure:647: checking whether we are using GNU C++
+configure:656: c++ -E conftest.C
+configure:675: checking whether c++ accepts -g
+configure:715: checking how to run the C++ preprocessor
+configure:733: c++ -E  conftest.C >/dev/null 2>conftest.out

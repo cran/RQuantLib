@@ -1,0 +1,47 @@
+dnl RQuantLib configure.in by Dirk Eddelbuettel <edd@debian.org>
+dnl Borrowed pieces from RPgSQL, GNU Gretl and GNU R
+dnl Greatly simplified thanks to quantlib-config
+
+dnl require at least autoconf 2.13
+AC_PREREQ(2.13)
+
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(src/RQuantLib.cc)
+
+dnl borrowed from a check for gnome in GNU gretl
+dnl define a check for quantlib-config
+AC_DEFUN(AC_PROG_QUANTLIB,
+	[AC_CHECK_PROG(QUANTLIB,quantlib-config,yes)])
+dnl and use it
+AC_PROG_QUANTLIB
+if test x"${QUANTLIB}" == x"yes" ; then
+	#echo "*** Found quantlib-config, using it for header and lib flags"
+	have_quantlib=yes
+	PKG_CXXFLAGS=`quantlib-config --cflags`
+	PKG_LIBS=`quantlib-config --libs`
+fi
+
+dnl Check for g++
+AC_PROG_CXX
+
+dnl We are using C++
+dnl autoconf2.50: AC_LANG(C++)
+AC_LANG_CPLUSPLUS
+AC_REQUIRE_CPP
+
+if test "${have_quantlibl}" = "no"  
+then
+	echo "
+  Your installation does not appear to have QuantLib installed as the
+  quantlib-config utility script could not be found. 
+
+  Please make sure that QuantLib installed and working properly.
+"
+else
+	AC_SUBST(PKG_CXXFLAGS)
+	AC_SUBST(PKG_LIBS)
+	AC_OUTPUT(src/Makevars)
+	echo "Completed configuration and ready to build."
+fi
+
+

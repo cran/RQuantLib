@@ -1,0 +1,5 @@
+* using log directory '/home/edd/src/progs/r/RQuantLib/RQuantLib/RELEASE/RQuantLib.Rcheck'
+* checking for file 'RQuantLib/DESCRIPTION' ... OK
+* checking if this is a source package ... OK
+ ERROR
+Installation failed.
