@@ -2,7 +2,7 @@
 //
 // Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: rquantlib.h,v 1.3 2004/09/12 18:55:28 edd Exp $
+// $Id: rquantlib.h,v 1.4 2005/04/27 02:29:02 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -34,7 +34,7 @@ extern "C" {
 			 const char *label);
   SEXP getListElement(SEXP list, char *str);
 
-  boost::shared_ptr<TermStructure> 
+  boost::shared_ptr<YieldTermStructure> 
      makeFlatCurve(const Date& today,
 		   const boost::shared_ptr<Quote>& forward,
 		   DayCounter dc);
@@ -51,8 +51,8 @@ extern "C" {
   makeOption(const boost::shared_ptr<StrikedTypePayoff>& payoff,
 	     const boost::shared_ptr<Exercise>& exercise,
 	     const boost::shared_ptr<Quote>& u,
-	     const boost::shared_ptr<TermStructure>& q,
-	     const boost::shared_ptr<TermStructure>& r,
+	     const boost::shared_ptr<YieldTermStructure>& q,
+	     const boost::shared_ptr<YieldTermStructure>& r,
 	     const boost::shared_ptr<BlackVolTermStructure>& vol,
 	     EngineType engineType = Analytic);
 }

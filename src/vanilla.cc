@@ -2,7 +2,7 @@
 //
 // Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: vanilla.cc,v 1.14 2004/12/28 03:23:40 edd Exp $
+// $Id: vanilla.cc,v 1.14 2004/12/28 03:23:40 edd Exp edd $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -51,7 +51,7 @@ extern "C" {
     Rate riskFreeRate = REAL(getListElement(optionParameters, 
 					    "riskFreeRate"))[0];
     Time maturity = REAL(getListElement(optionParameters, "maturity"))[0];
-    int length = int(maturity * 360); // FIXME: this could be better
+    int length = int(maturity*360 + 0.5); // FIXME: this could be better
     double volatility = REAL(getListElement(optionParameters, 
 					    "volatility"))[0];
 
@@ -73,11 +73,11 @@ extern "C" {
     boost::shared_ptr<BlackVolTermStructure> volTS = 
       makeFlatVolatility(today, vol, dc);
     boost::shared_ptr<SimpleQuote> qRate(new SimpleQuote(0.0));
-    boost::shared_ptr<TermStructure> qTS = makeFlatCurve(today, qRate, dc);
+    boost::shared_ptr<YieldTermStructure> qTS = makeFlatCurve(today,qRate,dc);
     boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(0.0));
-    boost::shared_ptr<TermStructure> rTS = makeFlatCurve(today, rRate, dc);
+    boost::shared_ptr<YieldTermStructure> rTS = makeFlatCurve(today,rRate,dc);
 
-    Date exDate = today.plusDays(length);
+    Date exDate = today + length;
     boost::shared_ptr<Exercise> exercise(new EuropeanExercise(exDate));
 
     boost::shared_ptr<StrikedTypePayoff> 
@@ -123,7 +123,7 @@ extern "C" {
     Rate riskFreeRate = REAL(getListElement(optionParameters, 
 					    "riskFreeRate"))[0];
     Time maturity = REAL(getListElement(optionParameters,"maturity"))[0];
-    int length = int(maturity * 360); // FIXME: this could be better
+    int length = int(maturity*360 + 0.5); // FIXME: this could be better
     double volatility = REAL(getListElement(optionParameters,"volatility"))[0];
     int timeSteps = INTEGER(getListElement(optionParameters,"timeSteps"))[0];
     int gridPoints = INTEGER(getListElement(optionParameters,"gridPoints"))[0];
@@ -146,15 +146,15 @@ extern "C" {
     boost::shared_ptr<BlackVolTermStructure> volTS = 
       makeFlatVolatility(today, vol, dc);
     boost::shared_ptr<SimpleQuote> qRate(new SimpleQuote(0.0));
-    boost::shared_ptr<TermStructure> qTS = makeFlatCurve(today, qRate, dc);
+    boost::shared_ptr<YieldTermStructure> qTS = makeFlatCurve(today,qRate,dc);
     boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(0.0));
-    boost::shared_ptr<TermStructure> rTS = makeFlatCurve(today, rRate, dc);
-    Date exDate = today.plusDays(length);
+    boost::shared_ptr<YieldTermStructure> rTS = makeFlatCurve(today,rRate,dc);
+    Date exDate = today + length;
     boost::shared_ptr<Exercise> exercise(new AmericanExercise(today, exDate));
     boost::shared_ptr<StrikedTypePayoff> 
       payoff(new PlainVanillaPayoff(optionType, strike));
-//  boost::shared_ptr<VanillaOption> option = makeOption(payoff, exercise, spot,
-// 					      qTS, rTS, volTS,
+//  boost::shared_ptr<VanillaOption> option = makeOption(payoff, exercise, 
+// 					      spot, qTS, rTS, volTS,
 // 					      JR); // engine
 // 					      //TGEO); // engine
     spot->setValue(underlying);
@@ -167,10 +167,10 @@ extern "C" {
 				    new BaroneAdesiWhaleyApproximationEngine);
     boost::shared_ptr<BlackScholesProcess> stochProcess(new
 	BlackScholesProcess(
-                RelinkableHandle<Quote>(spot),
-                RelinkableHandle<TermStructure>(qTS),
-                RelinkableHandle<TermStructure>(rTS),
-                RelinkableHandle<BlackVolTermStructure>(volTS)));
+               	Handle<Quote>(spot),
+                Handle<YieldTermStructure>(qTS),
+                Handle<YieldTermStructure>(rTS),
+                Handle<BlackVolTermStructure>(volTS)));
 
     VanillaOption option(stochProcess, payoff, exercise,
 			 engine);

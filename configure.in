@@ -4,7 +4,7 @@
 # Greatly simplified thanks to quantlib-config
 # Another contribution by Kurt Hornik gratefully acknowledged
 #
-# $Id: configure.in,v 1.1 2004/12/22 04:07:57 edd Exp $
+# $Id: configure.in,v 1.2 2005/04/27 02:54:57 edd Exp $
 
 # require at least autoconf 2.13
 # requirements inflation: now require 2.50
@@ -12,7 +12,7 @@ AC_PREREQ(2.50)
 
 # Process this file with autoconf to produce a configure script.
 # AC_INIT(src/RQuantLib.cc)
-AC_INIT(RQuantlib, 0.1.11)
+AC_INIT(RQuantlib, 0.1.12)
 
 # We are using C++
 AC_LANG(C++)
@@ -130,8 +130,8 @@ QL_CHECK_BOOST
 
 # also test for quantlib version using result from quantlib-config --version
 case ${pkg_version} in
-     0.1.*|0.2.*|0.3.1|0.3.2|0.3.3|0.3.4)
-	 AC_MSG_WARN([RQuantLib requires QuantLib version 0.3.5 or later.])
+     0.1.*|0.2.*|0.3.1|0.3.2|0.3.3|0.3.4|0.3.5|0.3.6|0.3.7)
+	 AC_MSG_WARN([RQuantLib requires QuantLib version 0.3.8 or later.])
 	 AC_MSG_ERROR([Please upgrade to a more recent version.])
      ;;
 esac

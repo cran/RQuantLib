@@ -3,7 +3,7 @@
 //
 // Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: implieds.cc,v 1.7 2004/12/28 03:23:03 edd Exp $
+// $Id: implieds.cc,v 1.7 2004/12/28 03:23:03 edd Exp edd $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -71,7 +71,7 @@ extern "C" {
       REAL(getListElement(optionParameters, "riskFreeRate"))[0];
     double volatility = REAL(getListElement(optionParameters, "volatility"))[0];
     Time maturity = REAL(getListElement(optionParameters, "maturity"))[0];
-    int length = int(maturity * 360); // FIXME: this could be better
+    int length = int(maturity*360 + 0.5); // FIXME: this could be better
 
     Date today = Date::todaysDate();
 
@@ -84,10 +84,10 @@ extern "C" {
     boost::shared_ptr<BlackVolTermStructure> volTS = 
       makeFlatVolatility(today, vol, dc);
     boost::shared_ptr<SimpleQuote> qRate(new SimpleQuote(0.0));
-    boost::shared_ptr<TermStructure> qTS = makeFlatCurve(today, qRate, dc);
+    boost::shared_ptr<YieldTermStructure> qTS = makeFlatCurve(today,qRate,dc);
     boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(0.0));
-    boost::shared_ptr<TermStructure> rTS = makeFlatCurve(today, rRate, dc);
-    Date exDate = today.plusDays(length);
+    boost::shared_ptr<YieldTermStructure> rTS = makeFlatCurve(today,rRate,dc);
+    Date exDate = today + length;
     boost::shared_ptr<Exercise> exercise(new EuropeanExercise(exDate));
     boost::shared_ptr<StrikedTypePayoff> 
       payoff(new PlainVanillaPayoff(optionType, strike));
@@ -142,7 +142,7 @@ extern "C" {
     double strike = REAL(getListElement(optionParameters,"strike"))[0];	
     
     Time maturity = REAL(getListElement(optionParameters, "maturity"))[0];
-    int length = int(maturity * 360); // FIXME: this could be better
+    int length = int(maturity*360 + 0.5); // FIXME: this could be better
 
     Date today = Date::todaysDate();
 
@@ -153,11 +153,11 @@ extern "C" {
     boost::shared_ptr<BlackVolTermStructure> volTS = 
       makeFlatVolatility(today, vol,dc);
     boost::shared_ptr<SimpleQuote> qRate(new SimpleQuote(0.0));
-    boost::shared_ptr<TermStructure> qTS = makeFlatCurve(today, qRate, dc);
+    boost::shared_ptr<YieldTermStructure> qTS = makeFlatCurve(today,qRate,dc);
     boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(0.0));
-    boost::shared_ptr<TermStructure> rTS = makeFlatCurve(today, rRate, dc);
+    boost::shared_ptr<YieldTermStructure> rTS = makeFlatCurve(today,rRate,dc);
 
-    Date exDate = today.plusDays(length);
+    Date exDate = today + length;
     //boost::shared_ptr<Exercise> exercise(new EuropeanExercise(exDate));
     boost::shared_ptr<Exercise> exercise(new AmericanExercise(today, exDate));
     boost::shared_ptr<StrikedTypePayoff> 

@@ -3,7 +3,7 @@
 //
 // Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: utils.cc,v 1.5 2004/12/22 04:09:48 edd Exp $
+// $Id: utils.cc,v 1.7 2005/04/27 02:46:07 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -62,8 +62,8 @@ extern "C" {
   makeOption(const boost::shared_ptr<StrikedTypePayoff>& payoff,
 	     const boost::shared_ptr<Exercise>& exercise,
 	     const boost::shared_ptr<Quote>& u,
-	     const boost::shared_ptr<TermStructure>& q,
-	     const boost::shared_ptr<TermStructure>& r,
+	     const boost::shared_ptr<YieldTermStructure>& q,
+	     const boost::shared_ptr<YieldTermStructure>& r,
 	     const boost::shared_ptr<BlackVolTermStructure>& vol,
 	     EngineType engineType) {
 
@@ -114,10 +114,10 @@ extern "C" {
     boost::shared_ptr<BlackScholesProcess> 
       stochProcess(new
          BlackScholesProcess(
-	     RelinkableHandle<Quote>(u),
-	     RelinkableHandle<TermStructure>(q),
-	     RelinkableHandle<TermStructure>(r),
-	     RelinkableHandle<BlackVolTermStructure>(vol)));
+	     	Handle<Quote>(u),
+	     	Handle<YieldTermStructure>(q),
+	     	Handle<YieldTermStructure>(r),
+	     	Handle<BlackVolTermStructure>(vol)));
 
     return 
       boost::shared_ptr<VanillaOption>(new
@@ -128,22 +128,21 @@ extern "C" {
 
   // QuantLib option setup utils, copied from the test-suite sources
 
-  boost::shared_ptr<TermStructure> 
+  boost::shared_ptr<YieldTermStructure> 
     makeFlatCurve(const Date& today,
 		  const boost::shared_ptr<Quote>& forward,
-		  DayCounter dc) {
-    return boost::shared_ptr<TermStructure>(
-	 new FlatForward(today, today, 
-			 RelinkableHandle<Quote>(forward), dc));
+		  const DayCounter dc) {
+    return boost::shared_ptr<YieldTermStructure>(
+	 new FlatForward(today, Handle<Quote>(forward), dc));
   }
 
   boost::shared_ptr<BlackVolTermStructure> 
     makeFlatVolatility(const Date& today,
 			const boost::shared_ptr<Quote>& vol,
-			DayCounter dc) {
+			const DayCounter dc) {
     return boost::shared_ptr<BlackVolTermStructure>(
          new BlackConstantVol(today, 
-			      RelinkableHandle<Quote>(vol), dc));
+			      Handle<Quote>(vol), dc));
   }
 
 

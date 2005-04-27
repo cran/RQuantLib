@@ -2,7 +2,7 @@
 //
 // Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: barrier_binary.cc,v 1.7 2004/12/28 03:28:02 edd Exp $
+// $Id: barrier_binary.cc,v 1.8 2005/04/27 02:30:06 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -44,7 +44,7 @@ extern "C" {
     Rate riskFreeRate = REAL(getListElement(optionParameters, 
 					    "riskFreeRate"))[0];
     Time maturity = REAL(getListElement(optionParameters, "maturity"))[0];
-    int length = int(maturity * 360); // FIXME: this could be better
+    int length = int(maturity * 360+0.5); // FIXME: this could be better
 
     double volatility = REAL(getListElement(optionParameters, 
 					    "volatility"))[0];
@@ -65,9 +65,9 @@ extern "C" {
     DayCounter dc = Actual360();
     boost::shared_ptr<SimpleQuote> spot(new SimpleQuote(0.0));
     boost::shared_ptr<SimpleQuote> qRate(new SimpleQuote(0.0));
-    boost::shared_ptr<TermStructure> qTS = makeFlatCurve(today, qRate, dc);
+    boost::shared_ptr<YieldTermStructure> qTS = makeFlatCurve(today,qRate,dc);
     boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(0.0));
-    boost::shared_ptr<TermStructure> rTS = makeFlatCurve(today, rRate, dc);
+    boost::shared_ptr<YieldTermStructure> rTS = makeFlatCurve(today,rRate,dc);
     boost::shared_ptr<SimpleQuote> vol(new SimpleQuote(0.0));
     boost::shared_ptr<BlackVolTermStructure> volTS = 
       makeFlatVolatility(today, vol, dc);
@@ -76,7 +76,8 @@ extern "C" {
     boost::shared_ptr<StrikedTypePayoff> 
       payoff(new CashOrNothingPayoff(optionType, strike, cashPayoff));
 
-    Date exDate = today.plusDays(length);
+    //Date exDate = today.plusDays(length);
+    Date exDate = today + length;
 
     boost::shared_ptr<Exercise> exercise(new EuropeanExercise(exDate));
 
@@ -87,10 +88,10 @@ extern "C" {
 
     boost::shared_ptr<BlackScholesProcess> 
       stochProcess(new BlackScholesProcess(
-                RelinkableHandle<Quote>(spot),
-                RelinkableHandle<TermStructure>(qTS),
-                RelinkableHandle<TermStructure>(rTS),
-                RelinkableHandle<BlackVolTermStructure>(volTS)));
+       		        Handle<Quote>(spot),
+                	Handle<YieldTermStructure>(qTS),
+                	Handle<YieldTermStructure>(rTS),
+                	Handle<BlackVolTermStructure>(volTS)));
 
     VanillaOption opt(stochProcess, payoff, exercise, engine);
 
@@ -147,9 +148,9 @@ extern "C" {
     DayCounter dc = Actual360();
     boost::shared_ptr<SimpleQuote> spot(new SimpleQuote(0.0));
     boost::shared_ptr<SimpleQuote> qRate(new SimpleQuote(0.0));
-    boost::shared_ptr<TermStructure> qTS = makeFlatCurve(today, qRate, dc);
+    boost::shared_ptr<YieldTermStructure> qTS = makeFlatCurve(today,qRate,dc);
     boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(0.0));
-    boost::shared_ptr<TermStructure> rTS = makeFlatCurve(today, rRate, dc);
+    boost::shared_ptr<YieldTermStructure> rTS = makeFlatCurve(today,rRate,dc);
     boost::shared_ptr<SimpleQuote> vol(new SimpleQuote(0.0));
     boost::shared_ptr<BlackVolTermStructure> volTS = 
       makeFlatVolatility(today, vol, dc);
@@ -169,8 +170,8 @@ extern "C" {
     boost::shared_ptr<BlackScholesStochasticProcess> 
       stochProcess(new BlackScholesStochasticProcess(
                 RelinkableHandle<Quote>(spot),
-                RelinkableHandle<TermStructure>(qTS),
-                RelinkableHandle<TermStructure>(rTS),
+                RelinkableHandle<YieldTermStructure>(qTS),
+                RelinkableHandle<YieldTermStructure>(rTS),
                 RelinkableHandle<BlackVolTermStructure>(volTS)));
 
     VanillaOption opt(stochProcess, payoff, exercise, engine);
@@ -204,7 +205,7 @@ extern "C" {
     Rate riskFreeRate = REAL(getListElement(optionParameters, 
 					    "riskFreeRate"))[0];
     Time maturity = REAL(getListElement(optionParameters, "maturity"))[0];
-    int length = int(maturity * 360); // FIXME: this could be better
+    int length = int(maturity*360 + 0.5); // FIXME: this could be better
     double volatility = REAL(getListElement(optionParameters, 
 					    "volatility"))[0];
     double barrier = REAL(getListElement(optionParameters, 
@@ -237,15 +238,15 @@ extern "C" {
     DayCounter dc = Actual360();
     boost::shared_ptr<SimpleQuote> spot(new SimpleQuote(0.0));
     boost::shared_ptr<SimpleQuote> qRate(new SimpleQuote(0.0));
-    boost::shared_ptr<TermStructure> qTS = makeFlatCurve(today, qRate, dc);
+    boost::shared_ptr<YieldTermStructure> qTS = makeFlatCurve(today,qRate,dc);
     boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(0.0));
-    boost::shared_ptr<TermStructure> rTS = makeFlatCurve(today, rRate, dc);
+    boost::shared_ptr<YieldTermStructure> rTS = makeFlatCurve(today,rRate,dc);
 
     boost::shared_ptr<SimpleQuote> vol(new SimpleQuote(0.0));
     boost::shared_ptr<BlackVolTermStructure> volTS = 
       makeFlatVolatility(today, vol, dc);
 
-    Date exDate = today.plusDays(length);
+    Date exDate = today + length;
     boost::shared_ptr<Exercise> exercise(new EuropeanExercise(exDate));
 
     spot ->setValue(underlying);
@@ -258,10 +259,10 @@ extern "C" {
 
     boost::shared_ptr<BlackScholesProcess> 
       stochProcess(new BlackScholesProcess(
-                RelinkableHandle<Quote>(spot),
-                RelinkableHandle<TermStructure>(qTS),
-                RelinkableHandle<TermStructure>(rTS),
-                RelinkableHandle<BlackVolTermStructure>(volTS)));
+                	Handle<Quote>(spot),
+                	Handle<YieldTermStructure>(qTS),
+                	Handle<YieldTermStructure>(rTS),
+                	Handle<BlackVolTermStructure>(volTS)));
 
     Size timeSteps = 1;
     bool antitheticVariate = false;
