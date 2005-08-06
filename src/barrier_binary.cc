@@ -1,8 +1,8 @@
 // RQuantLib -- R interface to the QuantLib libraries
 //
-// Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
+// Copyright 2002, 2003, 2004, 2005 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: barrier_binary.cc,v 1.8 2005/04/27 02:30:06 edd Exp $
+// $Id: barrier_binary.cc,v 1.9 2005/08/07 02:00:54 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -118,7 +118,7 @@ extern "C" {
   }
 
   // dumped core when we tried last
-#if 0
+  // no longer under 0.3.10 and g++ 4.0.1 (Aug 2005)
   SEXP QL_BinaryOptionImpliedVolatility(SEXP optionParameters) {
     const int nret = 2;		// dimension of return list
     char *type = CHAR(STRING_ELT(getListElement(optionParameters, "type"),0));
@@ -130,7 +130,7 @@ extern "C" {
     Rate riskFreeRate = REAL(getListElement(optionParameters, 
 					    "riskFreeRate"))[0];
     Time maturity = REAL(getListElement(optionParameters, "maturity"))[0];
-    int length = int(maturity * 360); // FIXME: this could be better
+    int length = int(maturity * 360 + 0.5); // FIXME: this could be better
     double volatility = REAL(getListElement(optionParameters,"volatility"))[0];
     double cashPayoff = REAL(getListElement(optionParameters,"cashPayoff"))[0];
 
@@ -158,7 +158,7 @@ extern "C" {
 
     boost::shared_ptr<StrikedTypePayoff> 
       payoff(new CashOrNothingPayoff(optionType, strike, cashPayoff));
-    Date exDate = today.plusDays(length);
+    Date exDate = today + length;
 
     boost::shared_ptr<Exercise> exercise(new EuropeanExercise(exDate));
 
@@ -167,27 +167,23 @@ extern "C" {
     rRate->setValue(riskFreeRate);
     vol  ->setValue(volatility);
 
-    boost::shared_ptr<BlackScholesStochasticProcess> 
-      stochProcess(new BlackScholesStochasticProcess(
-                RelinkableHandle<Quote>(spot),
-                RelinkableHandle<YieldTermStructure>(qTS),
-                RelinkableHandle<YieldTermStructure>(rTS),
-                RelinkableHandle<BlackVolTermStructure>(volTS)));
+    boost::shared_ptr<BlackScholesProcess> 
+      stochProcess(new BlackScholesProcess(Handle<Quote>(spot),
+					   Handle<YieldTermStructure>(qTS),
+					   Handle<YieldTermStructure>(rTS),
+					   Handle<BlackVolTermStructure>(volTS)));
 
     VanillaOption opt(stochProcess, payoff, exercise, engine);
 
     SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
     SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
-//     insertListElement(rl, nm, 0, BO.impliedVolatility(value), "impliedVol");
+    insertListElement(rl, nm, 0, opt.impliedVolatility(value), "impliedVol");
     SET_VECTOR_ELT(rl, 1, optionParameters);
     SET_STRING_ELT(nm, 1, mkChar("parameters"));
     setAttrib(rl, R_NamesSymbol, nm);
-    //    setAttrib(rl, R_ClassSymbol, 
-    //      ScalarString(mkChar("EuropeanOptionImpliedVolatility")));
     UNPROTECT(2);
     return(rl);
   }
-#endif
 
   SEXP QL_BarrierOption(SEXP optionParameters) {
 

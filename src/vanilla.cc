@@ -1,8 +1,8 @@
 // RQuantLib -- R interface to the QuantLib libraries
 //
-// Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
+// Copyright 2002, 2003, 2004, 2005 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: vanilla.cc,v 1.14 2004/12/28 03:23:40 edd Exp edd $
+// $Id: vanilla.cc,v 1.15 2005/08/07 02:03:57 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -24,12 +24,12 @@
 
 #include <ql/quantlib.hpp>	// make QuantLib known
 
-#include <ql/Instruments/vanillaoption.hpp>
-#include <ql/TermStructures/flatforward.hpp>
-#include <ql/Volatilities/blackconstantvol.hpp>
-#include <ql/Calendars/target.hpp>
+// #include <ql/Instruments/vanillaoption.hpp>
+// #include <ql/TermStructures/flatforward.hpp>
+// #include <ql/Volatilities/blackconstantvol.hpp>
+// #include <ql/Calendars/target.hpp>
 
-#include <ql/PricingEngines/Vanilla/baroneadesiwhaleyengine.hpp>
+// #include <ql/PricingEngines/Vanilla/baroneadesiwhaleyengine.hpp>
 
 using namespace QuantLib;
 

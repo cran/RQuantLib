@@ -1,31 +1,36 @@
-% $Id: EuropeanOptionImpliedVolatility.Rd,v 1.5 2005/08/05 01:40:04 edd Exp $
-\name{EuropeanOptionImpliedVolatility}
-\alias{EuropeanOptionImpliedVolatility}
-\alias{EuropeanOptionImpliedVolatility.default}
-\title{Implied Volatility calculation for European Option}
+% $Id: BinaryOptionImpliedVolatility.Rd,v 1.1 2005/08/05 02:01:57 edd Exp $
+\name{BinaryOptionImpliedVolatility}
+\alias{BinaryOptionImpliedVolatility}
+\alias{BinaryOptionImpliedVolatility.default}
+\title{Implied Volatility calculation for Binary Option}
 \description{
-  The \code{EuropeanOptionImpliedVolatility} function solves for the
+  The \code{BinaryOptionImpliedVolatility} function solves for the
   (unobservable) implied volatility, given an option price as well as
   the other required parameters to value an option.}
 \usage{
-EuropeanOptionImpliedVolatility.default(type, value, underlying, strike, dividendYield, riskFreeRate, maturity, volatility)
+BinaryOptionImpliedVolatility.default(type, value, underlying, strike,
+		dividendYield, riskFreeRate, maturity, volatility,
+		cashPayoff=1)
 
 \method{print}{ImpliedVolatility}
 \method{summary}{ImpliedVolatility}
 }
 \arguments{
-  \item{type}{A string with one of the values \code{call} or \code{put}}
+  \item{type}{A string with one of the values \code{call}, \code{put} or
+    \code{straddle}}
   \item{value}{Value of the option (used only for ImpliedVolatility calculation)}
   \item{underlying}{Current price of the underlying stock}
   \item{strike}{Strike price of the option}
   \item{dividendYield}{Continuous dividend yield (as a fraction) of the stock}
   \item{riskFreeRate}{Risk-free rate}
   \item{maturity}{Time to maturity (in fractional years)}
-  \item{volatility}{Initial guess for the volatility of the underlying stock}
+  \item{volatility}{Initial guess for the volatility of the underlying
+    stock}
+  \item{cashPayoff}{Binary payout if options is exercised, default is 1}
 }
 \value{
 
-  The \code{EuropeanOptionImpliedVolatility} function returns an object
+  The \code{BinaryOptionImpliedVolatility} function returns an object
   of class \code{\link{ImpliedVolatility}}. It contains a list with the
   following elements:
   \item{impliedVol}{The volatility implied by the given market prices}
@@ -33,9 +38,8 @@ EuropeanOptionImpliedVolatility.default(type, value, underlying, strike, dividen
 
 }
 \details{
-  The well-known closed-form solution derived by Black, Scholes and
-  Merton is used for valuation. Implied volatilities are then calculated
-  numerically.
+  The Finite Differences method is used to value the Binary Option.
+  Implied volatilities are then calculated numerically.
 
   Please see any decent Finance textbook for background reading, and the
   \code{QuantLib} documentation for details on the \code{QuantLib}
@@ -47,11 +51,9 @@ EuropeanOptionImpliedVolatility.default(type, value, underlying, strike, dividen
 \note{The interface might change in future release as \code{QuantLib}
   stabilises its own API.}
 \seealso{\code{\link{EuropeanOption}},\code{\link{AmericanOption}},\code{\link{BinaryOption}}}
+
 \examples{
-EuropeanOptionImpliedVolatility(type="call", value=11.10, underlying=100,
-	strike=100, dividendYield=0.01, riskFreeRate=0.03,
-	maturity=0.5, volatility=0.4)
+BinaryOptionImpliedVolatility("call", value=4.50, strike=100, 100, 0.02, 0.03, 0.5, 0.4, 10)
 }
 \keyword{misc}
-
 

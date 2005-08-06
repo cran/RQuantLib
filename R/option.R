@@ -1,8 +1,8 @@
 ## RQuantLib -- R interface to the QuantLib libraries
 ##
-## Copyright 2002 Dirk Eddelbuettel <edd@debian.org>
+## Copyright 2002, 2005 Dirk Eddelbuettel <edd@debian.org>
 ##
-## $Id: option.R,v 1.4 2003/06/01 04:27:40 edd Exp $
+## $Id: option.R,v 1.5 2005/08/07 02:05:27 edd Exp $
 ##
 ## This file is part of the RQuantLib library for GNU R.
 ## It is made available under the terms of the GNU General Public
@@ -22,9 +22,6 @@
 
 EuropeanOption <- function(type, underlying, strike, dividendYield,
                            riskFreeRate, maturity, volatility) {
-  #if (is.null(class(x)))
-  #  class(x) <- data.class(x)
-  #UseMethod("EuropeanOption", x, ...)
   UseMethod("EuropeanOption")
 }
 
@@ -46,9 +43,6 @@ EuropeanOption.default <- function(type, underlying, strike, dividendYield,
 AmericanOption <- function(type, underlying, strike, dividendYield,
                            riskFreeRate, maturity, volatility,
                            timeSteps=150, gridPoints=151) {
-  #if (is.null(class(x)))
-  #  class(x) <- data.class(x)
-  #UseMethod("AmericanOption", x, ...)
   UseMethod("AmericanOption")
 }
 
@@ -73,9 +67,6 @@ AmericanOption.default <- function(type, underlying, strike, dividendYield,
 BinaryOption <- function(type, underlying, strike, dividendYield,
                          riskFreeRate, maturity, volatility,
                          cashPayoff) {
-  #if (is.null(class(x)))
-  #  class(x) <- data.class(x)
-  #UseMethod("BinaryOption", x, ...)
   UseMethod("BinaryOption")
 }
 
@@ -99,9 +90,6 @@ BinaryOption.default <- function(type, underlying, strike, dividendYield,
 BarrierOption <- function(barrType, type, underlying, strike,
                           dividendYield, riskFreeRate, maturity,
                           volatility, barrier, rebate=0.0) {
-  #if (is.null(class(x)))
-  #  class(x) <- data.class(x)
-  #UseMethod("BarrierOption", x, ...)
   UseMethod("BarrierOption")
 }
 
@@ -125,20 +113,21 @@ BarrierOption.default <- function(barrType, type, underlying, strike,
 }
 
 plot.Option <- function(x, ...) {
-  warning(paste("No plotting available for class", class(x)[1],"\n"))
+  warning("No plotting available for class", class(x)[1],"\n")
   invisible(x)
 }
 
-print.Option <- function(x, digits=options('digits')[[1]], ...) {
-  cat(paste("Concise summary of valuation for", class(x)[1], "\n"))
-  print(unlist(x[1:7]), digits=digits)
+print.Option <- function(x, digits=4, ...) {
+  cat("Concise summary of valuation for", class(x)[1], "\n")
+  print(round(unlist(x[1:7]), digits))
   invisible(x)
 }
 
-summary.Option <- function(object, digits=options('digits')[[1]], ...) {
-  cat(paste("Detailed summary of valuation for", class(object)[1], "\n"))
-  print(unlist(object[1:7]),digits=digits)
-  print(unlist(object[["parameters"]]),digits=digits)
+summary.Option <- function(object, digits=4, ...) {
+  cat("Detailed summary of valuation for", class(object)[1], "\n")
+  print(round(unlist(object[1:7]), digits))
+  cat("with parameters\n")
+  print(unlist(object[["parameters"]]))
   invisible(object)
 }
 

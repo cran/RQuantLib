@@ -7,6 +7,9 @@ BarrierOption           Barrier Option evaluation using Closed-Form
                         solution
 BinaryOption            Binary Option evaluation using Closed-Form
                         solution
+BinaryOptionImpliedVolatility
+                        Implied Volatility calculation for Binary
+                        Option
 EuropeanOption          European Option evaluation using Closed-Form
                         solution
 EuropeanOptionArrays    European Option evaluation using Closed-Form

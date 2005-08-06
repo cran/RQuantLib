@@ -1,3 +1,28 @@
+2005-08-06  Dirk Eddelbuettel  <edd@debian.org>
+
+	* Release 0.1.13 matching the new QuantLib 0.3.10 release
+
+	* Implied volatilies are back! 
+	  With gcc/g++ 4.0, the segmentation fault that I was seeing
+	  on implied volatility using gcc/g++ 3.3 (but which others did
+	  not see with gcc/g++ 3.2) has disappeared, so the 
+	  corresponding code has been reactivated.
+	* BinaryOptionImpliedVolatility() is also back 
+
+	* src/*.cc, R/*.R: Removed a lot of commented-out code
+	
+
+2005-04-26  Dirk Eddelbuettel  <edd@debian.org>
+
+	* Release 0.1.12 matching the upcoming QuantLib 0.3.9 release
+	
+	* configure.in: Test for QuantLib >= 0.3.8
+
+	* src/*.cc: Several changes for QuantLib 0.3.9:
+	  - use Handle<...> instead of RelinkableHandle<...>
+	  - use YieldTermStructure instead of TermStructure
+	  - use today + alength instead of today.plusDays
+
 2004-12-27  Dirk Eddelbuettel  <edd@debian.org>
 
 	* Release 0.1.11 matching the new QuantLib 0.3.8 release
@@ -24,7 +49,7 @@
 	
 	* Implied volatility for both European and American options
 	  currently segfaults when called from R, though the code itself
-	  works as standalon. The code also works from R when the implied
+	  works as a standalone. The code also works from R when the implied
 	  calculation call is skipped. Something is corrupting memory
 	  somewhere. For now, we return NA for either function.
 

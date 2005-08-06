@@ -1,8 +1,8 @@
 // RQuantLib -- R interface to the QuantLib libraries
 //
-// Copyright 2002, 2003, 2004 Dirk Eddelbuettel <edd@debian.org>
+// Copyright 2002, 2003, 2004, 2005 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: rquantlib.h,v 1.4 2005/04/27 02:29:02 edd Exp $
+// $Id: rquantlib.h,v 1.5 2005/08/07 02:02:02 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -34,10 +34,13 @@ extern "C" {
 			 const char *label);
   SEXP getListElement(SEXP list, char *str);
 
-  boost::shared_ptr<YieldTermStructure> 
-     makeFlatCurve(const Date& today,
-		   const boost::shared_ptr<Quote>& forward,
-		   DayCounter dc);
+}
+
+  boost::shared_ptr<YieldTermStructure>
+  makeFlatCurve(const Date& today,
+	   const boost::shared_ptr<Quote>& forward,
+	   const DayCounter& dc);
+
   boost::shared_ptr<BlackVolTermStructure> 
      makeFlatVolatility(const Date& today,
 			const boost::shared_ptr<Quote>& vol,
@@ -45,6 +48,7 @@ extern "C" {
 
   enum EngineType { Analytic,
 		    JR, CRR, EQP, TGEO, TIAN, LR,
+		    FiniteDifferences,
 		    PseudoMonteCarlo, QuasiMonteCarlo };
 
   boost::shared_ptr<VanillaOption>
@@ -54,5 +58,6 @@ extern "C" {
 	     const boost::shared_ptr<YieldTermStructure>& q,
 	     const boost::shared_ptr<YieldTermStructure>& r,
 	     const boost::shared_ptr<BlackVolTermStructure>& vol,
-	     EngineType engineType = Analytic);
-}
+             EngineType engineType = Analytic,
+             Size binomialSteps=128,
+	     Size samples=100); 

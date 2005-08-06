@@ -1,8 +1,8 @@
 ## RQuantLib -- R interface to the QuantLib libraries
 ##
-## Copyright 2002 Dirk Eddelbuettel <edd@debian.org>
+## Copyright 2002 - 2005 Dirk Eddelbuettel <edd@debian.org>
 ##
-## $Id: implied.R,v 1.6 2004/09/12 18:53:27 edd Exp $
+## $Id: implied.R,v 1.7 2005/08/07 02:05:07 edd Exp $
 ##
 ## This file is part of the RQuantLib library for GNU R.
 ## It is made available under the terms of the GNU General Public
@@ -21,12 +21,10 @@
 ## MA 02111-1307, USA
 
 ## also dumps core (0.3.7)
+## no longer 0.3.9 and 0.3.10 with g++ 3.4/4.0
 EuropeanOptionImpliedVolatility <-
   function(type, value, underlying, strike, dividendYield,
            riskFreeRate, maturity, volatility) {
-  #if (is.null(class(x)))
-  #  class(x) <- data.class(x)
-  #UseMethod("EuropeanOptionImpliedVolatility", x, ...)
   UseMethod("EuropeanOptionImpliedVolatility")
 }
 
@@ -44,17 +42,14 @@ EuropeanOptionImpliedVolatility.default <-
                     volatility=as.double(volatility)),
                PACKAGE="RQuantLib")
   class(val) <- c("EuropeanOptionImpliedVolatility","ImpliedVolatility")
-  warning("EuropeanOptionImpliedVolatility currently disabled.\nDebugging help on this segfaults would be appreciated.\n")
   val
 }
 
 # also dumps core (0.3.7)
+## no longer 0.3.9 and 0.3.10 with g++ 3.4/4.0
 AmericanOptionImpliedVolatility <-
   function(type, value, underlying, strike, dividendYield, riskFreeRate,
            maturity, volatility, timeSteps=150, gridPoints=151) {
-  #if (is.null(class(x)))
-  #  class(x) <- data.class(x)
-  #UseMethod("AmericanOptionImpliedVolatility", x, ...)
   UseMethod("AmericanOptionImpliedVolatility")
 }
 
@@ -74,44 +69,44 @@ AmericanOptionImpliedVolatility.default <-
                     gridPoints=as.integer(gridPoints)),
                PACKAGE="RQuantLib")
   class(val) <- c("AmericanOptionImpliedVolatility","ImpliedVolatility")
-  warning("AmericanOptionImpliedVolatility currently disabled.\nDebugging help on this segfaults would be appreciated.\n")
   val
 }
 
 # dumps core :-/
-#BinaryOptionImpliedVolatility <- function(x, ...) {
-#  if (is.null(class(x)))
-#    class(x) <- data.class(x)
-#  UseMethod("BinaryOptionImpliedVolatility", x, ...)
-#}
+BinaryOptionImpliedVolatility <-
+  function(type, value, underlying, strike, dividendYield, riskFreeRate,
+           maturity, volatility, cashPayoff=1) {
+  UseMethod("BinaryOptionImpliedVolatility")
+}
 
-#BinaryOptionImpliedVolatility.default <-
-#  function(type, value, underlying, strike, dividendYield, riskFreeRate,
-#            maturity, volatility, cashPayoff=1) {
-#  val <- .Call("QL_BinaryOptionImpliedVolatility",
-#               list(type=as.character(type),
-#		    value=as.double(value),
-#                    underlying=as.double(underlying),
-#                    strike=as.double(strike),
-#                    dividendYield=as.double(dividendYield),
-#                    riskFreeRate=as.double(riskFreeRate),
-#                    maturity=as.double(maturity),
-#                    volatility=as.double(volatility),
-#                    cashPayoff=as.double(cashPayoff)),
-#               PACKAGE="RQuantLib")
-#  class(val) <- c("BinaryOptionImpliedVolatility","ImpliedVolatility")
-#  val
-#}
+BinaryOptionImpliedVolatility.default <-
+  function(type, value, underlying, strike, dividendYield, riskFreeRate,
+            maturity, volatility, cashPayoff=1) {
+  val <- .Call("QL_BinaryOptionImpliedVolatility",
+               list(type=as.character(type),
+		    value=as.double(value),
+                    underlying=as.double(underlying),
+                    strike=as.double(strike),
+                    dividendYield=as.double(dividendYield),
+                    riskFreeRate=as.double(riskFreeRate),
+                    maturity=as.double(maturity),
+                    volatility=as.double(volatility),
+                    cashPayoff=as.double(cashPayoff)),
+               PACKAGE="RQuantLib")
+  class(val) <- c("BinaryOptionImpliedVolatility","ImpliedVolatility")
+  val
+}
 
-print.ImpliedVolatility <- function(x, ...) {
-  cat(paste("Implied Volatility for", class(x)[1], "is", format(x[1]), "\n"))
+print.ImpliedVolatility <- function(x, digits=3, ...) {
+  impvol <- x[[1]]
+  cat("Implied Volatility for", class(x)[1], "is", round(impvol, digits), "\n")
   invisible(x)
 }
 
-summary.ImpliedVolatility <- function(object, ...) {
-  cat(paste("Implied Volatility for", class(object)[1],
-            "is", format(object[1]), "\n"))
-  cat(paste("with parameters\n"))
+summary.ImpliedVolatility <- function(object, digits=3, ...) {
+  impvol <- object[[1]]
+  cat("Implied Volatility for", class(object)[1], "is", round(impvol, digits), "\n")
+  cat("with parameters\n")
   print(unlist(object[[2]]))
   invisible(object)
 }
