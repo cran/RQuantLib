@@ -1,3 +1,63 @@
+2005-10-26  Dirk Eddelbuettel  <edd@debian.org>
+
+	* Preparing release 0.2.0 regrouping the numerous changes -- 
+	  contributed mostly by Dominick -- since the 0.1.13 release
+
+2005-10-13  Dominick Samperi <dsamperi@DecisionSynergy.com>
+
+	* src/Rcpp.{hpp,cpp}: Improved error messages
+
+2005-10-08  Dominick Samperi <dsamperi@DecisionSynergy.com>
+
+	* src/Rcpp.cpp: Implemented Rcpp, R/C++ interface classes, and
+	  modified discount.cpp and bermudan.cpp to use it.
+
+	* src/Rcpp.hpp: Header files for latter.
+	
+2005-10-03  Dominick Samperi <dsamperi@DecisionSynergy.com>
+
+	* inst/Boost-License.txt, inst/QuantLib-License.txt: License files
+	  for Boost and QuantLib.
+
+	* Windows is now supported using a binary package that does not
+	  require the user to install a compiler, Boost, or QuantLib. Had
+	  to add Makefile.win, configure.win, etc.
+	
+	* R/discount.R: new DiscountCurve function that constructs the 
+	  spot term structure of interest rates based on 
+	  market observables like 
+	  deposit rates, futures prices, FRA rates, and swap rates. Supports
+	  the fitting of discount factors, forward rates, or zero coupon 
+	  rates, using linear, log-linear, and cubic spline interpolation.
+
+	* man/DiscountCurve.Rd: man page for DiscountCurve.
+	
+	* R/bermudan.R: new function that prices a Bermudan swaption 
+	  using a choice of four models: G2 analytic, Hull-White analytic,
+	  Hull-White tree, and Black-Karasinski tree.
+
+	* man/BermudanSwaption.Rd: man page for BermudanSwaption.
+	
+	* src/curves.cpp: utility code for curve construction.
+
+	* src/discount.cpp: implements DiscountCurve.
+
+	* src/bermudan.cpp: implements BermudanSwaption.
+
+	* src/utils.cpp: added utility functions to simplify communication
+	  with R.
+
+	* src/rquantlib.hpp: contains prototypes for utility functions and
+	  new definitions for Windows.
+
+	* Changed: suffix .cc to .cpp, and .h to .hpp.
+	
+2005-09-16  Dirk Eddelbuettel  <edd@debian.org>
+
+	* demo/OptionSurfaces.R: added demo with OpenGL visualizations
+	  of option analytics, requires rgl package
+	  [ Update: not released as rgl crashes on some platforms ]
+
 2005-08-06  Dirk Eddelbuettel  <edd@debian.org>
 
 	* Release 0.1.13 matching the new QuantLib 0.3.10 release

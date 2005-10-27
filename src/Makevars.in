@@ -1,3 +1,2 @@
-PKG_CXXFLAGS=@pkg_cxxflags@
-PKG_LIBS=@pkg_libs@ 
-
+PKG_CXXFLAGS=@CPPFLAGS@
+PKG_LIBS=@LDFLAGS@ 

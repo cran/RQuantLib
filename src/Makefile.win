@@ -1,0 +1,51 @@
+# Project: RQuantLib
+# Makefile created by Dev-C++ 4.9.9.2
+# modified by UL in order to fit mingw and R requirements, 16.09.2005
+#
+# $Id: Makefile.win,v 1.2 2005/10/27 02:29:46 edd Exp $
+
+include $(RHOME)/src/gnuwin32/MkRules
+OBJ = Rcpp.o barrier_binary.o bermudan.o curves.o vanilla.o implieds.o utils.o discount.o
+LINKOBJ  = Rcpp.o barrier_binary.o bermudan.o curves.o vanilla.o implieds.o utils.o discount.o $(RES)
+DLLLIBS = -s -L"$(RHOME)/src/gnuwin32" -lR -L "$(QUANTLIB_ROOT)/lib" -lQuantLib-mgw-0_3_11 --no-export-all-symbols --add-stdcall-alias
+BIN  = RQuantLib.dll
+CXXFLAGS = -I"$(RHOME)/include" -I"$(RHOME)/src/include" -I"$(QUANTLIB_ROOT)" -Wall -O2 -DBUILDING_DLL=1 -DUSING_QUANTLIB
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before RQuantLib.dll all-after
+
+clean: clean-custom
+	${RM} $(LINKOBJ) $(BIN)
+
+DLLWRAP=dllwrap.exe
+DEFFILE=libRQuantLib.def
+STATICLIB=libRQuantLib.a
+
+$(BIN): $(LINKOBJ)
+	$(DLLWRAP) --output-def $(DEFFILE) --driver-name c++ --implib $(STATICLIB) $(LINKOBJ) $(DLLLIBS) -o $(BIN)
+
+barrier_binary.o: barrier_binary.cpp
+	$(CXX) -c barrier_binary.cpp -o barrier_binary.o $(CXXFLAGS)
+
+bermudan.o: bermudan.cpp
+	$(CXX) -c bermudan.cpp -o bermudan.o $(CXXFLAGS)
+
+curves.o: curves.cpp
+	$(CXX) -c curves.cpp -o curves.o $(CXXFLAGS)
+
+vanilla.o: vanilla.cpp
+	$(CXX) -c vanilla.cpp -o vanilla.o $(CXXFLAGS)
+
+implieds.o: implieds.cpp
+	$(CXX) -c implieds.cpp -o implieds.o $(CXXFLAGS)
+
+utils.o: utils.cpp
+	$(CXX) -c utils.cpp -o utils.o $(CXXFLAGS)
+
+discount.o: discount.cpp
+	$(CXX) -c discount.cpp -o discount.o $(CXXFLAGS)
+
+Rcpp.o: Rcpp.cpp
+	$(CXX) -c Rcpp.cpp -o Rcpp.o $(CXXFLAGS)

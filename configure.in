@@ -1,10 +1,10 @@
 # RQuantLib configure.in by Dirk Eddelbuettel <edd@debian.org>
-# Borrowed pieces from RPgSQL, GNU Gretl, GNU R and QuantLib
 #
+# Using pieces borrowed from RPgSQL, GNU Gretl, GNU R and QuantLib
 # Greatly simplified thanks to quantlib-config
 # Another contribution by Kurt Hornik gratefully acknowledged
 #
-# $Id: configure.in,v 1.2 2005/04/27 02:54:57 edd Exp $
+# $Id: configure.in,v 1.5 2005/10/27 02:32:20 edd Exp $
 
 # require at least autoconf 2.13
 # requirements inflation: now require 2.50
@@ -12,7 +12,7 @@ AC_PREREQ(2.50)
 
 # Process this file with autoconf to produce a configure script.
 # AC_INIT(src/RQuantLib.cc)
-AC_INIT(RQuantlib, 0.1.12)
+AC_INIT(RQuantlib, 0.2.0)
 
 # We are using C++
 AC_LANG(C++)
@@ -28,7 +28,6 @@ fi
 CXX=`${R_HOME}/bin/R CMD config CXX`
 
 AC_PROG_CXX
-
 if test "${GXX}" = yes; then
     gxx_version=`${CXX} -v 2>&1 | grep "^.*g.. version" | \\
 		       sed -e 's/^.*g.. version *//'`
@@ -50,6 +49,9 @@ if test x"${QUANTLIB}" == x"yes" ; then
     pkg_cxxflags=`quantlib-config --cflags`
     pkg_libs=`quantlib-config --libs`
     pkg_version=`quantlib-config --version`
+    AC_SUBST([CPPFLAGS],["${CPPFLAGS} -DUSING_QUANTLIB"])
+    AC_SUBST([CPPFLAGS],["${CPPFLAGS} $pkg_cxxflags"])
+    AC_SUBST([LDFLAGS],["${LDFLAGS} $pkg_libs"])
 else
     echo "
   Your installation does not appear to have QuantLib installed as the
@@ -127,17 +129,16 @@ AC_DEFUN([QL_CHECK_BOOST],
 QL_CHECK_BOOST
 
 
-
 # also test for quantlib version using result from quantlib-config --version
 case ${pkg_version} in
-     0.1.*|0.2.*|0.3.1|0.3.2|0.3.3|0.3.4|0.3.5|0.3.6|0.3.7)
-	 AC_MSG_WARN([RQuantLib requires QuantLib version 0.3.8 or later.])
+     0.1.*|0.2.*|0.3.1|0.3.2|0.3.3|0.3.4|0.3.5|0.3.6|0.3.7|0.3.8|0.3.9|0.3.10)
+	 AC_MSG_WARN([RQuantLib requires QuantLib version 0.3.11 or later.])
 	 AC_MSG_ERROR([Please upgrade to a more recent version.])
      ;;
 esac
 
-AC_SUBST(pkg_cxxflags)
-AC_SUBST(pkg_libs)
+AC_SUBST(CPPFLAGS)
+AC_SUBST(LDFLAGS)
 AC_OUTPUT(src/Makevars)
 echo "Completed configuration and ready to build."
 

@@ -3,7 +3,7 @@
 //
 // Copyright 2002-2005 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: implieds.cc,v 1.8 2005/08/07 02:03:18 edd Exp $
+// $Id: implieds.cpp,v 1.9 2005/10/12 03:56:07 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -23,23 +23,15 @@
 
 // NB can be build standalone as   PKG_LIBS=-lQuantLib R CMD SHLIB implieds.cc
 
-#include <ql/quantlib.hpp>	// make QuantLib known
+#include "rquantlib.hpp"
 
-using namespace QuantLib;
-
-extern "C" {
-
-#include "rquantlib.h"
-
-  // Dumps core
-
-  SEXP QL_EuropeanOptionImpliedVolatility(SEXP optionParameters) {
+RcppExport  SEXP QL_EuropeanOptionImpliedVolatility(SEXP optionParameters) {
     const Size maxEvaluations = 100;
     const double tolerance = 1.0e-6;
     const int nret = 2;		// dimension of return list
 
     char *type = CHAR(STRING_ELT(getListElement(optionParameters, "type"),0));
-    Option::Type optionType;
+    Option::Type optionType=Option::Call;
     if (!strcmp(type, "call")) {
       optionType = Option::Call;
     } else if (!strcmp(type, "put")) {
@@ -102,21 +94,21 @@ extern "C" {
     setAttrib(rl, R_NamesSymbol, nm);
     UNPROTECT(2);
     return(rl);
-  }
+}
 
-  SEXP QL_AmericanOptionImpliedVolatility(SEXP optionParameters) {
+RcppExport  SEXP QL_AmericanOptionImpliedVolatility(SEXP optionParameters) {
     const Size maxEvaluations = 100;
     const double tolerance = 1.0e-6;
     const int nret = 2;		// dimension of return list
 
     char *type = CHAR(STRING_ELT(getListElement(optionParameters, "type"),0));
-    Option::Type optionType;
+    Option::Type optionType=Option::Call;
     if (!strcmp(type, "call")) {
-      optionType = Option::Call;
+	optionType = Option::Call;
     } else if (!strcmp(type, "put")) {
-      optionType = Option::Put;
+	optionType = Option::Put;
     } else {
-      error("Unexpected option type %s, aborting\n", type);
+	error("Unexpected option type %s, aborting\n", type);
     }
 
     double strike = REAL(getListElement(optionParameters,"strike"))[0];	
@@ -131,7 +123,7 @@ extern "C" {
     boost::shared_ptr<SimpleQuote> spot(new SimpleQuote(0.0));
     boost::shared_ptr<SimpleQuote> vol(new SimpleQuote(0.0));
     boost::shared_ptr<BlackVolTermStructure> volTS = 
-      makeFlatVolatility(today, vol,dc);
+	makeFlatVolatility(today, vol,dc);
     boost::shared_ptr<SimpleQuote> qRate(new SimpleQuote(0.0));
     boost::shared_ptr<YieldTermStructure> qTS = makeFlatCurve(today,qRate,dc);
     boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(0.0));
@@ -170,6 +162,5 @@ extern "C" {
     setAttrib(rl, R_NamesSymbol, nm);
     UNPROTECT(2);
     return(rl);
-  }
- 
 }
+ 

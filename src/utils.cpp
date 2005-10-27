@@ -1,9 +1,9 @@
 
 // RQuantLib -- R interface to the QuantLib libraries
 //
-// Copyright 2002, 2003, 2004, 2005  Dirk Eddelbuettel <edd@debian.org>
+// Copyright 2002, 2003, 2004, 2005 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: utils.cc,v 1.8 2005/08/07 02:01:23 edd Exp $
+// $Id: utils.cpp,v 1.10 2005/10/13 15:43:26 dsamperi Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -21,61 +21,50 @@
 // Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 // MA 02111-1307, USA
 
-#include <ql/quantlib.hpp>	// make QuantLib known
+#include "rquantlib.hpp"
 
-using namespace QuantLib;
-
-extern "C" {
-
-#include <R.h>
-#include <Rinternals.h>
-#include "rquantlib.h"
-
-  // R interface utils, with thanks to Doug Bates
-
-  // simple helper function to insert "labelled" element into list
-  void insertListElement(SEXP &list, SEXP &names,
-			 const int pos, const double value, 
-			 const char *label) {
+// R interface utils, with thanks to Doug Bates
+// simple helper function to insert "labelled" element into list
+void insertListElement(SEXP &list, SEXP &names,
+		       const int pos, const double value, 
+		       const char *label) {
     SEXP vec = PROTECT(allocVector(REALSXP, 1));
     REAL(vec)[0] = value; 
     SET_VECTOR_ELT(list, pos, vec);
     SET_STRING_ELT(names, pos, mkChar(label));
     UNPROTECT(1);
-  }
+}
 
-  // get the list element named str, or return NULL 
-  // courtesy of the R Exts manual, and the nls package
-  SEXP getListElement(SEXP list, char *str) {
+// get the list element named str, or return NULL 
+// courtesy of the R Exts manual, and the nls package
+SEXP getListElement(SEXP list, char *str) {
     SEXP elmt = R_NilValue, names = getAttrib(list, R_NamesSymbol);
     int i;
 
     for (i = 0; i < length(list); i++)
-      if(strcmp(CHAR(STRING_ELT(names, i)), str) == 0) {
-	elmt = VECTOR_ELT(list, i);
-	break;
-      }
+	if(strcmp(CHAR(STRING_ELT(names, i)), str) == 0) {
+	    elmt = VECTOR_ELT(list, i);
+	    break;
+	}
     return elmt;
-  }
-
 }
 
-  boost::shared_ptr<VanillaOption>
-    makeOption(const boost::shared_ptr<StrikedTypePayoff>& payoff,
-	       const boost::shared_ptr<Exercise>& exercise,
-	       const boost::shared_ptr<Quote>& u,
-	       const boost::shared_ptr<YieldTermStructure>& q,
-	       const boost::shared_ptr<YieldTermStructure>& r,
-	       const boost::shared_ptr<BlackVolTermStructure>& vol,
-	       EngineType engineType,
-	       Size binomialSteps,
-	       Size samples) {
+boost::shared_ptr<VanillaOption>
+makeOption(const boost::shared_ptr<StrikedTypePayoff>& payoff,
+	   const boost::shared_ptr<Exercise>& exercise,
+	   const boost::shared_ptr<Quote>& u,
+	   const boost::shared_ptr<YieldTermStructure>& q,
+	   const boost::shared_ptr<YieldTermStructure>& r,
+	   const boost::shared_ptr<BlackVolTermStructure>& vol,
+	   EngineType engineType,
+	   Size binomialSteps,
+	   Size samples) {
   
     boost::shared_ptr<PricingEngine> engine;
     switch (engineType) {
     case Analytic:
-      engine = boost::shared_ptr<PricingEngine>(new AnalyticEuropeanEngine);
-      break;
+	engine = boost::shared_ptr<PricingEngine>(new AnalyticEuropeanEngine);
+	break;
     case JR:
       engine = boost::shared_ptr<PricingEngine>(
 			new BinomialVanillaEngine<JarrowRudd>(binomialSteps));
@@ -116,7 +105,6 @@ extern "C" {
     default:
       QL_FAIL("Unknown engine type");
     }
-
     boost::shared_ptr<BlackScholesProcess> 
       stochProcess(new
 		   BlackScholesProcess(
@@ -124,26 +112,25 @@ extern "C" {
 				       Handle<YieldTermStructure>(q),
 				       Handle<YieldTermStructure>(r),
 				       Handle<BlackVolTermStructure>(vol)));
+    return boost::shared_ptr<VanillaOption>(new
+	   EuropeanOption(stochProcess, payoff, exercise, engine));
 
-    return 
-      boost::shared_ptr<VanillaOption>(new
-	       EuropeanOption(stochProcess, payoff, exercise, engine));
-  }
+}
 
-  // QuantLib option setup utils, copied from the test-suite sources
+// QuantLib option setup utils, copied from the test-suite sources
 
-  boost::shared_ptr<YieldTermStructure>
-    makeFlatCurve(const Date& today,
-		  const boost::shared_ptr<Quote>& forward,
-		  const DayCounter& dc) {
+boost::shared_ptr<YieldTermStructure>
+makeFlatCurve(const Date& today,
+	      const boost::shared_ptr<Quote>& forward,
+	      const DayCounter& dc) {
     return boost::shared_ptr<YieldTermStructure>(
-                          new FlatForward(today, Handle<Quote>(forward), dc));
-  }
+	   new FlatForward(today, Handle<Quote>(forward), dc));
+}
   
-  boost::shared_ptr<BlackVolTermStructure> 
-    makeFlatVolatility(const Date& today,
-			const boost::shared_ptr<Quote>& vol,
-			const DayCounter dc) {
+boost::shared_ptr<BlackVolTermStructure> 
+makeFlatVolatility(const Date& today,
+		   const boost::shared_ptr<Quote>& vol,
+		   const DayCounter dc) {
     return boost::shared_ptr<BlackVolTermStructure>(
-         new BlackConstantVol(today, Handle<Quote>(vol), dc));
-  }
+	new BlackConstantVol(today, Handle<Quote>(vol), dc));
+}

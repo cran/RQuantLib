@@ -5,11 +5,15 @@ AmericanOptionImpliedVolatility
                         Option
 BarrierOption           Barrier Option evaluation using Closed-Form
                         solution
+BermudanSwaption        Bermudan swaption valuation using several
+                        short-rate models
 BinaryOption            Binary Option evaluation using Closed-Form
                         solution
 BinaryOptionImpliedVolatility
                         Implied Volatility calculation for Binary
                         Option
+DiscountCurve           Returns the discount curve (with zero rates
+                        and forwards) given times
 EuropeanOption          European Option evaluation using Closed-Form
                         solution
 EuropeanOptionArrays    European Option evaluation using Closed-Form

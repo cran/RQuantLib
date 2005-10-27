@@ -2,7 +2,7 @@
 ##
 ## Copyright 2002 - 2005 Dirk Eddelbuettel <edd@debian.org>
 ##
-## $Id: implied.R,v 1.7 2005/08/07 02:05:07 edd Exp $
+## $Id: implied.R,v 1.8 2005/10/12 03:20:39 edd Exp $
 ##
 ## This file is part of the RQuantLib library for GNU R.
 ## It is made available under the terms of the GNU General Public
@@ -21,7 +21,7 @@
 ## MA 02111-1307, USA
 
 ## also dumps core (0.3.7)
-## no longer 0.3.9 and 0.3.10 with g++ 3.4/4.0
+## no longer under 0.3.9 and 0.3.10 with g++ 3.4/4.0
 EuropeanOptionImpliedVolatility <-
   function(type, value, underlying, strike, dividendYield,
            riskFreeRate, maturity, volatility) {
@@ -46,7 +46,7 @@ EuropeanOptionImpliedVolatility.default <-
 }
 
 # also dumps core (0.3.7)
-## no longer 0.3.9 and 0.3.10 with g++ 3.4/4.0
+## no longer under 0.3.9 and 0.3.10 with g++ 3.4/4.0
 AmericanOptionImpliedVolatility <-
   function(type, value, underlying, strike, dividendYield, riskFreeRate,
            maturity, volatility, timeSteps=150, gridPoints=151) {
@@ -64,6 +64,8 @@ AmericanOptionImpliedVolatility.default <-
                     dividendYield=as.double(dividendYield),
                     riskFreeRate=as.double(riskFreeRate),
                     maturity=as.double(maturity),
+
+
                     volatility=as.double(volatility),
                     timeSteps=as.integer(timeSteps),
                     gridPoints=as.integer(gridPoints)),

@@ -2,7 +2,7 @@
 //
 // Copyright 2002, 2003, 2004, 2005 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: barrier_binary.cc,v 1.9 2005/08/07 02:00:54 edd Exp $
+// $Id: barrier_binary.cpp,v 1.10 2005/10/12 03:52:20 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -22,15 +22,9 @@
 
 // NB can be build standalone as   PKG_LIBS=-lQuantLib R CMD SHLIB RQuantLib.cc
 
-#include <ql/quantlib.hpp>	// make QuantLib known
+#include "rquantlib.hpp"
 
-using namespace QuantLib;
-
-extern "C" {
-
-#include "rquantlib.h"
-
-  SEXP QL_BinaryOption(SEXP optionParameters) {
+RcppExport  SEXP QL_BinaryOption(SEXP optionParameters) {
 
     const int nret = 8;		// dimension of return list
 
@@ -51,7 +45,7 @@ extern "C" {
     double cashPayoff = REAL(getListElement(optionParameters, 
 					    "cashPayoff"))[0];
 
-    Option::Type optionType;
+    Option::Type optionType=Option::Call;
     if (!strcmp(type, "call")) {
       optionType = Option::Call;
     } else if (!strcmp(type, "put")) {
@@ -115,11 +109,11 @@ extern "C" {
 
     UNPROTECT(2);
     return(rl);
-  }
+}
 
-  // dumped core when we tried last
-  // no longer under 0.3.10 and g++ 4.0.1 (Aug 2005)
-  SEXP QL_BinaryOptionImpliedVolatility(SEXP optionParameters) {
+// dumped core when we tried last
+// no longer under 0.3.10 and g++ 4.0.1 (Aug 2005)
+RcppExport  SEXP QL_BinaryOptionImpliedVolatility(SEXP optionParameters) {
     const int nret = 2;		// dimension of return list
     char *type = CHAR(STRING_ELT(getListElement(optionParameters, "type"),0));
     double value = REAL(getListElement(optionParameters, "value"))[0];
@@ -134,7 +128,7 @@ extern "C" {
     double volatility = REAL(getListElement(optionParameters,"volatility"))[0];
     double cashPayoff = REAL(getListElement(optionParameters,"cashPayoff"))[0];
 
-    Option::Type optionType;
+    Option::Type optionType=Option::Call;
     if (!strcmp(type, "call")) {
       optionType = Option::Call;
     } else if (!strcmp(type, "put")) {
@@ -153,11 +147,11 @@ extern "C" {
     boost::shared_ptr<YieldTermStructure> rTS = makeFlatCurve(today,rRate,dc);
     boost::shared_ptr<SimpleQuote> vol(new SimpleQuote(0.0));
     boost::shared_ptr<BlackVolTermStructure> volTS = 
-      makeFlatVolatility(today, vol, dc);
+	makeFlatVolatility(today, vol, dc);
     boost::shared_ptr<PricingEngine> engine(new AnalyticEuropeanEngine);
 
     boost::shared_ptr<StrikedTypePayoff> 
-      payoff(new CashOrNothingPayoff(optionType, strike, cashPayoff));
+	payoff(new CashOrNothingPayoff(optionType, strike, cashPayoff));
     Date exDate = today + length;
 
     boost::shared_ptr<Exercise> exercise(new EuropeanExercise(exDate));
@@ -169,9 +163,9 @@ extern "C" {
 
     boost::shared_ptr<BlackScholesProcess> 
       stochProcess(new BlackScholesProcess(Handle<Quote>(spot),
-					   Handle<YieldTermStructure>(qTS),
-					   Handle<YieldTermStructure>(rTS),
-					   Handle<BlackVolTermStructure>(volTS)));
+				Handle<YieldTermStructure>(qTS),
+				Handle<YieldTermStructure>(rTS),
+				Handle<BlackVolTermStructure>(volTS)));
 
     VanillaOption opt(stochProcess, payoff, exercise, engine);
 
@@ -183,9 +177,9 @@ extern "C" {
     setAttrib(rl, R_NamesSymbol, nm);
     UNPROTECT(2);
     return(rl);
-  }
+}
 
-  SEXP QL_BarrierOption(SEXP optionParameters) {
+RcppExport  SEXP QL_BarrierOption(SEXP optionParameters) {
 
     const int nret = 8;		// dimension of return list
 
@@ -208,7 +202,7 @@ extern "C" {
 					 "barrier"))[0];
     double rebate = REAL(getListElement(optionParameters, 
 					"rebate"))[0];
-    Barrier::Type barrierType;
+    Barrier::Type barrierType=Barrier::DownIn;
     if (!strcmp(barrType, "downin")) {
       barrierType = Barrier::DownIn;
     } else if (!strcmp(barrType, "upin")) {
@@ -220,7 +214,7 @@ extern "C" {
     } else {
       error("Unexpected barrier type %s, aborting\n", barrType);
     }
-    Option::Type optionType;
+    Option::Type optionType=Option::Call;
     if (!strcmp(type, "call")) {
       optionType = Option::Call;
     } else if (!strcmp(type, "put")) {
@@ -260,13 +254,13 @@ extern "C" {
                 	Handle<YieldTermStructure>(rTS),
                 	Handle<BlackVolTermStructure>(volTS)));
 
-    Size timeSteps = 1;
-    bool antitheticVariate = false;
-    bool controlVariate = false;
-    Size requiredSamples = 10000;
-    double requiredTolerance = 0.02;
-    Size maxSamples = 1000000;
-    bool isBiased = false;
+    // Size timeSteps = 1;
+    // bool antitheticVariate = false;
+    // bool controlVariate = false;
+    // Size requiredSamples = 10000;
+    // double requiredTolerance = 0.02;
+    // Size maxSamples = 1000000;
+    // bool isBiased = false;
 
     boost::shared_ptr<PricingEngine> engine(new AnalyticBarrierEngine);
 
@@ -279,7 +273,7 @@ extern "C" {
 				//mcEngine);
 				engine);
 
-    double calculated = barrierOption.NPV();
+    // double calculated = barrierOption.NPV();
     SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
     SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
 
@@ -297,5 +291,5 @@ extern "C" {
     setAttrib(rl, R_NamesSymbol, nm);
     UNPROTECT(2);
     return(rl);
-  }
 }
+
