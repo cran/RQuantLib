@@ -1,3 +1,24 @@
+2006-01-10  Dirk Eddelbuettel  <edd@debian.org>
+
+	* Release 0.2.1 with thanks to Dominick
+
+2006-01-10  Dominick Samperi <dsamperi@DecisionSynergy.com>
+
+	* DESCRIPTION: Fixed author in 
+
+	* man/DiscountCurve.Rd: Fixed typo and commented about rates
+	  needing to be fractions in fixed formating in DiscountCurve example
+
+	* src/Rcpp.{hpp,cpp},src/{curves,discount,bermudan}.cpp: 
+	  Various changes
+	
+2005-10-27  Dominick Samperi <dsamperi@DecisionSynergy.com>
+
+	* src/Rcpp.{hpp,cpp}: Some minor adjustments. Moved matrix and
+	  vector indexing into header file.
+	
+	* src/rquantlib.hpp: Added ifdef to protect against multiple includes.
+
 2005-10-26  Dirk Eddelbuettel  <edd@debian.org>
 
 	* Preparing release 0.2.0 regrouping the numerous changes -- 

@@ -2,7 +2,7 @@
 //
 // Copyright 2005 Dominick Samperi
 //
-// $Id: curves.cpp,v 1.1 2005/10/12 03:54:14 edd Exp $
+// $Id: curves.cpp,v 1.2 2006/01/10 22:19:34 dsamperi Exp $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -55,8 +55,9 @@ ObservableDB::ObservableDB() {
 boost::shared_ptr<RateHelper> ObservableDB::getRateHelper(string& ticker, Rate r) {
     RQLMapIterator iter = db_.find(ticker);
     if(iter == db_.end()) {
-       error("Unknown curve construction instrument: %s\n",ticker.c_str());
-       // return NULL_RateHelper;
+	ostringstream oss;
+	oss << "Unknown curve construction instrument: " << ticker;
+	throw std::range_error(oss.str());
     }
     RQLObservable *p = iter->second;
     RQLObservableType type = p->getType();

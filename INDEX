@@ -12,8 +12,8 @@ BinaryOption            Binary Option evaluation using Closed-Form
 BinaryOptionImpliedVolatility
                         Implied Volatility calculation for Binary
                         Option
-DiscountCurve           Returns the discount curve (with zero rates
-                        and forwards) given times
+DiscountCurve           Returns the discount curve (with zero rates and
+                        forwards) given times
 EuropeanOption          European Option evaluation using Closed-Form
                         solution
 EuropeanOptionArrays    European Option evaluation using Closed-Form

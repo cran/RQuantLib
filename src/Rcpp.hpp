@@ -1,8 +1,6 @@
-// Rcpp.hpp
+// Rcpp.hpp -- Rcpp 1.1
 //
 // Copyright (C) 2005  Dominick Samperi
-//
-// $Id: Rcpp.hpp,v 1.3 2005/10/14 05:23:59 dsamperi Exp $ 
 //
 // This program is part of the Rcpp R/C++ interface library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -14,16 +12,20 @@
 // PURPOSE.  See the GNU General Public License for more
 // details.
 
+#ifndef Rcpp_hpp
+#define Rcpp_hpp
+
 #ifdef USING_QUANTLIB
 #include <ql/quantlib.hpp>
 using namespace QuantLib;
 #else
-#include <stdexcept>
 #include <sstream>
 #include <string>
 #include <list>
 #include <map>
 #endif
+
+#include <stdexcept>
 
 using namespace std;
 
@@ -35,6 +37,8 @@ using namespace std;
 #else
 #define RcppExport extern "C"
 #endif
+
+char *copyMessageToR(const char* const mesg);
 
 #ifndef USING_QUANTLIB
 
@@ -72,26 +76,32 @@ class RcppNamedList {
 public:
     RcppNamedList(SEXP theList) {
 	if(!isNewList(theList))
-	    error("RcppNamedList: non-list passed to constructor");
+	    throw std::range_error("RcppNamedList: non-list passed to constructor");
         len = length(theList);
         names = getAttrib(theList, R_NamesSymbol);
         namedList = theList;
     }
     string getName(int i) {
-        if(i < 0 || i >= len)
-            error("RcppNamedList::getName: index out of bounds: %d", i);
+        if(i < 0 || i >= len) {
+	    ostringstream oss;
+	    oss << "RcppNamedList::getName: index out of bounds: " << i;
+	    throw std::range_error(oss.str());
+	}
         return string(CHAR(STRING_ELT(names,i)));
     }
     double getValue(int i) {
-        if(i < 0 || i >= len)
-            error("RcppNamedList::getValue: index out of bounds: %d", i);
+        if(i < 0 || i >= len) {
+	    ostringstream oss;
+	    oss << "RcppNamedList::getValue: index out of bounds: " << i;
+	    throw std::range_error(oss.str());
+	}
 	SEXP elt = VECTOR_ELT(namedList, i);
 	if(isReal(elt))
 	    return REAL(elt)[0];
 	else if(isInteger(elt))
 	    return (double)INTEGER(elt)[0];
 	else
-	    error("RcppNamedList: contains non-numeric value");
+	    throw std::range_error("RcppNamedList: contains non-numeric value");
 	return 0; // never get here
     }
     int getLength() { return len; }
@@ -107,7 +117,14 @@ public:
     RcppVector(SEXP vec);
     RcppVector(int len);
     int getLength() { return len; }
-    T& operator()(int i);
+    inline T& operator()(int i) {
+	if(i < 0 || i >= len) {
+	    ostringstream oss;
+	    oss << "RcppVector: subscript out of range: " << i;
+	    throw std::range_error(oss.str());
+	}
+	return v[i];
+    }
     T *cVector();
 private:
     int len;
@@ -121,7 +138,14 @@ public:
     RcppMatrix(int nx, int ny);
     int getDim1() { return dim1; }
     int getDim2() { return dim2; }
-    T& operator()(int i, int j);
+    inline T& operator()(int i, int j) {
+	if(i < 0 || i >= dim1 || j < 0 || j >= dim2) {
+	    ostringstream oss;
+	    oss << "RcppMatrix: subscripts out of range: " << i << ", " << j;
+	    throw std::range_error(oss.str());
+	}
+	return a[i][j];
+    }
     T **cMatrix();
 private:
     int dim1, dim2;
@@ -149,3 +173,4 @@ private:
     list<pair<string,SEXP> > values;
 };
 
+#endif

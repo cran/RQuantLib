@@ -1,8 +1,6 @@
-// Rcpp.cpp
+// Rcpp.cpp - Rcpp 1.1
 //
 // Copyright (C) 2005  Dominick Samperi
-//
-// $Id: Rcpp.cpp,v 1.3 2005/10/14 05:23:32 dsamperi Exp $
 //
 // This program is part of the Rcpp R/C++ interface library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -18,7 +16,7 @@
 
 RcppParams::RcppParams(SEXP params) {
     if(!isNewList(params))
-	error("RcppParams: non-list passed to constructor");
+	throw std::range_error("RcppParams: non-list passed to constructor");
     int len = length(params);
     SEXP names = getAttrib(params, R_NamesSymbol);
     for(int i = 0; i < len; i++) {
@@ -30,81 +28,107 @@ RcppParams::RcppParams(SEXP params) {
 void RcppParams::checkNames(char *inputNames[], int len) {
     for(int i = 0; i < len; i++) {
 	map<string,int>::iterator iter = pmap.find(inputNames[i]);
-	if(iter == pmap.end())
-	    error("checkNames: missing required parameter %s", inputNames[i]);
+	if(iter == pmap.end()) {
+	    string mesg = "checkNames: missing required parameter ";
+	    throw range_error(mesg+inputNames[i]);
+	}
     }
 }
 
 double RcppParams::getDoubleValue(string name) {
     map<string,int>::iterator iter = pmap.find(name);
-    if(iter == pmap.end())
-	error("getDoubleValue: no such name: %s", name.c_str());
+    if(iter == pmap.end()) {
+	string mesg = "getDoubleValue: no such name: ";
+	throw std::range_error(mesg+name);
+    }
     int posn = iter->second;
     SEXP elt = VECTOR_ELT(_params,posn);
-    if(!isNumeric(elt) || length(elt) != 1)
-	error("getDoubleValue: must be scalar %s", name.c_str());
+    if(!isNumeric(elt) || length(elt) != 1) {
+	string mesg = "getDoubleValue: must be scalar ";
+	throw std::range_error(mesg+name);
+    }
     if(isInteger(elt))
 	return (double)INTEGER(elt)[0];
     else if(isReal(elt))
 	return REAL(elt)[0];
-    else
-	error("getDoubleValue: invalid value for %s", name.c_str());
+    else {
+	string mesg = "getDoubleValue: invalid value for ";
+	throw std::range_error(mesg+name);
+    }
     return 0; // never get here
 }
 
 int RcppParams::getIntValue(string name) {
     map<string,int>::iterator iter = pmap.find(name);
-    if(iter == pmap.end())
-	error("getIntValue: no such name: %s", name.c_str());
+    if(iter == pmap.end()) {
+	string mesg = "getIntValue: no such name: ";
+	throw std::range_error(mesg+name);
+    }
     int posn = iter->second;
     SEXP elt = VECTOR_ELT(_params,posn);
-    if(!isNumeric(elt) || length(elt) != 1)
-	error("getIntValue: must be scalar: %s", name.c_str());
+    if(!isNumeric(elt) || length(elt) != 1) {
+	string mesg = "getIntValue: must be scalar: ";
+	throw std::range_error(mesg+name);
+    }
     if(isInteger(elt))
 	return INTEGER(elt)[0];
     else if(isReal(elt))
 	return (int)REAL(elt)[0];
-    else
-	error("getIntValue: invalid value for: %s", name.c_str());
+    else {
+	string mesg = "getIntValue: invalid value for: ";
+	throw std::range_error(mesg+name);
+    }
     return 0; // never get here
 }
 
 bool RcppParams::getBoolValue(string name) {
     map<string,int>::iterator iter = pmap.find(name);
-    if(iter == pmap.end())
-	error("getBoolValue: no such name: %s", name.c_str());
+    if(iter == pmap.end()) {
+	string mesg = "getBoolValue: no such name: ";
+	throw std::range_error(mesg+name);
+    }
     int posn = iter->second;
     SEXP elt = VECTOR_ELT(_params,posn);
     if(isLogical(elt))
 	return INTEGER(elt)[0];
-    else
-	error("getBoolValue: invalid value for: %s", name.c_str());
+    else {
+	string mesg = "getBoolValue: invalid value for: ";
+	throw std::range_error(mesg+name);
+    }
     return false; // never get here
 }
 
 string RcppParams::getStringValue(string name) {
     map<string,int>::iterator iter = pmap.find(name);
-    if(iter == pmap.end())
-	error("getStringValue: no such name: %s",name.c_str());
+    if(iter == pmap.end()) {
+	string mesg = "getStringValue: no such name: ";
+	throw std::range_error(mesg+name);
+    }
     int posn = iter->second;
     SEXP elt = VECTOR_ELT(_params,posn);
     if(isString(elt))
 		return string(CHAR(STRING_ELT(elt,0)));
-    else
-	error("getStringValue: invalid value for: %s", name.c_str());
+    else {
+	string mesg = "getStringValue: invalid value for: ";
+	throw std::range_error(mesg+name);
+    }
     return ""; // never get here
 }
 
 #ifdef USING_QUANTLIB
 Date RcppParams::getDateValue(string name) {
     map<string,int>::iterator iter = pmap.find(name);
-    if(iter == pmap.end())
-	error("getDateValue: no such name: %s", name.c_str());
+    if(iter == pmap.end()) {
+	string mesg = "getDateValue: no such name: ";
+	throw std::range_error(mesg+name);
+    }
     int posn = iter->second;
     int day=0, month=0, year=0;
     SEXP dateSEXP = VECTOR_ELT(_params, posn);
-    if(!isNumeric(dateSEXP) || length(dateSEXP) != 3)
-	error("getDateValue: invalid date: %s", name.c_str());
+    if(!isNumeric(dateSEXP) || length(dateSEXP) != 3) {
+	string mesg = "getDateValue: invalid date: ";
+	throw std::range_error(mesg+name);
+    }
     if(isInteger(dateSEXP)) {
 	month   = INTEGER(dateSEXP)[0];
 	day   = INTEGER(dateSEXP)[1];
@@ -115,21 +139,27 @@ Date RcppParams::getDateValue(string name) {
 	day   = (int)REAL(dateSEXP)[1];
 	year  = (int)REAL(dateSEXP)[2];
     }
-    else
-	error("getDateValue: invalid value for: %s", name.c_str());
+    else {
+	string mesg = "getDateValue: invalid value for: ";
+	throw std::range_error(mesg+name);
+    }
     Date d(day, (Month)month, year);
     return d;
 }
 #else
 Date RcppParams::getDateValue(string name) {
     map<string,int>::iterator iter = pmap.find(name);
-    if(iter == pmap.end())
-	error("getDateValue: no such name: %s", name.c_str());
+    if(iter == pmap.end()) {
+	string mesg = "getDateValue: no such name: ";
+	throw std::range_error(mesg+name);
+    }
     int posn = iter->second;
     int day=0, month=0, year=0;
     SEXP dateSEXP = VECTOR_ELT(_params, posn);
-    if(!isNumeric(dateSEXP) || length(dateSEXP) != 3)
-	error("getDateValue: invalid date: %s", name.c_str());
+    if(!isNumeric(dateSEXP) || length(dateSEXP) != 3) {
+	string mesg = "getDateValue: invalid date: ";
+	throw std::range_error(mesg+name);
+    }
     if(isInteger(dateSEXP)) {
 	month   = INTEGER(dateSEXP)[0];
 	day   = INTEGER(dateSEXP)[1];
@@ -140,8 +170,10 @@ Date RcppParams::getDateValue(string name) {
 	day   = (int)REAL(dateSEXP)[1];
 	year  = (int)REAL(dateSEXP)[2];
     }
-    else
-	error("getDateValue: invalid value for: %s", name.c_str());
+    else {
+	string mesg = "getDateValue: invalid value for: ";
+	throw std::range_error(mesg+name);
+    }
     Date d(day, month, year);
     return d;
 }
@@ -152,16 +184,18 @@ template <typename T>
 RcppVector<T>::RcppVector(SEXP vec) {
     int i;
 
-    // This test lets a matrix pass for a vector. Don't know how to
-    // enforce 1D. The dim attribute is garbage for vectors, and
-    // isVector(matrix) is true, even though is.vector(matrix) is
-    // false in R.
-    if(!isVector(vec) || !isNumeric(vec))
-	error("RcppVector: invalid vector");
+    // The function isVector returns TRUE for vectors AND
+    // matrices, so it does not distinguish. We could
+    // check the dim attribute here to be sure that it
+    // is not present (i.e., dimAttr == R_NilValue, not 0!).
+    // But it is easier to simply check if it is set via
+    // isMatrix (in which case we don't have a vector).
+    if(!isNumeric(vec) || isMatrix(vec) || isLogical(vec))
+	throw std::range_error("RcppVector: invalid numeric vector in constructor");
 
     len = length(vec);
     if(len == 0)
-	error("RcppVector: null vector in constructor");
+	throw std::range_error("RcppVector: null vector in constructor");
     int isInt = isInteger(vec);
     v = (T *)R_alloc(len, sizeof(T));
     if(isInt) {
@@ -191,19 +225,16 @@ T *RcppVector<T>::cVector() {
 }
 
 template <typename T>
-T& RcppVector<T>::operator()(int i) {
-    if(i < 0 || i >= len)
-	error("RcppVector: subscript out of range: %d",i);
-    return v[i];
-}
-
-template <typename T>
 RcppMatrix<T>::RcppMatrix(SEXP mat) {
-    if(!isMatrix(mat))
-	error("RcppMatrix: non-matrix passed to constructor");
+
+    if(!isNumeric(mat) || !isMatrix(mat))
+	throw std::range_error("RcppMatrix: invalid numeric matrix in constructor");
+
+    // Get matrix dimensions
     SEXP dimAttr = getAttrib(mat, R_DimSymbol);
     dim1 = INTEGER(dimAttr)[0];
     dim2 = INTEGER(dimAttr)[1];
+
     // We guard against  the possibility that R might pass an integer matrix.
     // Can be prevented using R code: temp <- as.double(a), dim(temp) <- dim(a)
     int i,j;
@@ -249,13 +280,6 @@ T **RcppMatrix<T>::cMatrix() {
 	for(j=0; j < dim2; j++)
 	    tmp[i][j] = a[i][j];
     return tmp;
-}
-
-template <typename T>
-T& RcppMatrix<T>::operator()(int i, int j) {
-    if(i < 0 || i >= dim1 || j < 0 || j >= dim2)
-	error("RcppMatrix: subscript out of range: %d, %d",i,j);
-    return a[i][j];
 }
 
 // Explicit instantiation (required for external linkage)
@@ -392,7 +416,7 @@ ostringstream& operator<<(ostringstream& os, const Date& d) {
 
 // Dummy Date class implementation when USING_QUANTLIB is not set...
 
-static const char* months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+static char* months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", 
 			       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
 Date::Date(int day, int month, int year) throw(range_error) {
@@ -410,3 +434,22 @@ ostringstream& operator<<(ostringstream& os, const Date& d) {
     return os;
 }
 #endif
+
+// This function copies the message string to R-managed memory so the
+// original C++ message object can be destroyed (when it goes out of
+// scope before returning to R).
+//
+// Thanks to Paul Roebuck for pointing out that the exception
+// object's memory will not be reclaimed if error() is called inside of
+// a catch block (due to a setjmp() call), and for suggesting the
+// work-around.
+char *copyMessageToR(const char* const mesg) {
+    char* Rmesg;
+    char* prefix = "Exception: ";
+    void* Rheap = R_alloc(std::strlen(prefix)+std::strlen(mesg)+1,sizeof(char));
+    Rmesg = static_cast<char*>(Rheap);
+    std::strcpy(Rmesg, prefix);
+    std::strcat(Rmesg, mesg);
+    return Rmesg;
+}
+

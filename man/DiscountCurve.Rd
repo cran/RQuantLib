@@ -1,4 +1,4 @@
-% $Id: DiscountCurve.Rd,v 1.1 2005/10/12 03:44:52 edd Exp $
+% $Id: DiscountCurve.Rd,v 1.3 2005/11/04 00:14:11 dsamperi Exp dsamperi $
 \name{DiscountCurve}
 \alias{DiscountCurve}
 \alias{DiscountCurve.default}
@@ -31,7 +31,7 @@ DiscountCurve(params, tsQuotes, times)
     \tabular{ll}{
       \code{flat} \tab rate for a flat yield curve\cr
       \code{d1w}  \tab 1-week deposit rate\cr
-      \code{d1m}  \tab 2-month deposit rate\cr
+      \code{d1m}  \tab 1-month deposit rate\cr
       \code{d3m}  \tab 3-month deposit rate\cr
       \code{d6m}  \tab 6-month deposit rate\cr
       \code{d9m}  \tab 9-month deposit rate\cr
@@ -48,6 +48,7 @@ DiscountCurve(params, tsQuotes, times)
       \code{fra6x9} \tab 6x9 FRA\cr
       \code{fra6x12}\tab 6x12 FRA
     }
+    Here rates are expected as fractions (so 5\% means .05).
     If \code{flat} is specified it must be the first and only item in
     the list. The eight futures correspond to the first eight IMM
     dates. The maturity dates of the instruments specified need not be

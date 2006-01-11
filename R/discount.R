@@ -2,7 +2,7 @@
 ##
 ## Copyright (C) 2005  Dominick Samperi
 ##
-## $Id: discount.R,v 1.1 2005/10/12 03:41:48 edd Exp $
+## $Id: discount.R,v 1.2 2005/11/01 04:34:33 dsamperi Exp $
 ##
 ## This program is part of the RQuantLib library for R (GNU S).
 ## It is made available under the terms of the GNU General Public
@@ -47,30 +47,50 @@ DiscountCurve.default <- function(params, tsQuotes, times) {
   val
 }
 
-plot.DiscountCurve <- function(x,setpar=TRUE,...) {
+plot.DiscountCurve <- function(x,setpar=TRUE,dolegend=TRUE,...) {
   if(setpar) {
       savepar <- par(mfrow=c(3,1))
   }
   if(names(tsQuotes)[1] == "flat") {
     # Don't want to plot noise when we look at a flat yield curve
     plot(c(x$times[1],x$times[length(x$times)]), c(0,.5),type='n',
-         main='forwards (flat)', xlab='time',ylab='forward rate')
+         main='forwards', xlab='time',ylab='forward rate')
     lines(x$times, x$forwards, type='l')
+    if(dolegend) {
+      legend('center','center','flat',bty='n',text.col='red')
+    }
     plot(c(x$times[1],x$times[length(x$times)]), c(0,.5),type='n',
-         main='zero rates (flat)', xlab='time',ylab='zero rate')
+         main='zero rates', xlab='time',ylab='zero rate')
     lines(x$times, x$zerorates, type='l')
+    if(dolegend) {
+      legend('center','center','flat',bty='n',text.col='red')
+    }
   }
   else {
     plot(x$times, x$forwards, type='l',
-         main=paste('forwards (',x$params$interpHow,x$params$interpWhat,')'),
-         xlab='time',ylab='fwd rate')
+         main='forwards',xlab='time',ylab='fwd rate')
+    if(dolegend) {
+      legend('center','center',paste(x$params$interpHow, 'discount'),bty='n',
+             text.col='red')
+    }
     plot(x$times, x$zerorates, type='l',
-         main=paste('zero rate (',x$params$interpHow,x$params$interpWhat,')'),
-         xlab='time',ylab='zero rate')
+         main='zero rates',xlab='time',ylab='zero rate')
+    if(dolegend) {
+      legend('center','center',paste(x$params$interpHow, 'discount'),bty='n',
+             text.col='red')
+    }
   }
   plot(x$times, x$discounts, type='l',
-       main=paste('discounts (',x$params$interpHow,x$params$interpWhat,')'),
-       xlab='time',ylab='discount')
+       main='discounts',xlab='time',ylab='discount')
+  if(dolegend) {
+    if(names(tsQuotes)[1] == "flat") {
+      legend('center','center','flat',bty='n',text.col='red')
+    }
+    else {
+      legend('center','center',paste(x$params$interpHow, 'discount'),bty='n',
+             text.col='red')
+    }
+  }
   if(setpar) {
       par(savepar)
   }

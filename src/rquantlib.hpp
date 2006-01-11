@@ -5,7 +5,7 @@
 // Copyright 2002, 2003, 2004, 2005  Dirk Eddelbuettel <edd@debian.org>
 // Copyright 2005  Dominick Samperi
 //
-// $Id: rquantlib.hpp,v 1.6 2005/10/12 03:59:56 edd Exp $
+// $Id: rquantlib.hpp,v 1.7 2005/10/27 04:21:40 dsamperi Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,9 +21,13 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+#ifndef rquantlib_hpp
+#define rquantlib_hpp
+
 #include <ql/quantlib.hpp>
 #include <R.h>
 #include <Rinternals.h>
+
 #include "Rcpp.hpp"
 
 #define NULL_RateHelper (boost::shared_ptr<RateHelper>)Null<boost::shared_ptr<RateHelper> >()
@@ -112,3 +116,4 @@ makeOption(const boost::shared_ptr<StrikedTypePayoff>& payoff,
 	   Size binomialSteps=128,
 	   Size samples=100); 
 
+#endif

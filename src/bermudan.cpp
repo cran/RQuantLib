@@ -2,7 +2,7 @@
 //
 // Copyright 2005 Dominick Samperi
 //
-// $Id: bermudan.cpp,v 1.1 2005/10/12 03:53:42 edd Exp $
+// $Id: bermudan.cpp,v 1.2 2006/01/10 22:18:24 dsamperi Exp $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -45,6 +45,8 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 				       SEXP maturities, SEXP tenors, 
 				       SEXP vols) {
     SEXP rl=0;
+    char* exceptionMesg=NULL;
+
     try {
 
 	// Parameter wrapper classes.
@@ -109,7 +111,7 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 		boost::shared_ptr<RateHelper> rh = 
 		    ObservableDB::instance().getRateHelper(name, val);
 		if(rh == NULL_RateHelper)
-		    error("Unknown rate in getRateHelper");
+		    throw std::range_error("Unknown rate in getRateHelper");
 		curveInput.push_back(rh);
 	    }
 	    boost::shared_ptr<YieldTermStructure> ts =
@@ -138,8 +140,12 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 	swapLengths = myLengths.cVector();
 
 	if(numRows*numCols != dim1*dim2) {
-	    error("Swaption vol matrix size (%d x %d) incompatible\nwith size of swaption maturity vector (%d) and swap tenor vector (%d)\n", dim1, dim2,
-		  numRows, numCols);
+	    ostringstream oss;
+	    oss << "Swaption vol matrix size (" << dim1 << " x " << dim2 << ") "
+		<< "incompatible\nwith size of swaption maturity vector ("
+		<< numRows << ") and swap tenor vector ("
+		<< numCols << ")";
+	    throw std::range_error(oss.str());
 	}
 
 	// Create dummy swap to get schedules.
@@ -314,13 +320,16 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 	    rl = rs.getReturnList();
 	}
 	else {
-	    error("Unknown method in BermudanSwaption\n");
+	    throw std::range_error("Unknown method in BermudanSwaption\n");
 	}
-    } catch(std::exception& e) {
-	error("Exception: %s\n", e.what());
+    } catch(std::exception& ex) {
+	exceptionMesg = copyMessageToR(ex.what());
     } catch(...) {
-	error("Exception: unknown reason\n");
+	exceptionMesg = copyMessageToR("unknown reason");
     }
+
+    if(exceptionMesg != NULL)
+	error(exceptionMesg);
 
     return rl;
 }

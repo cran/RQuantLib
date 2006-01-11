@@ -2,7 +2,7 @@
 //
 // Copyright (C) 2005  Dominick Samperi
 //
-// $Id: discount.cpp,v 1.1 2005/10/12 03:53:57 edd Exp $
+// $Id: discount.cpp,v 1.3 2006/01/10 23:46:52 dsamperi Exp $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -19,6 +19,7 @@
 RcppExport SEXP QL_DiscountCurve(SEXP params, SEXP tsQuotes,
 				     SEXP times) {
     SEXP rl=0;
+    char* exceptionMesg=NULL;
 
     try {
 
@@ -75,7 +76,7 @@ RcppExport SEXP QL_DiscountCurve(SEXP params, SEXP tsQuotes,
 		boost::shared_ptr<RateHelper> rh = 
 		    ObservableDB::instance().getRateHelper(name, val);
 		if(rh == NULL_RateHelper)
-		    error("Unknown rate in getRateHelper");
+		    throw std::range_error("Unknown rate in getRateHelper");
 		curveInput.push_back(rh);
 	    }
 	    boost::shared_ptr<YieldTermStructure> ts =
@@ -106,11 +107,14 @@ RcppExport SEXP QL_DiscountCurve(SEXP params, SEXP tsQuotes,
 	rs.add("params", params, false);
 	rl = rs.getReturnList();
 
-    } catch(std::exception& e) {
-	error("Exception: %s\n", e.what());
+    } catch(std::exception& ex) {
+	exceptionMesg = copyMessageToR(ex.what());
     } catch(...) {
-	error("Exception: unknown reason\n");
+	exceptionMesg = copyMessageToR("unknown reason");
     }
+
+    if(exceptionMesg != NULL)
+	error(exceptionMesg);
     
     return rl;
 }
