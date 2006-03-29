@@ -1,0 +1,29 @@
+# Project: RcppTemplate
+# Makefile created by Dev-C++ 4.9.9.2
+# modified bei UL in order to fit mingw and R requirements, 16.09.2005
+
+#This include causes many warnings and other issues, and doesn't seem to be needed!
+#include $(RHOME)/src/gnuwin32/MkRules
+
+SRC = Rcpp.cpp
+OBJ = Rcpp.o
+LINKOBJ  = Rcpp.o $(RES)
+DLLLIBS = -s -L"$(RHOME)/src/gnuwin32" -lR --no-export-all-symbols --add-stdcall-alias
+LIB  = libRcpp.a
+CXXFLAGS = -I"$(RHOME)/include" -I"$(RHOME)/src/include" -Wall -O2 $(CPPFLAGS)
+RM = rm -f
+
+.PHONY: all clean
+
+all: $(LIB)
+
+clean:
+	${RM} $(LINKOBJ) $(LIB)
+
+$(OBJ): $(SRC)
+	$(CXX) -c $(SRC) -o $(OBJ) $(CXXFLAGS)
+	
+$(LIB): $(LINKOBJ)
+	ar r $(LIB) $(OBJ)
+	ranlib $(LIB)
+	rm $(OBJ)

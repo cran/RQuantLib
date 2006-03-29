@@ -4,7 +4,7 @@
 # Greatly simplified thanks to quantlib-config
 # Another contribution by Kurt Hornik gratefully acknowledged
 #
-# $Id: configure.in,v 1.8 2006/01/10 23:45:25 edd Exp $
+# $Id: configure.in,v 1.11 2006/03/30 00:17:32 dsamperi Exp $
 
 # require at least autoconf 2.13
 # requirements inflation: now require 2.50
@@ -26,6 +26,7 @@ if test -z "${R_HOME}"; then
     exit 1
 fi
 CXX=`${R_HOME}/bin/R CMD config CXX`
+CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
 
 AC_PROG_CXX
 if test "${GXX}" = yes; then
@@ -49,9 +50,16 @@ if test x"${QUANTLIB}" == x"yes" ; then
     pkg_cxxflags=`quantlib-config --cflags`
     pkg_libs=`quantlib-config --libs`
     pkg_version=`quantlib-config --version`
-    AC_SUBST([CPPFLAGS],["${CPPFLAGS} -DUSING_QUANTLIB"])
-    AC_SUBST([CPPFLAGS],["${CPPFLAGS} $pkg_cxxflags"])
+    AC_SUBST([CXXFLAGS],["${CXXFLAGS} -DUSING_QUANTLIB"])
+    AC_SUBST([CXXFLAGS],["${CXXFLAGS} $pkg_cxxflags"])
+    AC_SUBST([CXXFLAGS],["${CXXFLAGS} -I../RcppSrc"])
+    AC_SUBST([LDFLAGS],["${LDFLAGS} -L../RcppSrc -lRcpp"])
     AC_SUBST([LDFLAGS],["${LDFLAGS} $pkg_libs"])
+    echo "Building libRcpp.a in RcppSrc..."
+    cd RcppSrc
+    make RHOME=${R_HOME} CPPFLAGS=-DUSING_QUANTLIB
+    cd ..
+    cp RcppSrc/Rcpp-version.txt inst
 else
     echo "
   Your installation does not appear to have QuantLib installed as the
@@ -73,7 +81,7 @@ AC_ARG_WITH([boost-include],
             [ql_boost_include_path=$withval],
             [ql_boost_include_path=""])
 if test [ -n "$ql_boost_include_path" ] ; then
-   AC_SUBST([CPPFLAGS],["${CPPFLAGS} -I${ql_boost_include_path}"])
+   AC_SUBST([CXXFLAGS],["${CXXFLAGS} -I${ql_boost_include_path}"])
 fi
 AC_ARG_WITH([boost-lib],
             AC_HELP_STRING([--with-boost-lib=LIB_PATH],
@@ -137,7 +145,7 @@ case ${pkg_version} in
      ;;
 esac
 
-AC_SUBST(CPPFLAGS)
+AC_SUBST(CXXFLAGS)
 AC_SUBST(LDFLAGS)
 AC_OUTPUT(src/Makevars)
 echo "Completed configuration and ready to build."

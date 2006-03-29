@@ -1,0 +1,7 @@
+echo "Building libRcpp.a in RcppSrc..."
+R_HOME=`R RHOME`
+cd RcppSrc
+make RHOME=$R_HOME CPPFLAGS="-I\"${QUANTLIB_ROOT}\" -DUSING_QUANTLIB" -f Makefile.win
+cd ..
+cp RcppSrc/Rcpp-version.txt inst
+

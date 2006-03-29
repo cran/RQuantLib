@@ -2,7 +2,7 @@
 //
 // Copyright (C) 2005  Dominick Samperi
 //
-// $Id: discount.cpp,v 1.3 2006/01/10 23:46:52 dsamperi Exp $
+// $Id: discount.cpp,v 1.4 2006/03/23 21:57:42 dsamperi Exp $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -33,7 +33,6 @@ RcppExport SEXP QL_DiscountCurve(SEXP params, SEXP tsQuotes,
 	Date settlementDate = rparam.getDateValue("settleDate");
 	RQLContext::instance().settleDate = settlementDate;
 	Settings::instance().evaluationDate() = todaysDate;
-
 	string firstQuoteName = tslist.getName(0);
 
 	double dt = rparam.getDoubleValue("dt");

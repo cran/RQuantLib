@@ -23,4 +23,6 @@ done
 find . -name \*~ | xargs rm -f
 #rm -vf configure 
 rm -vf config.log config.status
+rm -f RcppSrc/*.a RcppSrc/*.o RcppSrc/config.*
+rm -f inst/Rcpp-version.txt
 exit 0

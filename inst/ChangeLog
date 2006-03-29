@@ -1,17 +1,26 @@
+2006-03-23  Dominick Samperi  <djsamperi@DecisionSynergy.com>
+
+	* configure.in, configure.win, 
+	  inst/lib/Makefile, inst/lib/Makefile.win,
+	  src/Makefile, src/Makefile.win,
+	  cleanup: modified to support use of RcppTemplate V2.2.
+          RQuantLib shared library (or DLL) is created by linking
+          against RcppSrc/libRcpp.a.
+	  Tested against QuantLib 0.3.12.
+
+	* Rcpp.{cpp,hpp}: added latest versions from RcppTemplate package.
+
 2006-01-10  Dirk Eddelbuettel  <edd@debian.org>
 
 	* Release 0.2.1 with thanks to Dominick
 
 2006-01-10  Dominick Samperi <dsamperi@DecisionSynergy.com>
 
-	* DESCRIPTION: Fixed author in 
-
-	* man/DiscountCurve.Rd: Fixed typo and commented about rates
+	* man/DiscountCurve.Rd: Fixed typo and commented out rates
 	  needing to be fractions in fixed formating in DiscountCurve example
 
 	* src/Rcpp.{hpp,cpp},src/{curves,discount,bermudan}.cpp: 
-	  Various changes
-	
+	  modified to throw exceptions instead of calling R's error() function.	  
 2005-10-27  Dominick Samperi <dsamperi@DecisionSynergy.com>
 
 	* src/Rcpp.{hpp,cpp}: Some minor adjustments. Moved matrix and
