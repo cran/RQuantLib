@@ -1,4 +1,4 @@
-% $Id: DiscountCurve.Rd,v 1.3 2005/11/04 00:14:11 dsamperi Exp dsamperi $
+% $Id: DiscountCurve.Rd,v 1.4 2006/07/20 02:43:26 dsamperi Exp $
 \name{DiscountCurve}
 \alias{DiscountCurve}
 \alias{DiscountCurve.default}
@@ -111,8 +111,8 @@ DiscountCurve(params, tsQuotes, times)
 savepar <- par(mfrow=c(3,3))
 
 # This data is taken from sample code shipped with QuantLib 0.3.10.
-params <- list(tradeDate=c(2, 15, 2002),
-               settleDate=c(2, 19, 2002),
+params <- list(tradeDate=as.Date('2002-2-15'),
+               settleDate=as.Date('2002-2-19'),
                dt=.25,
                interpWhat="discount",
                interpHow="loglinear")

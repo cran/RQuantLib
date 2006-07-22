@@ -1,9 +1,9 @@
 
 // RQuantLib -- R interface to the QuantLib libraries
 //
-// Copyright 2002, 2003, 2004, 2005 Dirk Eddelbuettel <edd@debian.org>
+// Copyright 2002-2006 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: utils.cpp,v 1.10 2005/10/13 15:43:26 dsamperi Exp $
+// $Id: utils.cpp,v 1.12 2006/04/15 21:13:28 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -22,32 +22,6 @@
 // MA 02111-1307, USA
 
 #include "rquantlib.hpp"
-
-// R interface utils, with thanks to Doug Bates
-// simple helper function to insert "labelled" element into list
-void insertListElement(SEXP &list, SEXP &names,
-		       const int pos, const double value, 
-		       const char *label) {
-    SEXP vec = PROTECT(allocVector(REALSXP, 1));
-    REAL(vec)[0] = value; 
-    SET_VECTOR_ELT(list, pos, vec);
-    SET_STRING_ELT(names, pos, mkChar(label));
-    UNPROTECT(1);
-}
-
-// get the list element named str, or return NULL 
-// courtesy of the R Exts manual, and the nls package
-SEXP getListElement(SEXP list, char *str) {
-    SEXP elmt = R_NilValue, names = getAttrib(list, R_NamesSymbol);
-    int i;
-
-    for (i = 0; i < length(list); i++)
-	if(strcmp(CHAR(STRING_ELT(names, i)), str) == 0) {
-	    elmt = VECTOR_ELT(list, i);
-	    break;
-	}
-    return elmt;
-}
 
 boost::shared_ptr<VanillaOption>
 makeOption(const boost::shared_ptr<StrikedTypePayoff>& payoff,

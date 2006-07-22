@@ -2,7 +2,7 @@
 //
 // Copyright (C) 2005  Dominick Samperi
 //
-// $Id: discount.cpp,v 1.4 2006/03/23 21:57:42 dsamperi Exp $
+// $Id: discount.cpp,v 1.5 2006/07/22 14:13:04 dsamperi Exp $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -18,7 +18,7 @@
 
 RcppExport SEXP QL_DiscountCurve(SEXP params, SEXP tsQuotes,
 				     SEXP times) {
-    SEXP rl=0;
+    SEXP rl=R_NilValue;
     char* exceptionMesg=NULL;
 
     try {

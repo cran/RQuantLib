@@ -1,4 +1,4 @@
-// Rcpp.cpp: Part of the R/C++ interface class library, Version 2.0
+// Rcpp.cpp: Part of the R/C++ interface class library, Version 4.2
 //
 // Copyright (C) 2005-2006 Dominick Samperi
 //
@@ -36,6 +36,77 @@ void RcppParams::checkNames(char *inputNames[], int len) {
 	    string mesg = "checkNames: missing required parameter ";
 	    throw range_error(mesg+inputNames[i]);
 	}
+    }
+}
+
+RcppFrame::RcppFrame(SEXP df) {
+    if(!isNewList(df))
+	throw std::range_error("RcppFrame::RcppFrame: invalid data frame.");
+    int ncol = length(df);
+    SEXP names = getAttrib(df, R_NamesSymbol);
+    colNames_.resize(ncol);
+    SEXP colData = VECTOR_ELT(df,0); // First column of data.
+    int nrow = length(colData);
+    if(nrow == 0)
+	throw std::range_error("RcppFrame::RcppFrame: zero lenth column.");
+
+    // Allocate storage for table.
+    table.resize(nrow);
+    for(int r = 0; r < nrow; r++)
+	table[r].resize(ncol);
+    
+    for(int i=0; i < ncol; i++) {
+	colNames_[i] = string(CHAR(STRING_ELT(names,i)));
+	SEXP colData = VECTOR_ELT(df,i);
+	if(!isVector(colData) || length(colData) != nrow)
+	    throw std::range_error("RcppFrame::RcppFrame: invalid column.");
+
+	// Check for Date class. Currently R stores the date ordinal in a
+	// real value. We check for Date under both Real and Integer values
+	// as insurance against future changes.
+	SEXP classname = getAttrib(colData, R_ClassSymbol);
+	bool isDateClass = (strcmp(CHAR(STRING_ELT(classname,0)),"Date") == 0);
+
+	if(isReal(colData)) {
+	    if(isDateClass) {
+		for(int j=0; j < nrow; j++) // Column of Date's
+		    table[j][i].setDateValue(RcppDate((int)REAL(colData)[j]));
+	    }
+	    else // Column of REAL's
+		for(int j=0; j < nrow; j++)
+		    table[j][i].setDoubleValue(REAL(colData)[j]);
+	}
+	else if(isInteger(colData)) {
+	    if(isDateClass) {
+		for(int j=0; j < nrow; j++) // Column of Date's
+		    table[j][i].setDateValue(RcppDate(INTEGER(colData)[j]));
+	    }
+	    else
+		for(int j=0; j < nrow; j++)
+		    table[j][i].setIntValue(INTEGER(colData)[j]);
+	}
+	else if(isString(colData)) { // Non-factor string column
+	    for(int j=0; j < nrow; j++)
+		table[j][i].setStringValue(string(CHAR(STRING_ELT(colData,j))));
+	}
+	else if (isFactor(colData)) { // Factor column.
+	    SEXP names = getAttrib(colData, R_LevelsSymbol);
+	    int numLevels = length(names);
+	    string *levelNames = new string[numLevels];
+	    for(int k=0; k < numLevels; k++)
+		levelNames[k] = string(CHAR(STRING_ELT(names,k)));
+	    for(int j=0; j < nrow; j++)
+		table[j][i].setFactorValue(levelNames, numLevels,
+					   INTEGER(colData)[j]);
+	    delete [] levelNames;
+	}
+	else if(isLogical(colData)) {
+	    for(int j=0; j < nrow; j++) {
+		table[j][i].setLogicalValue(INTEGER(colData)[j]);
+	    }
+	}
+	else
+	    throw std::range_error("RcppFrame::RcppFrame: unsupported data frame column type.");
     }
 }
 
@@ -119,35 +190,55 @@ string RcppParams::getStringValue(string name) {
     return ""; // never get here
 }
 
-Date RcppParams::getDateValue(string name) {
+RcppDate RcppParams::getDateValue(string name) {
     map<string,int>::iterator iter = pmap.find(name);
     if(iter == pmap.end()) {
 	string mesg = "getDateValue: no such name: ";
 	throw std::range_error(mesg+name);
     }
     int posn = iter->second;
-    int day=0, month=0, year=0;
-    SEXP dateSEXP = VECTOR_ELT(_params, posn);
-    if(!isNumeric(dateSEXP) || length(dateSEXP) != 3) {
-	string mesg = "getDateValue: invalid date: ";
+    SEXP elt = VECTOR_ELT(_params,posn);
+    if(!isNumeric(elt) || length(elt) != 1) {
+	string mesg = "getDateValue: invalide date: ";
 	throw std::range_error(mesg+name);
     }
-    if(isInteger(dateSEXP)) {
-	month   = INTEGER(dateSEXP)[0];
-	day   = INTEGER(dateSEXP)[1];
-	year  = INTEGER(dateSEXP)[2];
-    }
-    else if(isReal(dateSEXP)) {
-	month   = (int)REAL(dateSEXP)[0];
-	day   = (int)REAL(dateSEXP)[1];
-	year  = (int)REAL(dateSEXP)[2];
-    }
+
+    int d;
+    if(isReal(elt)) // R stores julian value in a double.
+	d = (int)REAL(elt)[0];
     else {
 	string mesg = "getDateValue: invalid value for: ";
 	throw std::range_error(mesg+name);
     }
-    Date d(day, (Month)month, year);
-    return d;
+    return RcppDate(d);
+}
+
+RcppDateVector::RcppDateVector(SEXP vec) {
+    int i;
+    if(!isNumeric(vec) || isMatrix(vec) || isLogical(vec))
+	throw std::range_error("RcppVector: invalid numeric vector in constructor");
+    int len = length(vec);
+    if(len == 0)
+	throw std::range_error("RcppVector: null vector in constructor");
+    v = new RcppDate[len];
+    for(i = 0; i < len; i++)
+	v[i] = RcppDate((int)REAL(vec)[i]);
+    length = len;
+}
+
+RcppStringVector::RcppStringVector(SEXP vec) {
+    int i;
+    if(isMatrix(vec) || isLogical(vec))
+	throw std::range_error("RcppVector: invalid numeric vector in constructor");
+    if(!isString(vec))
+	throw std::range_error("RcppStringVector: invalid string");
+    int len = length(vec);
+    if(len == 0)
+	throw std::range_error("RcppVector: null vector in constructor");
+    v = new string[len];
+    for(i = 0; i < len; i++)
+	v[i] = string(CHAR(STRING_ELT(vec,i)));
+    length = len;
 }
 
 template <typename T>
@@ -162,17 +253,13 @@ RcppVector<T>::RcppVector(SEXP vec) {
     // isMatrix (in which case we don't have a vector).
     if(!isNumeric(vec) || isMatrix(vec) || isLogical(vec))
 	throw std::range_error("RcppVector: invalid numeric vector in constructor");
-
     len = length(vec);
-    if(len == 0)
-	throw std::range_error("RcppVector: null vector in constructor");
-    int isInt = isInteger(vec);
     v = (T *)R_alloc(len, sizeof(T));
-    if(isInt) {
+    if(isInteger(vec)) {
 	for(i = 0; i < len; i++)
 	    v[i] = (T)(INTEGER(vec)[i]);
     }	
-    else {
+    else if(isReal(vec)) {
 	for(i = 0; i < len; i++)
 	    v[i] = (T)(REAL(vec)[i]);
     }
@@ -189,6 +276,14 @@ RcppVector<T>::RcppVector(int _len) {
 template <typename T>
 T *RcppVector<T>::cVector() {
     T* tmp = (T *)R_alloc(len, sizeof(T));
+    for(int i = 0; i < len; i++)
+	tmp[i] = v[i];
+    return tmp;
+}
+
+template <typename T>
+vector<T> RcppVector<T>::stlVector() {
+    vector<T> tmp(len);
     for(int i = 0; i < len; i++)
 	tmp[i] = v[i];
     return tmp;
@@ -240,6 +335,19 @@ RcppMatrix<T>::RcppMatrix(int _dim1, int _dim2) {
 }
 
 template <typename T>
+vector<vector<T> > RcppMatrix<T>::stlMatrix() {
+    int i,j;
+    vector<vector<T> > temp;
+    for(i = 0; i < dim1; i++) {
+	temp.push_back(vector<T>(dim2));
+    }
+    for(i = 0; i < dim1; i++)
+	for(j = 0; j < dim2; j++)
+	    temp[i][j] = a[i][j];
+    return temp;
+}
+
+template <typename T>
 T **RcppMatrix<T>::cMatrix() {
     int i,j;
     T *m = (T *)R_alloc(dim1*dim2, sizeof(T));
@@ -257,6 +365,17 @@ template class RcppVector<int>;
 template class RcppVector<double>;
 template class RcppMatrix<int>;
 template class RcppMatrix<double>;
+
+void RcppResultSet::add(string name, RcppDate& date) {
+    SEXP value = PROTECT(allocVector(REALSXP, 1));
+    numProtected++;
+    REAL(value)[0] = date.getJDN() - RcppDate::Jan1970Offset;
+    SEXP dateclass = PROTECT(allocVector(STRSXP,1));
+    numProtected++;
+    SET_STRING_ELT(dateclass, 0, mkChar("Date"));
+    setAttrib(value, R_ClassSymbol, dateclass); 
+    values.push_back(make_pair(name, value));
+}
 
 void RcppResultSet::add(string name, double x) {
     SEXP value = PROTECT(allocVector(REALSXP, 1));
@@ -280,6 +399,8 @@ void RcppResultSet::add(string name, string strvalue) {
 }
 
 void RcppResultSet::add(string name, double *vec, int len) {
+    if(vec == 0)
+	throw std::range_error("RcppResultSet::add: NULL double vector");
     SEXP value = PROTECT(allocVector(REALSXP, len));
     numProtected++;
     for(int i = 0; i < len; i++)
@@ -287,7 +408,31 @@ void RcppResultSet::add(string name, double *vec, int len) {
     values.push_back(make_pair(name, value));
 }
 
+void RcppResultSet::add(string name, RcppDateVector& datevec) {
+    SEXP value = PROTECT(allocVector(REALSXP, datevec.size()));
+    numProtected++;
+    for(int i = 0; i < datevec.size(); i++) {
+	REAL(value)[i] = datevec(i).getJDN() - RcppDate::Jan1970Offset;
+    }
+    SEXP dateclass = PROTECT(allocVector(STRSXP,1));
+    numProtected++;
+    SET_STRING_ELT(dateclass, 0, mkChar("Date"));
+    setAttrib(value, R_ClassSymbol, dateclass); 
+    values.push_back(make_pair(name, value));
+}
+
+void RcppResultSet::add(string name, RcppStringVector& stringvec) {
+    int len = (int)stringvec.size();
+    SEXP value = PROTECT(allocVector(STRSXP, len));
+    numProtected++;
+    for(int i = 0; i < len; i++)
+        SET_STRING_ELT(value, i, mkChar(stringvec(i).c_str()));
+    values.push_back(make_pair(name, value));
+}
+
 void RcppResultSet::add(string name, int *vec, int len) {
+    if(vec == 0)
+	throw std::range_error("RcppResultSet::add: NULL int vector");
     SEXP value = PROTECT(allocVector(INTSXP, len));
     numProtected++;
     for(int i = 0; i < len; i++)
@@ -296,6 +441,8 @@ void RcppResultSet::add(string name, int *vec, int len) {
 }
 
 void RcppResultSet::add(string name, double **mat, int nx, int ny) {
+    if(mat == 0)
+	throw std::range_error("RcppResultSet::add: NULL double matrix");
     SEXP value = PROTECT(allocMatrix(REALSXP, nx, ny));
     numProtected++;
     for(int i = 0; i < nx; i++)
@@ -305,11 +452,76 @@ void RcppResultSet::add(string name, double **mat, int nx, int ny) {
 }
 
 void RcppResultSet::add(string name, int **mat, int nx, int ny) {
+    if(mat == 0)
+	throw std::range_error("RcppResultSet::add: NULL int matrix");
     SEXP value = PROTECT(allocMatrix(INTSXP, nx, ny));
     numProtected++;
     for(int i = 0; i < nx; i++)
 	for(int j = 0; j < ny; j++)
 	    INTEGER(value)[i + nx*j] = mat[i][j];
+    values.push_back(make_pair(name, value));
+}
+
+void RcppResultSet::add(string name, vector<string>& vec) {
+    if(vec.size() == 0)
+	throw std::range_error("RcppResultSet::add; zero length vector<string>");
+    int len = (int)vec.size();
+    SEXP value = PROTECT(allocVector(STRSXP, len));
+    numProtected++;
+    for(int i = 0; i < len; i++)
+        SET_STRING_ELT(value, i, mkChar(vec[i].c_str()));
+    values.push_back(make_pair(name, value));
+}
+
+void RcppResultSet::add(string name, vector<int>& vec) {
+    if(vec.size() == 0)
+	throw std::range_error("RcppResultSet::add; zero length vector<int>");
+    int len = (int)vec.size();
+    SEXP value = PROTECT(allocVector(INTSXP, len));
+    numProtected++;
+    for(int i = 0; i < len; i++)
+	INTEGER(value)[i] = vec[i];
+    values.push_back(make_pair(name, value));
+}
+
+void RcppResultSet::add(string name, vector<double>& vec) {
+    if(vec.size() == 0)
+	throw std::range_error("RcppResultSet::add; zero length vector<double>");
+    int len = (int)vec.size();
+    SEXP value = PROTECT(allocVector(REALSXP, len));
+    numProtected++;
+    for(int i = 0; i < len; i++)
+	REAL(value)[i] = vec[i];
+    values.push_back(make_pair(name, value));
+}
+
+void RcppResultSet::add(string name, vector<vector<int> >& mat) {
+    if(mat.size() == 0)
+	throw std::range_error("RcppResultSet::add: zero length vector<vector<int> >");
+    else if(mat[0].size() == 0)
+	throw std::range_error("RcppResultSet::add: no columns in vector<vector<int> >");
+    int nx = (int)mat.size();
+    int ny = (int)mat[0].size();
+    SEXP value = PROTECT(allocMatrix(INTSXP, nx, ny));
+    numProtected++;
+    for(int i = 0; i < nx; i++)
+	for(int j = 0; j < ny; j++)
+	    INTEGER(value)[i + nx*j] = mat[i][j];
+    values.push_back(make_pair(name, value));
+}
+
+void RcppResultSet::add(string name, vector<vector<double> >& mat) {
+    if(mat.size() == 0)
+	throw std::range_error("RcppResultSet::add: zero length vector<vector<double> >");
+    else if(mat[0].size() == 0)
+	throw std::range_error("RcppResultSet::add: no columns in vector<vector<double> >");
+    int nx = (int)mat.size();
+    int ny = (int)mat[0].size();
+    SEXP value = PROTECT(allocMatrix(REALSXP, nx, ny));
+    numProtected++;
+    for(int i = 0; i < nx; i++)
+	for(int j = 0; j < ny; j++)
+	    REAL(value)[i + nx*j] = mat[i][j];
     values.push_back(make_pair(name, value));
 }
 
@@ -357,6 +569,82 @@ void RcppResultSet::add(string name, RcppMatrix<double>& mat) {
     values.push_back(make_pair(name, value));
 }
 
+void RcppResultSet::add(string name, RcppFrame& frame) {
+    vector<string> colNames = frame.getColNames();
+    vector<vector<ColDatum> > table = frame.getTableData();
+    int ncol = colNames.size();
+    int nrow = table.size();
+    SEXP rl = PROTECT(allocVector(VECSXP,ncol));
+    SEXP nm = PROTECT(allocVector(STRSXP,ncol));
+    numProtected += 2;
+    for(int i=0; i < ncol; i++) {
+	SEXP value, names;
+	if(table[0][i].getType() == COLTYPE_DOUBLE) {
+	    value = PROTECT(allocVector(REALSXP,nrow));
+	    numProtected++;
+	    for(int j=0; j < nrow; j++)
+		REAL(value)[j] = table[j][i].getDoubleValue();
+	}
+	else if(table[0][i].getType() == COLTYPE_INT) {
+	    value = PROTECT(allocVector(INTSXP,nrow));
+	    numProtected++;
+	    for(int j=0; j < nrow; j++)
+		INTEGER(value)[j] = table[j][i].getIntValue();
+	}
+	else if(table[0][i].getType() == COLTYPE_FACTOR) {
+	    value = PROTECT(allocVector(INTSXP,nrow));
+	    numProtected++;
+	    int levels = table[0][i].getFactorNumLevels();
+	    names = PROTECT(allocVector(STRSXP,levels));
+	    numProtected++;
+	    string *levelNames = table[0][i].getFactorLevelNames();
+	    for(int k=0; k < levels; k++)
+		SET_STRING_ELT(names, k, mkChar(levelNames[k].c_str()));
+	    for(int j=0; j < nrow; j++) {
+		int level = table[j][i].getFactorLevel();
+		INTEGER(value)[j] = level;
+	    }
+	    setAttrib(value, R_LevelsSymbol, names);
+	    SEXP factorclass = PROTECT(allocVector(STRSXP,1));
+	    numProtected++;
+	    SET_STRING_ELT(factorclass, 0, mkChar("factor"));
+	    setAttrib(value, R_ClassSymbol, factorclass); 
+	}
+	else if(table[0][i].getType() == COLTYPE_STRING) {
+	    value = PROTECT(allocVector(STRSXP,nrow));
+	    numProtected++;
+	    for(int j=0; j < nrow; j++) {
+		SET_STRING_ELT(value, j, mkChar(table[j][i].getStringValue().c_str()));
+	    }
+		
+	}
+	else if(table[0][i].getType() == COLTYPE_LOGICAL) {
+	    value = PROTECT(allocVector(LGLSXP,nrow));
+	    numProtected++;
+	    for(int j=0; j < nrow; j++) {
+		LOGICAL(value)[j] = table[j][i].getLogicalValue();
+	    }
+	}
+	else if(table[0][i].getType() == COLTYPE_DATE) {
+	    value = PROTECT(allocVector(REALSXP,nrow));
+	    numProtected++;
+	    for(int j=0; j < nrow; j++)
+		REAL(value)[j] = table[j][i].getDateRCode();
+	    SEXP dateclass = PROTECT(allocVector(STRSXP,1));
+	    numProtected++;
+	    SET_STRING_ELT(dateclass, 0, mkChar("Date"));
+	    setAttrib(value, R_ClassSymbol, dateclass); 
+	}
+	else {
+	    throw std::range_error("RcppResultSet::add invalid column type");
+	}
+	SET_VECTOR_ELT(rl, i, value);
+	SET_STRING_ELT(nm, i, mkChar(colNames[i].c_str()));
+    }
+    setAttrib(rl, R_NamesSymbol, nm);
+    values.push_back(make_pair(name, rl));
+}
+
 void RcppResultSet::add(string name, SEXP sexp, bool isProtected) {
     values.push_back(make_pair(name, sexp));
     if(isProtected)
@@ -364,7 +652,7 @@ void RcppResultSet::add(string name, SEXP sexp, bool isProtected) {
 }
 
 SEXP RcppResultSet::getReturnList() {
-    int nret = values.size();
+    int nret = (int)values.size();
     SEXP rl = PROTECT(allocVector(VECSXP,nret));
     SEXP nm = PROTECT(allocVector(STRSXP,nret));
     list<pair<string,SEXP> >::iterator iter = values.begin();
@@ -378,32 +666,116 @@ SEXP RcppResultSet::getReturnList() {
 }
 
 #ifdef USING_QUANTLIB
+
+// Conversion from QuantLib Date to RcppDate.
+RcppDate::RcppDate(Date dateQL) {
+    day = (int)dateQL.dayOfMonth();
+    month = (int)dateQL.month();
+    year  = (int)dateQL.year();
+    mdy2jdn();
+}
+
+// Conversion from RcppDate to QuantLib Date.
+RcppDate::operator Date() const {
+    Date d(day, (Month)month, year);
+    return d;
+}
+
+// Print a QuantLib Date.
 ostringstream& operator<<(ostringstream& os, const Date& d) {
     os << d.month() << " " << d.weekday() << ", " << d.year();
     return os;
 }
-#else
 
-// Dummy Date class implementation when USING_QUANTLIB is not set...
+#endif
 
-static char* months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-			       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-
-Date::Date(int day, int month, int year) throw(range_error) {
-    if(day < 0 || day > 31 || month < 0 || month >= 12 || year < 0)
-	throw std::range_error("Date parameters out of range");
-    _day = day, _month = month, _year = year;
-}
-
-char* Date::getMonth() const {
-    return months[_month];
-}
-
-ostringstream& operator<<(ostringstream& os, const Date& d) {
-    os << d.getMonth() << " " << d.getDay() << ", " << d.getYear();
+// Print an RcppDate.
+ostream& operator<<(ostream& os, const RcppDate& date) {
+    os << date.getYear() << "-" << date.getMonth() << "-" << date.getDay();
     return os;
 }
+
+#ifdef RCPP_DATE_OPS
+
+// A few basic date operations.
+RcppDate operator+(const RcppDate& date, int offset) {
+    RcppDate temp(date.month, date.day, date.year);
+    temp.jdn += offset;
+    temp.jdn2mdy();
+    return temp;
+}
+
+int operator-(const RcppDate& date2, const RcppDate& date1) {
+    return date2.jdn - date1.jdn;
+}
+
+bool  operator<(const RcppDate &date1, const RcppDate& date2) {
+    return date1.jdn < date2.jdn;
+}
+
+bool  operator>(const RcppDate &date1, const RcppDate& date2) {
+    return date1.jdn > date2.jdn;
+}
+
+bool  operator>=(const RcppDate &date1, const RcppDate& date2) {
+    return date1.jdn >= date2.jdn;
+}
+
+bool  operator<=(const RcppDate &date1, const RcppDate& date2) {
+    return date1.jdn <= date2.jdn;
+}
+
+bool  operator==(const RcppDate &date1, const RcppDate& date2) {
+    return date1.jdn == date2.jdn;
+}
+
 #endif
+
+// Offset used to convert from R date representation to Julian day number.
+const int RcppDate::Jan1970Offset = 2440588;
+
+// The Julian day number (jdn) is the number of days since Monday,
+// Jan 1, 4713BC (year = -4712). Here 1BC is year 0, 2BC is year -1, etc.
+// On the other hand, R measures days since Jan 1, 1970, and these dates are
+// converted to jdn's by adding Jan1970Offset.
+//
+// mdy2jdn and jdn2mdy are inverse functions for dates back to 
+// year = -4799 (4800BC).
+//
+// See the Wikipedia entry on Julian day number for more information 
+// on these algorithms.
+//
+void RcppDate::mdy2jdn() {
+    int m = month, d = day, y = year;
+    int a = (14 - m)/12;
+    y += 4800 - a;
+    m += 12*a - 3;
+    jdn = (d + (153*m + 2)/5 + 365*y
+	   + y/4 - y/100 + y/400 - 32045);
+}
+
+void RcppDate::jdn2mdy() {
+    int jul = jdn + 32044;
+    int g = jul/146097;
+    int dg = jul % 146097;
+    int c = (dg/36524 + 1)*3/4;
+    int dc = dg - c*36524;
+    int b = dc/1461;
+    int db = dc % 1461;
+    int a = (db/365 + 1)*3/4;
+    int da = db - a*365;
+    int y = g*400 + c*100 + b*4 + a;
+    int m = (da*5 + 308)/153 - 2;
+    int d = da - (m + 4)*153 /5 + 122;
+    y = y - 4800 + (m + 2)/12;
+    m = (m + 2) % 12 + 1;
+    d = d + 1;
+    month = m;
+    day   = d;
+    year  = y;
+}
+
+#include <string.h>
 
 // This function copies the message string to R-managed memory so the
 // original C++ message object can be destroyed (when it goes out of

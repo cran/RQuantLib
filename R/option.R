@@ -2,7 +2,7 @@
 ##
 ## Copyright 2002, 2005 Dirk Eddelbuettel <edd@debian.org>
 ##
-## $Id: option.R,v 1.5 2005/08/07 02:05:27 edd Exp $
+## $Id: option.R,v 1.5 2005/08/07 02:05:27 edd Exp edd $
 ##
 ## This file is part of the RQuantLib library for GNU R.
 ## It is made available under the terms of the GNU General Public
@@ -61,6 +61,12 @@ AmericanOption.default <- function(type, underlying, strike, dividendYield,
                     gridPoints=as.integer(gridPoints)),
                PACKAGE="RQuantLib")
   class(val) <- c("AmericanOption","Option")
+  val[[2]] <- NA
+  val[[3]] <- NA
+  val[[4]] <- NA
+  val[[5]] <- NA
+  val[[6]] <- NA
+  val[[7]] <- NA 
   val
 }
 
@@ -109,6 +115,12 @@ BarrierOption.default <- function(barrType, type, underlying, strike,
                     rebate=as.double(rebate)),
                PACKAGE="RQuantLib")
   class(val) <- c("BarrierOption", "Option")
+  val[[2]] <- NA
+  val[[3]] <- NA
+  val[[4]] <- NA
+  val[[5]] <- NA
+  val[[6]] <- NA
+  val[[7]] <- NA 
   val
 }
 

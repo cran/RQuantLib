@@ -1,3 +1,14 @@
+2006-07-23  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Release 0.2.3 using the new RcppTemplate version 4.2
+	 
+	* src/*: RcppTemplate is now used for all R/C++ interfaces
+	  features from the new RcppTemplate
+
+2006-03-30  Dirk Eddelbuettel  <edd@debian.org>
+
+	* Release 0.2.2 once more with thanks to Dominick
+
 2006-03-23  Dominick Samperi  <djsamperi@DecisionSynergy.com>
 
 	* configure.in, configure.win, 

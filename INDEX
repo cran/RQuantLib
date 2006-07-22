@@ -24,3 +24,4 @@ EuropeanOptionImpliedVolatility
 ImpliedVolatility       Base class for option-price implied volatility
                         evalution
 Option                  Base class for option price evalution
+RcppVersion             Rcpp Version and License Information

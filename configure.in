@@ -4,7 +4,7 @@
 # Greatly simplified thanks to quantlib-config
 # Another contribution by Kurt Hornik gratefully acknowledged
 #
-# $Id: configure.in,v 1.11 2006/03/30 00:17:32 dsamperi Exp $
+# $Id: configure.in,v 1.13 2006/07/20 01:51:41 dsamperi Exp $
 
 # require at least autoconf 2.13
 # requirements inflation: now require 2.50
@@ -57,9 +57,9 @@ if test x"${QUANTLIB}" == x"yes" ; then
     AC_SUBST([LDFLAGS],["${LDFLAGS} $pkg_libs"])
     echo "Building libRcpp.a in RcppSrc..."
     cd RcppSrc
-    make RHOME=${R_HOME} CPPFLAGS=-DUSING_QUANTLIB
+    make RHOME=${R_HOME} CPPFLAGS="-DUSING_QUANTLIB $pkg_cxxflags"
     cd ..
-    cp RcppSrc/Rcpp-version.txt inst
+    cp RcppSrc/Rcpp-license.txt inst
 else
     echo "
   Your installation does not appear to have QuantLib installed as the

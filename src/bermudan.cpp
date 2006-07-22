@@ -2,7 +2,7 @@
 //
 // Copyright 2005 Dominick Samperi
 //
-// $Id: bermudan.cpp,v 1.2 2006/01/10 22:18:24 dsamperi Exp $
+// $Id: bermudan.cpp,v 1.3 2006/07/22 14:12:07 dsamperi Exp $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -44,7 +44,7 @@ void calibrateModel(const boost::shared_ptr<ShortRateModel>& model,
 RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes, 
 				       SEXP maturities, SEXP tenors, 
 				       SEXP vols) {
-    SEXP rl=0;
+    SEXP rl=R_NilValue;
     char* exceptionMesg=NULL;
 
     try {

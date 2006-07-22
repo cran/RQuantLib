@@ -10,14 +10,14 @@ OBJ = Rcpp.o
 LINKOBJ  = Rcpp.o $(RES)
 DLLLIBS = -s -L"$(RHOME)/src/gnuwin32" -lR --no-export-all-symbols --add-stdcall-alias
 LIB  = libRcpp.a
-CXXFLAGS = -I"$(RHOME)/include" -I"$(RHOME)/src/include" -Wall -O2 $(CPPFLAGS)
+CXXFLAGS = -I"$(RHOME)/include" -I"$(RHOME)/src/include" $(CPPFLAGS) -Wall -O2
 RM = rm -f
 
-.PHONY: all clean
+.PHONY: all all-before all-after clean clean-custom
 
-all: $(LIB)
+all: all-before libRcpp.a all-after
 
-clean:
+clean: clean-custom
 	${RM} $(LINKOBJ) $(LIB)
 
 $(OBJ): $(SRC)

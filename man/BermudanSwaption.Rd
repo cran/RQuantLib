@@ -1,4 +1,4 @@
-% $Id: BermudanSwaption.Rd,v 1.1 2005/10/12 03:45:03 edd Exp $
+% $Id: BermudanSwaption.Rd,v 1.2 2006/07/20 02:42:44 dsamperi Exp $
 \name{BermudanSwaption}
 \alias{BermudanSwaption}
 \alias{BermudanSwaption.default}
@@ -108,13 +108,13 @@ volMatrix)
 \examples{
 
 # This data is taken from sample code shipped with QuantLib 0.3.10.
-params <- list(tradeDate=c(2, 15, 2002),
-                 settleDate=c(2, 19, 2002),
-                 payFixed=TRUE,
-		 strike=.06,
-	         method="G2Analytic",
-                 interpWhat="discount",
-                 interpHow="loglinear")
+params <- list(tradeDate=as.Date('2002-2-15'),
+               settleDate=as.Date('2002-2-19'),
+               payFixed=TRUE,
+	       strike=.06,
+	       method="G2Analytic",
+               interpWhat="discount",
+               interpHow="loglinear")
 		
 # Market data used to construct the term structure of interest rates
 tsQuotes <- list(d1w  =0.0382,

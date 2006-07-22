@@ -14,5 +14,3 @@ $(OBJ): $(SRC)
 
 $(LIB): $(OBJ)
 	ar crs $(LIB) $(OBJ)
-
-

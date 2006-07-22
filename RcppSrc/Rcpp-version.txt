@@ -1,1 +1,0 @@
-Built using RcppTemplate package V2.4 and the Rcpp R/C++ interface library

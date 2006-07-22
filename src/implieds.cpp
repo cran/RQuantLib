@@ -1,9 +1,9 @@
 
 // RQuantLib -- R interface to the QuantLib libraries
 //
-// Copyright 2002-2005 Dirk Eddelbuettel <edd@debian.org>
+// Copyright 2002-2006 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: implieds.cpp,v 1.9 2005/10/12 03:56:07 edd Exp $
+// $Id: implieds.cpp,v 1.13 2006/07/22 14:17:28 dsamperi Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -26,29 +26,34 @@
 #include "rquantlib.hpp"
 
 RcppExport  SEXP QL_EuropeanOptionImpliedVolatility(SEXP optionParameters) {
-    const Size maxEvaluations = 100;
-    const double tolerance = 1.0e-6;
-    const int nret = 2;		// dimension of return list
+  const Size maxEvaluations = 100;
+  const double tolerance = 1.0e-6;
 
-    char *type = CHAR(STRING_ELT(getListElement(optionParameters, "type"),0));
+  SEXP rl=R_NilValue;
+  char* exceptionMesg=NULL;
+  
+  try {
+
+    RcppParams rparam(optionParameters);    	// Parameter wrapper class
+
+    string type = rparam.getStringValue("type");
+    double value = rparam.getDoubleValue("value");
+    double underlying = rparam.getDoubleValue("underlying");
+    double strike = rparam.getDoubleValue("strike");
+    Spread dividendYield = rparam.getDoubleValue("dividendYield");
+    Rate riskFreeRate = rparam.getDoubleValue("riskFreeRate");
+    Time maturity = rparam.getDoubleValue("maturity");
+    int length = int(maturity*360 + 0.5); // FIXME: this could be better
+    double volatility = rparam.getDoubleValue("volatility");
+
     Option::Type optionType=Option::Call;
-    if (!strcmp(type, "call")) {
+    if (type=="call") {
       optionType = Option::Call;
-    } else if (!strcmp(type, "put")) {
+    } else if (type=="put") {
       optionType = Option::Put;
     } else {
-      error("Unexpected option type %s, aborting\n", type);
+      throw std::range_error("Unknown option " + type);
     }
-
-    double underlying = REAL(getListElement(optionParameters, "underlying"))[0];
-    double strike = REAL(getListElement(optionParameters,"strike"))[0];	
-    double dividendYield = 
-      REAL(getListElement(optionParameters, "dividendYield"))[0];
-    double riskFreeRate = 
-      REAL(getListElement(optionParameters, "riskFreeRate"))[0];
-    double volatility = REAL(getListElement(optionParameters, "volatility"))[0];
-    Time maturity = REAL(getListElement(optionParameters, "maturity"))[0];
-    int length = int(maturity*360 + 0.5); // FIXME: this could be better
 
     Date today = Date::todaysDate();
 
@@ -63,10 +68,10 @@ RcppExport  SEXP QL_EuropeanOptionImpliedVolatility(SEXP optionParameters) {
       makeFlatVolatility(today, vol, dc);
     boost::shared_ptr<SimpleQuote> qRate(new SimpleQuote(0.0));
     qRate->setValue(dividendYield);
-    boost::shared_ptr<YieldTermStructure> qTS = makeFlatCurve(today, qRate, dc);
+    boost::shared_ptr<YieldTermStructure> qTS = makeFlatCurve(today,qRate,dc);
     boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(0.0));
     rRate->setValue(riskFreeRate);
-    boost::shared_ptr<YieldTermStructure> rTS = makeFlatCurve(today, rRate, dc);
+    boost::shared_ptr<YieldTermStructure> rTS = makeFlatCurve(today,rRate,dc);
     Date exDate = today + length;
     boost::shared_ptr<Exercise> exercise(new EuropeanExercise(exDate));
     boost::shared_ptr<StrikedTypePayoff> 
@@ -79,42 +84,53 @@ RcppExport  SEXP QL_EuropeanOptionImpliedVolatility(SEXP optionParameters) {
     double volguess = volatility;
     vol->setValue(volguess);
 
-    //double value = option->NPV();
-    double value = REAL(getListElement(optionParameters,"value"))[0];
-    //    if (value != 0.0) {
-    //  vol->setValue(volguess*1.5);	// shift guess somehow
-      implVol = option->impliedVolatility(value, tolerance, maxEvaluations);
-    //}
+    implVol = option->impliedVolatility(value, tolerance, maxEvaluations);
 
-    SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
-    SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
-    insertListElement(rl, nm, 0, implVol, "impliedVol");
-    SET_VECTOR_ELT(rl, 1, optionParameters);
-    SET_STRING_ELT(nm, 1, mkChar("parameters"));
-    setAttrib(rl, R_NamesSymbol, nm);
-    UNPROTECT(2);
-    return(rl);
+    RcppResultSet rs;
+    rs.add("impliedVol", implVol);
+    rs.add("parameters", optionParameters, false);
+    rl = rs.getReturnList();
+
+  } catch(std::exception& ex) {
+    exceptionMesg = copyMessageToR(ex.what());
+  } catch(...) {
+    exceptionMesg = copyMessageToR("unknown reason");
+  }
+  if(exceptionMesg != NULL)
+    error(exceptionMesg);
+    
+  return rl;
 }
 
 RcppExport  SEXP QL_AmericanOptionImpliedVolatility(SEXP optionParameters) {
-    const Size maxEvaluations = 100;
-    const double tolerance = 1.0e-6;
-    const int nret = 2;		// dimension of return list
+  const Size maxEvaluations = 100;
+  const double tolerance = 1.0e-6;
 
-    char *type = CHAR(STRING_ELT(getListElement(optionParameters, "type"),0));
-    Option::Type optionType=Option::Call;
-    if (!strcmp(type, "call")) {
-	optionType = Option::Call;
-    } else if (!strcmp(type, "put")) {
-	optionType = Option::Put;
-    } else {
-	error("Unexpected option type %s, aborting\n", type);
-    }
+  SEXP rl=R_NilValue;
+  char* exceptionMesg=NULL;
+  
+  try {
 
-    double strike = REAL(getListElement(optionParameters,"strike"))[0];	
-    
-    Time maturity = REAL(getListElement(optionParameters, "maturity"))[0];
+    RcppParams rparam(optionParameters);    	// Parameter wrapper class
+
+    string type = rparam.getStringValue("type");
+    double value = rparam.getDoubleValue("value");
+    double underlying = rparam.getDoubleValue("underlying");
+    double strike = rparam.getDoubleValue("strike");
+    Spread dividendYield = rparam.getDoubleValue("dividendYield");
+    Rate riskFreeRate = rparam.getDoubleValue("riskFreeRate");
+    Time maturity = rparam.getDoubleValue("maturity");
     int length = int(maturity*360 + 0.5); // FIXME: this could be better
+    double volguess = rparam.getDoubleValue("volatility");
+
+    Option::Type optionType=Option::Call;
+    if (type=="call") {
+      optionType = Option::Call;
+    } else if (type=="put") {
+      optionType = Option::Put;
+    } else {
+      throw std::range_error("Unknown option " + type);
+    }
 
     Date today = Date::todaysDate();
 
@@ -134,33 +150,31 @@ RcppExport  SEXP QL_AmericanOptionImpliedVolatility(SEXP optionParameters) {
     boost::shared_ptr<Exercise> exercise(new AmericanExercise(today, exDate));
     boost::shared_ptr<StrikedTypePayoff> 
       payoff(new PlainVanillaPayoff(optionType, strike));
-    boost::shared_ptr<VanillaOption> option = makeOption(payoff, exercise, spot,
-					      qTS, rTS, volTS,
-					      JR);
+    boost::shared_ptr<VanillaOption> option = 
+      makeOption(payoff, exercise, spot, qTS, rTS, volTS, JR);
 
-    spot->setValue(REAL(getListElement(optionParameters, "underlying"))[0]);
-    qRate->setValue(REAL(getListElement(optionParameters, 
-					"dividendYield"))[0]);
-    rRate->setValue(REAL(getListElement(optionParameters,
-					"riskFreeRate"))[0]);
-    double volguess = REAL(getListElement(optionParameters, "volatility"))[0];
+    spot->setValue(underlying);
+    qRate->setValue(dividendYield);
+    rRate->setValue(riskFreeRate);
     vol->setValue(volguess);
 
-    //double value = option->NPV();
-    double value = REAL(getListElement(optionParameters,"value"))[0];
     double implVol = 0.0; // just to remove a warning...
-    //    if (value != 0.0) {
-    //  vol->setValue(volguess*1.5);	// shift guess somehow
-      implVol = option->impliedVolatility(value, tolerance, maxEvaluations);
-      //}
+    implVol = option->impliedVolatility(value, tolerance, maxEvaluations);
 
-    SEXP rl = PROTECT(allocVector(VECSXP, nret)); // returned list
-    SEXP nm = PROTECT(allocVector(STRSXP, nret)); // names of list elements
-    insertListElement(rl, nm, 0, implVol, "impliedVol");
-    SET_VECTOR_ELT(rl, 1, optionParameters);
-    SET_STRING_ELT(nm, 1, mkChar("parameters"));
-    setAttrib(rl, R_NamesSymbol, nm);
-    UNPROTECT(2);
-    return(rl);
+    RcppResultSet rs;
+    rs.add("impliedVol", implVol);
+    rs.add("parameters", optionParameters, false);
+    rl = rs.getReturnList();
+
+  } catch(std::exception& ex) {
+    exceptionMesg = copyMessageToR(ex.what());
+  } catch(...) {
+    exceptionMesg = copyMessageToR("unknown reason");
+  }
+  
+  if(exceptionMesg != NULL)
+    error(exceptionMesg);
+    
+  return rl;
 }
  
