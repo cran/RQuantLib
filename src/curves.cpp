@@ -2,7 +2,7 @@
 //
 // Copyright 2005 Dominick Samperi
 //
-// $Id: curves.cpp,v 1.2 2006/01/10 22:19:34 dsamperi Exp $
+// $Id: curves.cpp,v 1.4 2006/07/31 18:02:59 dsamperi Exp $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -83,14 +83,14 @@ boost::shared_ptr<RateHelper> ObservableDB::getRateHelper(string& ticker, Rate r
 	Frequency swFixedLegFrequency = Annual;
 	BusinessDayConvention swFixedLegConvention = Unadjusted;
 	DayCounter swFixedLegDayCounter = Thirty360(Thirty360::European);
-	Frequency swFloatingLegFrequency = Semiannual;
+        boost::shared_ptr<Xibor> swFloatingLegIndex(new Euribor6M);
 	boost::shared_ptr<Quote> quote(new SimpleQuote(r));
 	boost::shared_ptr<RateHelper> swap(new SwapRateHelper(
             Handle<Quote>(quote),
-            n1, units, fixingDays,
+            n1*Years, fixingDays,
             calendar, swFixedLegFrequency,
             swFixedLegConvention, swFixedLegDayCounter,
-            swFloatingLegFrequency, ModifiedFollowing));
+            swFloatingLegIndex));
 	return swap;
     }
     else if(type == RQLFuture) {

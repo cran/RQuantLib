@@ -1,7 +1,7 @@
 Package: RQuantLib
 Title: R interface to the QuantLib library
-Version: 0.2.3
-Date: $Date: 2006/07/22 00:47:22 $
+Version: 0.2.4
+Date: $Date: 2006/08/16 03:13:33 $
 Maintainer: Dirk Eddelbuettel <edd@debian.org>
 Author: Dirk Eddelbuettel <edd@debian.org> with contributions from Dominick Samperi 
 Description: The RQuantLib package makes selected parts of QuantLib 
@@ -22,10 +22,10 @@ Description: The RQuantLib package makes selected parts of QuantLib
 	.
 	Parts of RQuantLib use the Rcpp R/C++ interface class library.
 	See the RcppTemplate package on CRAN for more information on Rcpp.
-Depends: R (>= 2.2.0)
+Depends: R (>= 2.3.1)
 SystemRequirements: QuantLib library from http://quantlib.org, Boost library
 	from http://www.boost.org
 License: GPL Version 2 or later for RQuantLib; QuantLib itself is released
 	under an Open Source license as well (see QuantLib-License.txt).
 URL: http://quantlib.org http://dirk.eddelbuettel.com/code/rquantlib.html
-Packaged: Sun Jul 23 11:02:01 2006; edd
+Packaged: Tue Aug 15 22:22:16 2006; edd

@@ -2,7 +2,7 @@
 //
 // Copyright 2005 Dominick Samperi
 //
-// $Id: bermudan.cpp,v 1.3 2006/07/22 14:12:07 dsamperi Exp $
+// $Id: bermudan.cpp,v 1.4 2006/07/31 17:03:26 dsamperi Exp $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -166,11 +166,11 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
                                fixedLegFrequency,fixedLegConvention);
         Schedule floatSchedule(calendar,startDate,maturity,
                                floatingLegFrequency,floatingLegConvention);
-        boost::shared_ptr<SimpleSwap> swap(new SimpleSwap(
+        boost::shared_ptr<VanillaSwap> swap(new VanillaSwap(
             payFixedRate, notional,
             fixedSchedule, dummyFixedRate, fixedLegDayCounter,
             floatSchedule, indexSixMonths, fixingDays, 0.0,
-            rhTermStructure));
+            indexSixMonths->dayCounter(), rhTermStructure));
 
 	// Find the ATM or break-even rate
         Rate fixedATMRate = swap->fairRate();
@@ -182,11 +182,11 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 	    fixedRate = strike;
 
 	// The swap underlying the Bermudan swaption.
-        boost::shared_ptr<SimpleSwap> mySwap(new SimpleSwap(
+        boost::shared_ptr<VanillaSwap> mySwap(new VanillaSwap(
             payFixedRate, notional,
             fixedSchedule, fixedRate, fixedLegDayCounter,
             floatSchedule, indexSixMonths, fixingDays, 0.0,
-            rhTermStructure));
+            indexSixMonths->dayCounter(), rhTermStructure));
 
 	// Build swaptions that will be used to calibrate model to
 	// the volatility matrix.
@@ -208,6 +208,7 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
                                indexSixMonths,
                                indexSixMonths->frequency(),
                                indexSixMonths->dayCounter(),
+			       indexSixMonths->dayCounter(),
                                rhTermStructure)));
             swaptions.back()->addTimesTo(times);
         }

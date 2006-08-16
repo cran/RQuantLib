@@ -65,7 +65,9 @@ RcppFrame::RcppFrame(SEXP df) {
 	// real value. We check for Date under both Real and Integer values
 	// as insurance against future changes.
 	SEXP classname = getAttrib(colData, R_ClassSymbol);
-	bool isDateClass = (strcmp(CHAR(STRING_ELT(classname,0)),"Date") == 0);
+	bool isDateClass = false;
+	if(classname != R_NilValue)
+	    isDateClass = (strcmp(CHAR(STRING_ELT(classname,0)),"Date") == 0);
 
 	if(isReal(colData)) {
 	    if(isDateClass) {
@@ -745,6 +747,8 @@ const int RcppDate::Jan1970Offset = 2440588;
 // See the Wikipedia entry on Julian day number for more information 
 // on these algorithms.
 //
+
+// Transform month/day/year to Julian day number.
 void RcppDate::mdy2jdn() {
     int m = month, d = day, y = year;
     int a = (14 - m)/12;
@@ -754,6 +758,7 @@ void RcppDate::mdy2jdn() {
 	   + y/4 - y/100 + y/400 - 32045);
 }
 
+// Transform from Julian day number to month/day/year.
 void RcppDate::jdn2mdy() {
     int jul = jdn + 32044;
     int g = jul/146097;

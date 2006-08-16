@@ -53,10 +53,10 @@ char *copyMessageToR(const char* const mesg);
 
 class RcppDate {
 private:
-    void mdy2jdn(); // M/D/Y to Julian Date Number.
-    void jdn2mdy(); // Julian date number to M/D/Y.
+    void mdy2jdn(); // month/day/year to Julian day number.
+    void jdn2mdy(); // Julian day number to month/day/year.
     int month, day, year;
-    int jdn; // Julian Date Number
+    int jdn; // Julian day number
 
 public:
     static const int Jan1970Offset;

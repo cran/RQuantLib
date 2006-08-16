@@ -1,3 +1,13 @@
+2006-08-14  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Release 0.2.4 updated for QuantLib 0.3.13; this
+	  required some changes in the fixed-income functions
+
+	* configure.in: Tests for QuantLib version 0.3.13
+
+	* tests/RQuantLib.R: Added the beginnings of unit-tests
+	* tests/RQuantLib.Rout.save: Control output for unit tests
+
 2006-07-23  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: Release 0.2.3 using the new RcppTemplate version 4.2
