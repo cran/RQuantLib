@@ -2,7 +2,7 @@
 //
 // Copyright 2005 Dominick Samperi
 //
-// $Id: bermudan.cpp,v 1.4 2006/07/31 17:03:26 dsamperi Exp $
+// $Id: bermudan.cpp,v 1.5 2006/11/06 21:42:30 edd Exp $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -156,7 +156,7 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
         Frequency floatingLegFrequency = Semiannual;
         Rate dummyFixedRate = 0.03;
         boost::shared_ptr<Xibor> indexSixMonths(new
-            Euribor(6, Months, rhTermStructure));
+            Euribor6M(rhTermStructure));
 
         Date startDate = calendar.advance(settlementDate,1,Years,
                                           floatingLegConvention);

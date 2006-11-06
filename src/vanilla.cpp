@@ -3,7 +3,7 @@
 //
 // Copyright 2002-2006 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: vanilla.cpp,v 1.20 2006/07/22 14:18:18 dsamperi Exp $
+// $Id: vanilla.cpp,v 1.21 2006/11/06 21:51:10 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -157,8 +157,8 @@ RcppExport  SEXP QL_AmericanOption(SEXP optionParameters) {
     // new from 0.3.7 BaroneAdesiWhaley
     boost::shared_ptr<PricingEngine> engine(
 				    new BaroneAdesiWhaleyApproximationEngine);
-    boost::shared_ptr<BlackScholesProcess> stochProcess(new
-	BlackScholesProcess(
+    boost::shared_ptr<StochasticProcess> stochProcess(new
+	BlackScholesMertonProcess(
                	Handle<Quote>(spot),
                 Handle<YieldTermStructure>(qTS),
                 Handle<YieldTermStructure>(rTS),

@@ -2,7 +2,7 @@
 //
 // Copyright 2002-2006 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: barrier_binary.cpp,v 1.13 2006/07/22 14:16:36 dsamperi Exp $
+// $Id: barrier_binary.cpp,v 1.14 2006/11/06 21:14:33 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -77,9 +77,9 @@ RcppExport  SEXP QL_BinaryOption(SEXP optionParameters) {
     rRate->setValue(riskFreeRate);
     vol  ->setValue(volatility);
 
-    boost::shared_ptr<BlackScholesProcess> 
-      stochProcess(new BlackScholesProcess(
-       		        Handle<Quote>(spot),
+    boost::shared_ptr<StochasticProcess> 
+      stochProcess(new BlackScholesMertonProcess(
+			Handle<Quote>(spot),
                 	Handle<YieldTermStructure>(qTS),
                 	Handle<YieldTermStructure>(rTS),
                 	Handle<BlackVolTermStructure>(volTS)));
@@ -165,8 +165,8 @@ RcppExport  SEXP QL_BinaryOptionImpliedVolatility(SEXP optionParameters) {
     rRate->setValue(riskFreeRate);
     vol  ->setValue(volatility);
 
-    boost::shared_ptr<BlackScholesProcess> 
-      stochProcess(new BlackScholesProcess(Handle<Quote>(spot),
+    boost::shared_ptr<StochasticProcess> 
+      stochProcess(new BlackScholesMertonProcess(Handle<Quote>(spot),
 				Handle<YieldTermStructure>(qTS),
 				Handle<YieldTermStructure>(rTS),
 				Handle<BlackVolTermStructure>(volTS)));
@@ -257,8 +257,8 @@ RcppExport  SEXP QL_BarrierOption(SEXP optionParameters) {
     boost::shared_ptr<StrikedTypePayoff> 
       payoff(new PlainVanillaPayoff(optionType, strike));
 
-    boost::shared_ptr<BlackScholesProcess> 
-      stochProcess(new BlackScholesProcess(
+    boost::shared_ptr<StochasticProcess> 
+      stochProcess(new BlackScholesMertonProcess(
                 	Handle<Quote>(spot),
                 	Handle<YieldTermStructure>(qTS),
                 	Handle<YieldTermStructure>(rTS),

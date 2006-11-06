@@ -3,7 +3,7 @@
 //
 // Copyright 2002-2006 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: utils.cpp,v 1.12 2006/04/15 21:13:28 edd Exp $
+// $Id: utils.cpp,v 1.13 2006/11/06 21:27:23 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -79,13 +79,13 @@ makeOption(const boost::shared_ptr<StrikedTypePayoff>& payoff,
     default:
       QL_FAIL("Unknown engine type");
     }
-    boost::shared_ptr<BlackScholesProcess> 
+    boost::shared_ptr<StochasticProcess> 
       stochProcess(new
-		   BlackScholesProcess(
-				       Handle<Quote>(u),
-				       Handle<YieldTermStructure>(q),
-				       Handle<YieldTermStructure>(r),
-				       Handle<BlackVolTermStructure>(vol)));
+		   BlackScholesMertonProcess(
+					     Handle<Quote>(u),
+					     Handle<YieldTermStructure>(q),
+					     Handle<YieldTermStructure>(r),
+					     Handle<BlackVolTermStructure>(vol)));
     return boost::shared_ptr<VanillaOption>(new
 	   EuropeanOption(stochProcess, payoff, exercise, engine));
 

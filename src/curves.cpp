@@ -2,7 +2,7 @@
 //
 // Copyright 2005 Dominick Samperi
 //
-// $Id: curves.cpp,v 1.4 2006/07/31 18:02:59 dsamperi Exp $
+// $Id: curves.cpp,v 1.5 2006/11/06 21:50:41 edd Exp $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -75,7 +75,7 @@ boost::shared_ptr<RateHelper> ObservableDB::getRateHelper(string& ticker, Rate r
 	boost::shared_ptr<Quote> quote(new SimpleQuote(r));
 	boost::shared_ptr<RateHelper> depo(new DepositRateHelper(
 	    Handle<Quote>(quote),
-            n1, units, fixingDays,	
+            n1*units, fixingDays,	
             calendar, ModifiedFollowing, depositDayCounter));
 	return depo;
     }
