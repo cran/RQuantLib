@@ -2,7 +2,7 @@
 //
 // Copyright 2005 Dominick Samperi
 //
-// $Id: bermudan.cpp,v 1.5 2006/11/06 21:42:30 edd Exp $
+// $Id: bermudan.cpp,v 1.7 2007/02/24 23:08:25 dsamperi Exp $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -24,8 +24,7 @@ void calibrateModel(const boost::shared_ptr<ShortRateModel>& model,
 		    int *swaptionMat, int *swapLengths, double **swaptionVols,
 		    Size numRows, Size numCols) {
 
-    Simplex om(lambda, 1e-9);
-    om.setEndCriteria(EndCriteria(10000, 1e-7));
+    LevenbergMarquardt om;
     model->calibrate(helpers, om);
 
     // Output the implied Black volatilities
@@ -48,6 +47,7 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
     char* exceptionMesg=NULL;
 
     try {
+	QL_IO_INIT
 
 	// Parameter wrapper classes.
 	RcppParams rparam(params);
@@ -64,8 +64,6 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 	Date settlementDate = rparam.getDateValue("settleDate");
 	RQLContext::instance().settleDate = settlementDate;
         Settings::instance().evaluationDate() = todaysDate;
-
-	bool payFixedRate = rparam.getBoolValue("payFixed");
 
 	double strike = rparam.getDoubleValue("strike");
 
@@ -155,21 +153,26 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
         DayCounter fixedLegDayCounter = Thirty360(Thirty360::European);
         Frequency floatingLegFrequency = Semiannual;
         Rate dummyFixedRate = 0.03;
-        boost::shared_ptr<Xibor> indexSixMonths(new
+        boost::shared_ptr<IborIndex> indexSixMonths(new
             Euribor6M(rhTermStructure));
 
         Date startDate = calendar.advance(settlementDate,1,Years,
                                           floatingLegConvention);
         Date maturity = calendar.advance(startDate,5,Years,
                                          floatingLegConvention);
-        Schedule fixedSchedule(calendar,startDate,maturity,
-                               fixedLegFrequency,fixedLegConvention);
-        Schedule floatSchedule(calendar,startDate,maturity,
-                               floatingLegFrequency,floatingLegConvention);
+        Schedule fixedSchedule(startDate,maturity,
+			       Period(fixedLegFrequency),calendar,
+                               fixedLegConvention,fixedLegConvention,
+			       false,false);
+        Schedule floatSchedule(startDate,maturity,Period(floatingLegFrequency),
+			       calendar,
+                               floatingLegConvention,floatingLegConvention,
+			       false,false);
+	VanillaSwap::Type type = VanillaSwap::Payer;
         boost::shared_ptr<VanillaSwap> swap(new VanillaSwap(
-            payFixedRate, notional,
+	    type, notional,
             fixedSchedule, dummyFixedRate, fixedLegDayCounter,
-            floatSchedule, indexSixMonths, fixingDays, 0.0,
+            floatSchedule, indexSixMonths, 0.0,
             indexSixMonths->dayCounter(), rhTermStructure));
 
 	// Find the ATM or break-even rate
@@ -183,9 +186,9 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 
 	// The swap underlying the Bermudan swaption.
         boost::shared_ptr<VanillaSwap> mySwap(new VanillaSwap(
-            payFixedRate, notional,
+	    type, notional,
             fixedSchedule, fixedRate, fixedLegDayCounter,
-            floatSchedule, indexSixMonths, fixingDays, 0.0,
+            floatSchedule, indexSixMonths, 0.0,
             indexSixMonths->dayCounter(), rhTermStructure));
 
 	// Build swaptions that will be used to calibrate model to
@@ -206,7 +209,7 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
                                Period(swapLengths[numCols-i-1], Years),
                                Handle<Quote>(vol),
                                indexSixMonths,
-                               indexSixMonths->frequency(),
+                               indexSixMonths->tenor(),
                                indexSixMonths->dayCounter(),
 			       indexSixMonths->dayCounter(),
                                rhTermStructure)));

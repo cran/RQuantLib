@@ -1,4 +1,4 @@
-% $Id: EuropeanOptionImpliedVolatility.Rd,v 1.5 2005/08/05 01:40:04 edd Exp $
+% $Id: EuropeanOptionImpliedVolatility.Rd,v 1.6 2006/11/11 04:13:25 edd Exp $
 \name{EuropeanOptionImpliedVolatility}
 \alias{EuropeanOptionImpliedVolatility}
 \alias{EuropeanOptionImpliedVolatility.default}
@@ -8,7 +8,8 @@
   (unobservable) implied volatility, given an option price as well as
   the other required parameters to value an option.}
 \usage{
-EuropeanOptionImpliedVolatility.default(type, value, underlying, strike, dividendYield, riskFreeRate, maturity, volatility)
+\method{EuropeanOptionImpliedVolatility}{default}(type, value,
+	underlying, strike, dividendYield, riskFreeRate, maturity, volatility)
 
 \method{print}{ImpliedVolatility}
 \method{summary}{ImpliedVolatility}

@@ -1,4 +1,4 @@
-% $Id: AmericanOption.Rd,v 1.5 2004/12/28 03:13:45 edd Exp $
+% $Id: AmericanOption.Rd,v 1.6 2006/11/11 04:08:06 edd Exp $
 \name{AmericanOption}
 \alias{AmericanOption}
 \alias{AmericanOption.default}
@@ -8,7 +8,7 @@ This function evaluations an American-style option on a common stock
 using finite differences. The option value as well as the common first
 derivatives (\"Greeks\") are returned.}
 \usage{
-AmericanOption.default(type, underlying, strike, dividendYield, riskFreeRate,
+\method{AmericanOption}{default}(type, underlying, strike, dividendYield, riskFreeRate,
 maturity, volatility, timeSteps=150, gridPoints=151)
 
 \method{print}{Option}

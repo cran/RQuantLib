@@ -1,4 +1,4 @@
-% $Id: BinaryOption.Rd,v 1.5 2004/12/28 03:18:02 edd Exp $
+% $Id: BinaryOption.Rd,v 1.6 2006/11/11 04:09:45 edd Exp $
 \name{BinaryOption}
 \alias{BinaryOption}
 \alias{BinaryOption.default}
@@ -8,8 +8,8 @@ This function evaluations an Binary option on a common stock
 using a closed-form solution. The option value as well as the common first
 derivatives (\"Greeks\") are returned.}
 \usage{
-BinaryOption.default(type, underlying, strike, dividendYield, riskFreeRate,
-maturity, volatility, cashPayoff)
+\method{BinaryOption}{default}(type, underlying, strike, dividendYield,
+	riskFreeRate, maturity, volatility, cashPayoff)
 
 \method{print}{Option}
 \method{summary}{Option}

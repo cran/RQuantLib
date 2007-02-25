@@ -1,3 +1,17 @@
+2007-02-25  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Relase 0.2.5 updated for Quantlib 0.4.0
+
+	* configure.in: Require Quantlib 0.4.0
+
+2007-02-24  Dominick Samperi  <djsamperi@DecisionSynergy.com>
+
+	* src/bermudan.cpp: Several updates for Quantlib 0.4.0
+
+2006-11-10  Dirk Eddelbuettel  <edd@debian.org>
+
+	* man/*.Rd: Updates to default method docs suggested by Kurt Hornik
+	
 2006-11-06  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: Release 0.2.5 updated for QuantLib 0.3.14 

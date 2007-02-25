@@ -1,4 +1,4 @@
-% $Id: AmericanOptionImpliedVolatility.Rd,v 1.5 2005/08/05 01:40:23 edd Exp $
+% $Id: AmericanOptionImpliedVolatility.Rd,v 1.6 2006/11/11 04:08:41 edd Exp $
 \name{AmericanOptionImpliedVolatility}
 \alias{AmericanOptionImpliedVolatility}
 \alias{AmericanOptionImpliedVolatility.default}
@@ -8,7 +8,8 @@
   (unobservable) implied volatility, given an option price as well as
   the other required parameters to value an option.}
 \usage{
-AmericanOptionImpliedVolatility.default(type, value, underlying, strike,
+\method{AmericanOptionImpliedVolatility}{default}(type, value,
+		underlying, strike,
 		dividendYield, riskFreeRate, maturity, volatility,
                 timeSteps=150, gridPoints=151)
 

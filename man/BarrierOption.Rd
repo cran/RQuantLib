@@ -1,4 +1,4 @@
-% $Id: BarrierOption.Rd,v 1.5 2004/12/28 03:17:35 edd Exp $
+% $Id: BarrierOption.Rd,v 1.6 2006/11/11 04:09:12 edd Exp $
 \name{BarrierOption}
 \alias{BarrierOption}
 \alias{BarrierOption.default}
@@ -8,7 +8,8 @@ This function evaluations an Barrier option on a common stock
 using a closed-form solution. The option value as well as the common first
 derivatives (\"Greeks\") are returned.}
 \usage{
-BarrierOption.default(barrType, type, underlying, strike, dividendYield,
+\method{BarrierOption}{default}(barrType, type, underlying, strike,
+		      dividendYield,
                       riskFreeRate, maturity, volatility,
 		      barrier, rebate=0.0)
 

@@ -1,4 +1,4 @@
-% $Id: BinaryOptionImpliedVolatility.Rd,v 1.1 2005/08/05 02:01:57 edd Exp $
+% $Id: BinaryOptionImpliedVolatility.Rd,v 1.2 2006/11/11 04:12:02 edd Exp $
 \name{BinaryOptionImpliedVolatility}
 \alias{BinaryOptionImpliedVolatility}
 \alias{BinaryOptionImpliedVolatility.default}
@@ -8,8 +8,8 @@
   (unobservable) implied volatility, given an option price as well as
   the other required parameters to value an option.}
 \usage{
-BinaryOptionImpliedVolatility.default(type, value, underlying, strike,
-		dividendYield, riskFreeRate, maturity, volatility,
+\method{BinaryOptionImpliedVolatility}{default}(type, value, underlying,
+		strike, dividendYield, riskFreeRate, maturity, volatility,
 		cashPayoff=1)
 
 \method{print}{ImpliedVolatility}

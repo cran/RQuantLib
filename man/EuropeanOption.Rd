@@ -1,4 +1,4 @@
-% $Id: EuropeanOption.Rd,v 1.4 2004/12/28 03:18:47 edd Exp $
+% $Id: EuropeanOption.Rd,v 1.5 2006/11/11 04:12:45 edd Exp $
 \name{EuropeanOption}
 \alias{EuropeanOption}
 \alias{EuropeanOption.default}
@@ -10,7 +10,8 @@
   calling parameters are returned.
 }
 \usage{
-EuropeanOption.default(type, underlying, strike, dividendYield, riskFreeRate, maturity, volatility)
+\method{EuropeanOption}{default}(type, underlying, strike,
+	dividendYield, riskFreeRate, maturity, volatility)
 
 \method{plot}{Option}
 \method{print}{Option}

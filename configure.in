@@ -4,7 +4,7 @@
 # Greatly simplified thanks to quantlib-config
 # Another contribution by Kurt Hornik gratefully acknowledged
 #
-# $Id: configure.in,v 1.13 2006/07/20 01:51:41 dsamperi Exp edd $
+# $Id: configure.in,v 1.14 2007/02/26 02:59:04 edd Exp $
 
 # require at least autoconf 2.13
 # requirements inflation: now require 2.50
@@ -12,7 +12,7 @@ AC_PREREQ(2.50)
 
 # Process this file with autoconf to produce a configure script.
 # AC_INIT(src/RQuantLib.cc)
-AC_INIT(RQuantlib, 0.2.4)
+AC_INIT(RQuantlib, 0.2.6)
 
 # We are using C++
 AC_LANG(C++)
@@ -138,22 +138,21 @@ QL_CHECK_BOOST
 
 
 # also test for quantlib version using result from quantlib-config --version
-# part 1 of 2
 case ${pkg_version} in
-     0.1.*|0.2.*)
-	 AC_MSG_WARN([RQuantLib requires QuantLib versions 0.3.*.])
+     0.1.*|0.2.*|0.3.*)
+	 AC_MSG_WARN([RQuantLib requires QuantLib (>= 0.4.0).])
 	 AC_MSG_ERROR([Please upgrade to a more recent version.])
      ;;
 esac
 
 # test for quantlib version using result from quantlib-config --version
 # part 2 of 2
-case ${pkg_version} in
-     0.3.?|0.3.10|0.3.11|0.3.12)
-	 AC_MSG_WARN([RQuantLib requires QuantLib version 0.3.13 or later.])
-	 AC_MSG_ERROR([Please upgrade to a more recent version.])
-     ;;
-esac
+#case ${pkg_version} in
+#     0.3.?|0.3.10|0.3.11|0.3.12)
+#	 AC_MSG_WARN([RQuantLib requires QuantLib version 0.3.13 or later.])
+#	 AC_MSG_ERROR([Please upgrade to a more recent version.])
+#     ;;
+#esac
 
 AC_SUBST(CXXFLAGS)
 AC_SUBST(LDFLAGS)
