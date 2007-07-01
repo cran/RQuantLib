@@ -2,7 +2,7 @@
 //
 // Copyright 2005 Dominick Samperi
 //
-// $Id: bermudan.cpp,v 1.7 2007/02/24 23:08:25 dsamperi Exp $
+// $Id: bermudan.cpp,v 1.8 2007/06/30 18:21:55 dsamperi Exp $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -25,7 +25,8 @@ void calibrateModel(const boost::shared_ptr<ShortRateModel>& model,
 		    Size numRows, Size numCols) {
 
     LevenbergMarquardt om;
-    model->calibrate(helpers, om);
+    model->calibrate(helpers, om,
+		     EndCriteria(400,100,1.0e-8, 1.0e-8, 1.0e-8));
 
     // Output the implied Black volatilities
     for (Size i=0; i<numRows; i++) {
@@ -47,7 +48,6 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
     char* exceptionMesg=NULL;
 
     try {
-	QL_IO_INIT
 
 	// Parameter wrapper classes.
 	RcppParams rparam(params);
@@ -118,8 +118,13 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 			      termStructureDayCounter, tolerance);
 	    curve = ts;
 	}
-	Handle<YieldTermStructure> rhTermStructure;
-	rhTermStructure.linkTo(curve);
+	//Handle<YieldTermStructure> rhTermStructure;
+	//rhTermStructure.linkTo(curve);
+        boost::shared_ptr<Quote> flatRate(new SimpleQuote(0.04875825));
+        Handle<YieldTermStructure> rhTermStructure(
+            boost::shared_ptr<FlatForward>(
+                      new FlatForward(settlementDate, Handle<Quote>(flatRate),
+                                      Actual365Fixed())));
 
 	// Get swaption vol matrix.
 	RcppMatrix<double> myVols(vols);

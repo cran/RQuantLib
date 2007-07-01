@@ -2,7 +2,7 @@
 //
 // Copyright 2005 Dominick Samperi
 //
-// $Id: curves.cpp,v 1.5 2006/11/06 21:50:41 edd Exp $
+// $Id: curves.cpp,v 1.6 2007/06/30 18:21:15 dsamperi Exp $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -76,14 +76,15 @@ boost::shared_ptr<RateHelper> ObservableDB::getRateHelper(string& ticker, Rate r
 	boost::shared_ptr<RateHelper> depo(new DepositRateHelper(
 	    Handle<Quote>(quote),
             n1*units, fixingDays,	
-            calendar, ModifiedFollowing, depositDayCounter));
+            calendar, ModifiedFollowing, 
+	    true, fixingDays, depositDayCounter));
 	return depo;
     }
     else if(type == RQLSwap) {
 	Frequency swFixedLegFrequency = Annual;
 	BusinessDayConvention swFixedLegConvention = Unadjusted;
 	DayCounter swFixedLegDayCounter = Thirty360(Thirty360::European);
-        boost::shared_ptr<Xibor> swFloatingLegIndex(new Euribor6M);
+        boost::shared_ptr<IborIndex> swFloatingLegIndex(new Euribor6M);
 	boost::shared_ptr<Quote> quote(new SimpleQuote(r));
 	boost::shared_ptr<RateHelper> swap(new SwapRateHelper(
             Handle<Quote>(quote),
@@ -95,9 +96,9 @@ boost::shared_ptr<RateHelper> ObservableDB::getRateHelper(string& ticker, Rate r
     }
     else if(type == RQLFuture) {
 	Integer futMonths = 3;
-	Date imm = Date::nextIMMdate(settlementDate);
+	Date imm = IMM::nextDate(settlementDate);
 	for(int i = 1; i < n1; i++)
-	    imm = Date::nextIMMdate(imm+1);
+	    imm = IMM::nextDate(imm+1);
 	boost::shared_ptr<Quote> quote(new SimpleQuote(r));
 	boost::shared_ptr<RateHelper> future(new FuturesRateHelper(
 	    Handle<Quote>(quote),
@@ -111,7 +112,7 @@ boost::shared_ptr<RateHelper> ObservableDB::getRateHelper(string& ticker, Rate r
 	boost::shared_ptr<RateHelper> FRA(new FraRateHelper(
             Handle<Quote>(quote),
             n1, n2, fixingDays, calendar, ModifiedFollowing,
-            depositDayCounter));
+            true, fixingDays, depositDayCounter));
 	return FRA;
     }
     else {

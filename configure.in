@@ -4,7 +4,7 @@
 # Greatly simplified thanks to quantlib-config
 # Another contribution by Kurt Hornik gratefully acknowledged
 #
-# $Id: configure.in,v 1.14 2007/02/26 02:59:04 edd Exp $
+# $Id: configure.in,v 1.15 2007/07/01 18:34:21 edd Exp $
 
 # require at least autoconf 2.13
 # requirements inflation: now require 2.50
@@ -12,7 +12,7 @@ AC_PREREQ(2.50)
 
 # Process this file with autoconf to produce a configure script.
 # AC_INIT(src/RQuantLib.cc)
-AC_INIT(RQuantlib, 0.2.6)
+AC_INIT(RQuantlib, 0.2.7)
 
 # We are using C++
 AC_LANG(C++)
@@ -118,7 +118,7 @@ AC_DEFUN([QL_CHECK_BOOST_VERSION],
  AC_REQUIRE([QL_CHECK_BOOST_DEVEL])
  AC_TRY_COMPILE(
     [@%:@include <boost/version.hpp>],
-    [@%:@if BOOST_VERSION < 103100
+    [@%:@if BOOST_VERSION < 103400
      @%:@error too old
      @%:@endif],
     [AC_MSG_RESULT([yes])],
@@ -139,8 +139,8 @@ QL_CHECK_BOOST
 
 # also test for quantlib version using result from quantlib-config --version
 case ${pkg_version} in
-     0.1.*|0.2.*|0.3.*)
-	 AC_MSG_WARN([RQuantLib requires QuantLib (>= 0.4.0).])
+     0.1.*|0.2.*|0.3.*|0.4.*|0.8.0)
+	 AC_MSG_WARN([RQuantLib requires QuantLib (>= 0.8.1).])
 	 AC_MSG_ERROR([Please upgrade to a more recent version.])
      ;;
 esac
