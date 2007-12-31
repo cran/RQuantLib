@@ -792,7 +792,7 @@ void RcppDate::jdn2mdy() {
 // work-around.
 char *copyMessageToR(const char* const mesg) {
     char* Rmesg;
-    char* prefix = "Exception: ";
+    const char* prefix = "Exception: ";
     void* Rheap = R_alloc(std::strlen(prefix)+std::strlen(mesg)+1,sizeof(char));
     Rmesg = static_cast<char*>(Rheap);
     std::strcpy(Rmesg, prefix);

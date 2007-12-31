@@ -2,7 +2,7 @@
 //
 // Copyright 2005 Dominick Samperi
 //
-// $Id: bermudan.cpp,v 1.8 2007/06/30 18:21:55 dsamperi Exp $
+// $Id: bermudan.cpp,v 1.9 2007/12/31 01:56:43 edd Exp $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -35,7 +35,7 @@ void calibrateModel(const boost::shared_ptr<ShortRateModel>& model,
                                                            1000, 0.05, 0.50);
 	Volatility diff = implied - swaptionVols[i][numCols-i-1];
 
-	Rprintf("%dx%d: model %lf, market %lf, diff %lf\n",
+	Rprintf((char*) "%dx%d: model %lf, market %lf, diff %lf\n",
 		swaptionMat[i], swapLengths[numCols-i-1], implied, 
 		swaptionVols[i][numCols-i-1], diff);
     }	
@@ -168,17 +168,19 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
         Schedule fixedSchedule(startDate,maturity,
 			       Period(fixedLegFrequency),calendar,
                                fixedLegConvention,fixedLegConvention,
-			       false,false);
+			       DateGeneration::Forward,false);
         Schedule floatSchedule(startDate,maturity,Period(floatingLegFrequency),
 			       calendar,
                                floatingLegConvention,floatingLegConvention,
-			       false,false);
+			       DateGeneration::Forward,false);
 	VanillaSwap::Type type = VanillaSwap::Payer;
         boost::shared_ptr<VanillaSwap> swap(new VanillaSwap(
 	    type, notional,
             fixedSchedule, dummyFixedRate, fixedLegDayCounter,
             floatSchedule, indexSixMonths, 0.0,
-            indexSixMonths->dayCounter(), rhTermStructure));
+            indexSixMonths->dayCounter()));
+	swap->setPricingEngine(boost::shared_ptr<PricingEngine>(
+  	    new DiscountingSwapEngine(rhTermStructure)));
 
 	// Find the ATM or break-even rate
         Rate fixedATMRate = swap->fairRate();
@@ -194,7 +196,9 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 	    type, notional,
             fixedSchedule, fixedRate, fixedLegDayCounter,
             floatSchedule, indexSixMonths, 0.0,
-            indexSixMonths->dayCounter(), rhTermStructure));
+            indexSixMonths->dayCounter()));
+	swap->setPricingEngine(boost::shared_ptr<PricingEngine>(
+  	    new DiscountingSwapEngine(rhTermStructure)));
 
 	// Build swaptions that will be used to calibrate model to
 	// the volatility matrix.
@@ -241,18 +245,16 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 	// Price based on method selected.
 	if(method.compare("G2Analytic") == 0) {
 	    boost::shared_ptr<G2> modelG2(new G2(rhTermStructure));
-	    Rprintf("G2/Jamshidian (analytic) calibration\n");
+	    Rprintf((char*)"G2/Jamshidian (analytic) calibration\n");
 	    for(i = 0; i < swaptions.size(); i++)
 		swaptions[i]->setPricingEngine(boost::shared_ptr<PricingEngine>(
                 new G2SwaptionEngine(modelG2, 6.0, 16)));
 	    calibrateModel(modelG2, swaptions, 0.05, 
 			   swaptionMat,swapLengths, swaptionVols, 
 			   numRows, numCols);
-	    Swaption bermudanSwaption(mySwap, bermudaExercise, 
-				      rhTermStructure,
-				      boost::shared_ptr<PricingEngine>());
-	    bermudanSwaption.setPricingEngine
-		(boost::shared_ptr<PricingEngine>(new TreeSwaptionEngine(modelG2, 50)));
+	    boost::shared_ptr<PricingEngine> engine(new TreeSwaptionEngine(modelG2, 50));
+	    Swaption bermudanSwaption(mySwap, bermudaExercise); 
+	    bermudanSwaption.setPricingEngine(engine);
 	    rs.add("a", modelG2->params()[0]);
 	    rs.add("sigma", modelG2->params()[1]);
 	    rs.add("b", modelG2->params()[2]);
@@ -265,18 +267,16 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 	}
 	else if(method.compare("HWAnalytic") == 0) {
 	    boost::shared_ptr<HullWhite> modelHW(new HullWhite(rhTermStructure));
-	    Rprintf("Hull-White (analytic) calibration\n");
+	    Rprintf((char*)"Hull-White (analytic) calibration\n");
 	    for (i=0; i<swaptions.size(); i++)
 		swaptions[i]->setPricingEngine(boost::shared_ptr<PricingEngine>(
                 new JamshidianSwaptionEngine(modelHW)));
 	    calibrateModel(modelHW, swaptions, 0.05, 
 			   swaptionMat, swapLengths, swaptionVols, 
 			   numRows, numCols);
-	    Swaption bermudanSwaption(mySwap, bermudaExercise, 
-				      rhTermStructure,
-				      boost::shared_ptr<PricingEngine>());
-	    bermudanSwaption.setPricingEngine
-		(boost::shared_ptr<PricingEngine>(new TreeSwaptionEngine(modelHW, 50)));
+	    boost::shared_ptr<PricingEngine> engine(new TreeSwaptionEngine(modelHW, 50));
+	    Swaption bermudanSwaption(mySwap, bermudaExercise);
+	    bermudanSwaption.setPricingEngine(engine);
 	    rs.add("a", modelHW->params()[0]);
 	    rs.add("sigma", modelHW->params()[1]);
 	    rs.add("price", bermudanSwaption.NPV());
@@ -286,7 +286,7 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 	}
 	else if(method.compare("HWTree") == 0) {
 	    boost::shared_ptr<HullWhite> modelHW2(new HullWhite(rhTermStructure));
-	    Rprintf("Hull-White (tree) calibration\n");
+	    Rprintf((char*)"Hull-White (tree) calibration\n");
 	    for (i=0; i<swaptions.size(); i++)
             swaptions[i]->setPricingEngine(boost::shared_ptr<PricingEngine>(
                 new TreeSwaptionEngine(modelHW2,grid)));
@@ -294,11 +294,9 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 	    calibrateModel(modelHW2, swaptions, 0.05, 
 			   swaptionMat, swapLengths, swaptionVols, 
 			   numRows, numCols);
-	    Swaption bermudanSwaption(mySwap, bermudaExercise, 
-				      rhTermStructure,
-				      boost::shared_ptr<PricingEngine>());
-	    bermudanSwaption.setPricingEngine
-		(boost::shared_ptr<PricingEngine>(new TreeSwaptionEngine(modelHW2, 50)));
+	    boost::shared_ptr<PricingEngine> engine(new TreeSwaptionEngine(modelHW2, 50));
+	    Swaption bermudanSwaption(mySwap, bermudaExercise);
+	    bermudanSwaption.setPricingEngine(engine);
 	    rs.add("a", modelHW2->params()[0]);
 	    rs.add("sigma", modelHW2->params()[1]);
 	    rs.add("price", bermudanSwaption.NPV());
@@ -309,18 +307,17 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 	else if(method.compare("BKTree") == 0) {
 	    boost::shared_ptr<BlackKarasinski> modelBK(new
 		    BlackKarasinski(rhTermStructure));
-	    Rprintf("Black-Karasinski (tree) calibration\n");
+	    Rprintf((char*)"Black-Karasinski (tree) calibration\n");
 	    for (i=0; i<swaptions.size(); i++)
             swaptions[i]->setPricingEngine(boost::shared_ptr<PricingEngine>(
                 new TreeSwaptionEngine(modelBK,grid)));
 	    calibrateModel(modelBK, swaptions, 0.05, 
 			   swaptionMat, swapLengths, swaptionVols, 
 			   numRows, numCols);
-	    Swaption bermudanSwaption(mySwap, bermudaExercise, 
-				      rhTermStructure,
-				      boost::shared_ptr<PricingEngine>());
-	    bermudanSwaption.setPricingEngine
-		(boost::shared_ptr<PricingEngine>(new TreeSwaptionEngine(modelBK, 50)));
+
+	    boost::shared_ptr<PricingEngine> engine(new TreeSwaptionEngine(modelBK, 50));
+	    Swaption bermudanSwaption(mySwap, bermudaExercise);
+	    bermudanSwaption.setPricingEngine(engine);
 	    rs.add("a", modelBK->params()[0]);
 	    rs.add("sigma", modelBK->params()[1]);
 	    rs.add("price", bermudanSwaption.NPV());

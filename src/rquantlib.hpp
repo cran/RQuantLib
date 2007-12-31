@@ -1,11 +1,11 @@
-/* -*- mode: c++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- 
+//
 // RQuantLib function prototypes and macros
 //
 // Copyright 2002, 2003, 2004, 2005  Dirk Eddelbuettel <edd@debian.org>
 // Copyright 2005  Dominick Samperi
 //
-// $Id: rquantlib.hpp,v 1.7 2005/10/27 04:21:40 dsamperi Exp $
+// $Id: rquantlib.hpp,v 1.8 2007/12/31 01:59:44 edd Exp $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -85,35 +85,52 @@ private:
     RQLMap db_;
 };
 
-boost::shared_ptr<YieldTermStructure> getTermStructure
-(string& interpWhat, string& interpHow, const Date& settleDate,
-const std::vector<boost::shared_ptr<RateHelper> >& curveInput,
- DayCounter& dayCounter, Real tolerance);
+boost::shared_ptr<YieldTermStructure> 
+getTermStructure(string& interpWhat, string& interpHow, 
+                 const Date& settleDate,
+                 const std::vector<boost::shared_ptr<RateHelper> >& curveInput,
+                 DayCounter& dayCounter, Real tolerance);
 
 boost::shared_ptr<YieldTermStructure>
 makeFlatCurve(const Date& today,
-	      const boost::shared_ptr<Quote>& forward,
-	      const DayCounter& dc);
+              const boost::shared_ptr<Quote>& forward,
+              const DayCounter& dc);
+
+boost::shared_ptr<YieldTermStructure>
+flatRate(const Date& today,
+         const boost::shared_ptr<Quote>& forward,
+         const DayCounter& dc);
 
 boost::shared_ptr<BlackVolTermStructure> 
 makeFlatVolatility(const Date& today,
-		   const boost::shared_ptr<Quote>& vol,
-		   DayCounter dc);
+                   const boost::shared_ptr<Quote>& vol,
+                   DayCounter dc);
+
+boost::shared_ptr<BlackVolTermStructure>
+flatVol(const Date& today,
+        const boost::shared_ptr<Quote>& vol,
+        const DayCounter& dc);
 
 enum EngineType {Analytic,
-		 JR, CRR, EQP, TGEO, TIAN, LR,
-		 FiniteDifferences,
-		 PseudoMonteCarlo, QuasiMonteCarlo };
+                 JR, CRR, EQP, TGEO, TIAN, LR, JOSHI,
+                 FiniteDifferences, Integral,
+                 PseudoMonteCarlo, QuasiMonteCarlo };
 
 boost::shared_ptr<VanillaOption>
 makeOption(const boost::shared_ptr<StrikedTypePayoff>& payoff,
-	   const boost::shared_ptr<Exercise>& exercise,
-	   const boost::shared_ptr<Quote>& u,
-	   const boost::shared_ptr<YieldTermStructure>& q,
-	   const boost::shared_ptr<YieldTermStructure>& r,
-	   const boost::shared_ptr<BlackVolTermStructure>& vol,
-	   EngineType engineType = Analytic,
-	   Size binomialSteps=128,
-	   Size samples=100); 
+           const boost::shared_ptr<Exercise>& exercise,
+           const boost::shared_ptr<Quote>& u,
+           const boost::shared_ptr<YieldTermStructure>& q,
+           const boost::shared_ptr<YieldTermStructure>& r,
+           const boost::shared_ptr<BlackVolTermStructure>& vol,
+           EngineType engineType = Analytic,
+           Size binomialSteps=128,
+           Size samples=100); 
+
+boost::shared_ptr<GeneralizedBlackScholesProcess>
+makeProcess(const boost::shared_ptr<Quote>& u,
+            const boost::shared_ptr<YieldTermStructure>& q,
+            const boost::shared_ptr<YieldTermStructure>& r,
+            const boost::shared_ptr<BlackVolTermStructure>& vol);
 
 #endif

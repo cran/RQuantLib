@@ -2,7 +2,7 @@
 ##
 ## Copyright (C) 2005  Dominick Samperi
 ##
-## $Id: discount.R,v 1.2 2005/11/01 04:34:33 dsamperi Exp $
+## $Id: discount.R,v 1.3 2007/12/31 02:11:19 edd Exp $
 ##
 ## This program is part of the RQuantLib library for R (GNU S).
 ## It is made available under the terms of the GNU General Public
@@ -35,11 +35,11 @@ DiscountCurve.default <- function(params, tsQuotes, times) {
   if(!is.numeric(unlist(tsQuotes))) {
     stop("Term structure quotes must have numeric values")
   }
-  
+
   # Check the times vector
   if(!is.numeric(times) || length(times) == 0)
     stop("The times parameter must be a non-emptry numeric vector")
-    
+
   # Finally ready to make the call...
   val <- .Call("QL_DiscountCurve", params, tsQuotes, times,
                PACKAGE="RQuantLib")
@@ -51,7 +51,7 @@ plot.DiscountCurve <- function(x,setpar=TRUE,dolegend=TRUE,...) {
   if(setpar) {
       savepar <- par(mfrow=c(3,1))
   }
-  if(names(tsQuotes)[1] == "flat") {
+  if(x$flatQuotes) {
     # Don't want to plot noise when we look at a flat yield curve
     plot(c(x$times[1],x$times[length(x$times)]), c(0,.5),type='n',
          main='forwards', xlab='time',ylab='forward rate')
@@ -83,7 +83,7 @@ plot.DiscountCurve <- function(x,setpar=TRUE,dolegend=TRUE,...) {
   plot(x$times, x$discounts, type='l',
        main='discounts',xlab='time',ylab='discount')
   if(dolegend) {
-    if(names(tsQuotes)[1] == "flat") {
+    if(x$flatQuotes) {
       legend('center','center','flat',bty='n',text.col='red')
     }
     else {

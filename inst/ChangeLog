@@ -1,3 +1,20 @@
+2008-01-01  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Release 0.2.8, updated for QL 0.9.0
+
+	* R/option.R: For BinaryOption, added new arguments 'binType' and 
+	  'excType' to select the type of Binary (cash, asset or gap) and 
+	  exercise (european or american).
+
+	* RcppSrc/Rcpp.cpp,src/*cpp: Added const char* casts for Rprintf
+	* src/BinaryOptions.cpp: Support new binType and excType arguments
+	* src/*cpp: Generally updated for QL 0.9.0 changes
+	* src/discount.cpp: New boolean variable flatQuotes
+	
+	* man/{BinaryOption,DiscountCurve}.Rd: Updated for new arguments
+
+	* inst/unitTests: Added unit testing using the RUnit package
+
 2007-07-01  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: Release 0.2.7, updated for QL 0.8.1

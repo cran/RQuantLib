@@ -2,7 +2,7 @@
 //
 // Copyright 2005 Dominick Samperi
 //
-// $Id: curves.cpp,v 1.6 2007/06/30 18:21:15 dsamperi Exp $
+// $Id: curves.cpp,v 1.7 2007/12/31 01:57:42 edd Exp $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -88,7 +88,7 @@ boost::shared_ptr<RateHelper> ObservableDB::getRateHelper(string& ticker, Rate r
 	boost::shared_ptr<Quote> quote(new SimpleQuote(r));
 	boost::shared_ptr<RateHelper> swap(new SwapRateHelper(
             Handle<Quote>(quote),
-            n1*Years, fixingDays,
+            n1*Years, /*fixingDays,*/
             calendar, swFixedLegFrequency,
             swFixedLegConvention, swFixedLegDayCounter,
             swFloatingLegIndex));
@@ -144,7 +144,7 @@ const std::vector<boost::shared_ptr<RateHelper> >& curveInput,
     else if(interpWhat.compare("discount") == 0 &&
             interpHow.compare("spline") == 0) {
 	boost::shared_ptr<YieldTermStructure> ts(new
-	       PiecewiseYieldCurve<Discount,Cubic>(settlementDate, 
+	       PiecewiseYieldCurve<Discount,CubicSpline>(settlementDate, 
 	       curveInput, dayCounter, tolerance));
 	return ts;
     }
@@ -165,7 +165,7 @@ const std::vector<boost::shared_ptr<RateHelper> >& curveInput,
     else if(interpWhat.compare("forward") == 0 &&
             interpHow.compare("spline") == 0) {
 	boost::shared_ptr<YieldTermStructure> ts(new
-	       PiecewiseYieldCurve<ForwardRate,Cubic>(settlementDate, 
+	       PiecewiseYieldCurve<ForwardRate,CubicSpline>(settlementDate, 
 	       curveInput, dayCounter, tolerance));
 	return ts;
     }
@@ -186,13 +186,13 @@ const std::vector<boost::shared_ptr<RateHelper> >& curveInput,
     else if(interpWhat.compare("zero") == 0 &&
             interpHow.compare("spline") == 0) {
 	boost::shared_ptr<YieldTermStructure> ts(new
-	       PiecewiseYieldCurve<ZeroYield,Cubic>(settlementDate, 
+	       PiecewiseYieldCurve<ZeroYield,CubicSpline>(settlementDate, 
 	       curveInput, dayCounter, tolerance));
 	return ts;
     }
     else {
-	Rprintf("interpWhat = %s\n", interpWhat.c_str());
-	Rprintf("interpHow  = %s\n", interpHow.c_str());
+      Rprintf((char*)"interpWhat = %s\n", interpWhat.c_str());
+      Rprintf((char*)"interpHow  = %s\n", interpHow.c_str());
 	throw range_error("What/How term structure options not recognized");
     }
 }

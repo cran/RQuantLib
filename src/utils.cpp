@@ -1,9 +1,10 @@
-
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- 
+//
 // RQuantLib -- R interface to the QuantLib libraries
 //
 // Copyright 2002-2006 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: utils.cpp,v 1.13 2006/11/06 21:27:23 edd Exp $
+// $Id: utils.cpp,v 1.14 2007/12/31 02:00:08 edd Exp $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -23,72 +24,68 @@
 
 #include "rquantlib.hpp"
 
+// cf QuantLib-0.9.0/test-suite/europeanoption.cpp
 boost::shared_ptr<VanillaOption>
 makeOption(const boost::shared_ptr<StrikedTypePayoff>& payoff,
-	   const boost::shared_ptr<Exercise>& exercise,
-	   const boost::shared_ptr<Quote>& u,
-	   const boost::shared_ptr<YieldTermStructure>& q,
-	   const boost::shared_ptr<YieldTermStructure>& r,
-	   const boost::shared_ptr<BlackVolTermStructure>& vol,
-	   EngineType engineType,
-	   Size binomialSteps,
-	   Size samples) {
+           const boost::shared_ptr<Exercise>& exercise,
+           const boost::shared_ptr<Quote>& u,
+           const boost::shared_ptr<YieldTermStructure>& q,
+           const boost::shared_ptr<YieldTermStructure>& r,
+           const boost::shared_ptr<BlackVolTermStructure>& vol,
+           EngineType engineType,
+           Size binomialSteps,
+           Size samples) {
   
+    boost::shared_ptr<GeneralizedBlackScholesProcess> stochProcess = makeProcess(u,q,r,vol);
     boost::shared_ptr<PricingEngine> engine;
+
     switch (engineType) {
     case Analytic:
-	engine = boost::shared_ptr<PricingEngine>(new AnalyticEuropeanEngine);
-	break;
+        engine = boost::shared_ptr<PricingEngine>(new AnalyticEuropeanEngine(stochProcess));
+        break;
     case JR:
-      engine = boost::shared_ptr<PricingEngine>(
-			new BinomialVanillaEngine<JarrowRudd>(binomialSteps));
-      break;
+        engine = boost::shared_ptr<PricingEngine>(new BinomialVanillaEngine<JarrowRudd>(stochProcess, binomialSteps));
+        break;
     case CRR:
-      engine = boost::shared_ptr<PricingEngine>(
-		new BinomialVanillaEngine<CoxRossRubinstein>(binomialSteps));
+        engine = boost::shared_ptr<PricingEngine>(new BinomialVanillaEngine<CoxRossRubinstein>(stochProcess, binomialSteps));
     case EQP:
-      engine = boost::shared_ptr<PricingEngine>(
-		new BinomialVanillaEngine<AdditiveEQPBinomialTree>(
-      						   binomialSteps));
-      break;
+        engine = boost::shared_ptr<PricingEngine>(new BinomialVanillaEngine<AdditiveEQPBinomialTree>(stochProcess, binomialSteps));
+        break;
     case TGEO:
-      engine = boost::shared_ptr<PricingEngine>(
-		new BinomialVanillaEngine<Trigeorgis>(binomialSteps));
-      break;
+        engine = boost::shared_ptr<PricingEngine>(new BinomialVanillaEngine<Trigeorgis>(stochProcess, binomialSteps));
+        break;
     case TIAN:
-      engine = boost::shared_ptr<PricingEngine>(
-		new BinomialVanillaEngine<Tian>(binomialSteps));
-      break;
+        engine = boost::shared_ptr<PricingEngine>(new BinomialVanillaEngine<Tian>(stochProcess, binomialSteps));
+        break;
     case LR:
-      engine = boost::shared_ptr<PricingEngine>(
-		new BinomialVanillaEngine<LeisenReimer>(binomialSteps));
-      break;
+        engine = boost::shared_ptr<PricingEngine>(new BinomialVanillaEngine<LeisenReimer>(stochProcess, binomialSteps));
+        break;
+    case JOSHI:
+        engine = boost::shared_ptr<PricingEngine>(new BinomialVanillaEngine<Joshi4>(stochProcess, binomialSteps));
+        break;
     case FiniteDifferences:
-      engine = boost::shared_ptr<PricingEngine>(
-		new FDEuropeanEngine(binomialSteps,samples));
-      break;
+        engine = boost::shared_ptr<PricingEngine>(new FDEuropeanEngine(stochProcess, binomialSteps, samples));
+        break;
+    case Integral:
+        engine = boost::shared_ptr<PricingEngine>(new IntegralEngine(stochProcess));
+        break;
     case PseudoMonteCarlo:
-      engine = MakeMCEuropeanEngine<PseudoRandom>().withStepsPerYear(1)
-      .withSamples(samples)
-      .withSeed(42);
-      break;
+        engine = MakeMCEuropeanEngine<PseudoRandom>(stochProcess)
+            .withStepsPerYear(1)
+            .withSamples(samples)
+            .withSeed(42);
+        break;
     case QuasiMonteCarlo:
-      engine = MakeMCEuropeanEngine<LowDiscrepancy>().withStepsPerYear(1)
-	.withSamples(samples);
-      break;
+        engine = MakeMCEuropeanEngine<LowDiscrepancy>(stochProcess)
+            .withStepsPerYear(1)
+            .withSamples(samples);
+        break;
     default:
-      QL_FAIL("Unknown engine type");
+        QL_FAIL("Unknown engine type");
     }
-    boost::shared_ptr<StochasticProcess> 
-      stochProcess(new
-		   BlackScholesMertonProcess(
-					     Handle<Quote>(u),
-					     Handle<YieldTermStructure>(q),
-					     Handle<YieldTermStructure>(r),
-					     Handle<BlackVolTermStructure>(vol)));
-    return boost::shared_ptr<VanillaOption>(new
-	   EuropeanOption(stochProcess, payoff, exercise, engine));
-
+    boost::shared_ptr<VanillaOption> option(new EuropeanOption(payoff, exercise));
+    option->setPricingEngine(engine);
+    return option;
 }
 
 // QuantLib option setup utils, copied from the test-suite sources
@@ -100,11 +97,40 @@ makeFlatCurve(const Date& today,
     return boost::shared_ptr<YieldTermStructure>(
 	   new FlatForward(today, Handle<Quote>(forward), dc));
 }
+
+boost::shared_ptr<YieldTermStructure>
+flatRate(const Date& today,
+	 const boost::shared_ptr<Quote>& forward,
+	 const DayCounter& dc) {
+  return boost::shared_ptr<YieldTermStructure>(
+	       new FlatForward(today, Handle<Quote>(forward), dc));
+}
   
 boost::shared_ptr<BlackVolTermStructure> 
 makeFlatVolatility(const Date& today,
-		   const boost::shared_ptr<Quote>& vol,
-		   const DayCounter dc) {
+                   const boost::shared_ptr<Quote>& vol,
+                   const DayCounter dc) {
     return boost::shared_ptr<BlackVolTermStructure>(
-	new BlackConstantVol(today, Handle<Quote>(vol), dc));
+           new BlackConstantVol(today, NullCalendar(), Handle<Quote>(vol), dc));
 }
+
+boost::shared_ptr<BlackVolTermStructure>
+flatVol(const Date& today,
+	const boost::shared_ptr<Quote>& vol,
+	const DayCounter& dc) {
+  return boost::shared_ptr<BlackVolTermStructure>(new
+            BlackConstantVol(today, NullCalendar(), Handle<Quote>(vol), dc));
+}
+
+boost::shared_ptr<GeneralizedBlackScholesProcess>
+makeProcess(const boost::shared_ptr<Quote>& u,
+            const boost::shared_ptr<YieldTermStructure>& q,
+            const boost::shared_ptr<YieldTermStructure>& r,
+            const boost::shared_ptr<BlackVolTermStructure>& vol) {
+    return boost::shared_ptr<BlackScholesMertonProcess>(
+           new BlackScholesMertonProcess(Handle<Quote>(u),
+                                         Handle<YieldTermStructure>(q),
+                                         Handle<YieldTermStructure>(r),
+                                         Handle<BlackVolTermStructure>(vol)));
+}
+

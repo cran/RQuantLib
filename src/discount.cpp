@@ -2,7 +2,7 @@
 //
 // Copyright (C) 2005  Dominick Samperi
 //
-// $Id: discount.cpp,v 1.5 2006/07/22 14:13:04 dsamperi Exp $
+// $Id: discount.cpp,v 1.6 2007/12/31 02:08:42 edd Exp $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -38,11 +38,13 @@ RcppExport SEXP QL_DiscountCurve(SEXP params, SEXP tsQuotes,
 	double dt = rparam.getDoubleValue("dt");
 	
 	string interpWhat, interpHow;
+	bool flatQuotes = true;
 	if(firstQuoteName.compare("flat") != 0) {
 
 	    // Get interpolation method (not needed for "flat" case)
 	    interpWhat = rparam.getStringValue("interpWhat");
 	    interpHow  = rparam.getStringValue("interpHow");
+	    flatQuotes = false;
 	}
 
         Calendar calendar = TARGET();
@@ -103,6 +105,7 @@ RcppExport SEXP QL_DiscountCurve(SEXP params, SEXP tsQuotes,
 	rs.add("discounts", disc, true);
 	rs.add("forwards", fwds, true);
 	rs.add("zerorates", zero, true);
+	rs.add("flatQuotes", flatQuotes);
 	rs.add("params", params, false);
 	rl = rs.getReturnList();
 

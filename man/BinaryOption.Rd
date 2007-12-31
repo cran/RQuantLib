@@ -1,4 +1,4 @@
-% $Id: BinaryOption.Rd,v 1.6 2006/11/11 04:09:45 edd Exp $
+% $Id: BinaryOption.Rd,v 1.7 2007/12/31 01:51:47 edd Exp $
 \name{BinaryOption}
 \alias{BinaryOption}
 \alias{BinaryOption.default}
@@ -8,14 +8,20 @@ This function evaluations an Binary option on a common stock
 using a closed-form solution. The option value as well as the common first
 derivatives (\"Greeks\") are returned.}
 \usage{
-\method{BinaryOption}{default}(type, underlying, strike, dividendYield,
+\method{BinaryOption}{default}(binType, type, excType, underlying,
+        strike, dividendYield,
 	riskFreeRate, maturity, volatility, cashPayoff)
 
 \method{print}{Option}
 \method{summary}{Option}
 }
 \arguments{
+  \item{binType}{A string with one of the values \code{cash},
+    \code{asset} or \code{gap} to select CashOrNothing, AssetOrNothing
+    or Gap payoff profiles}
   \item{type}{A string with one of the values \code{call} or \code{put}}
+  \item{excType}{A string with one of the values \code{european} or
+    \code{american} to denote the exercise type}
   \item{underlying}{Current price of the underlying stock}
   \item{strike}{Strike price of the option}
   \item{dividendYield}{Continuous dividend yield (as a fraction) of the stock}
@@ -56,7 +62,8 @@ derivatives (\"Greeks\") are returned.}
 \seealso{\code{\link{AmericanOption}},\code{\link{EuropeanOption}}}
 
 \examples{
-BinaryOption("call", 100, 100, 0.02, 0.03, 0.5, 0.4, 10)
+BinaryOption(binType="asset", type="call", excType="european", underlying=100, strike=100, dividendYield=0.02,
+             riskFreeRate=0.03, maturity=0.5, volatility=0.4, cashPayoff=10)
 }
 \keyword{misc}
 

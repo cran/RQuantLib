@@ -1,6 +1,6 @@
 
-R : Copyright 2006, The R Foundation for Statistical Computing
-Version 2.3.1 (2006-06-01)
+R version 2.6.1 (2007-11-26)
+Copyright (C) 2007 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -98,18 +98,19 @@ Concise summary of valuation for AmericanOption
 +                     mat=0.5, vol=0.25), digits=4)
 Concise summary of valuation for BarrierOption 
  value  delta  gamma   vega  theta    rho divRho 
-9.0246     NA     NA     NA     NA     NA     NA 
+9.0246    NaN    NaN    NaN    NaN    NaN    NaN 
 > ## barrier: down and in call == 7.7627
 > print(BarrierOption("downin", barrier=95, rebate=3, type="call",
 +                     strike=90, underlying=100, div=0.04, riskF=0.08,
 +                     mat=0.5, vol=0.25), digits=4)
 Concise summary of valuation for BarrierOption 
  value  delta  gamma   vega  theta    rho divRho 
-7.7627     NA     NA     NA     NA     NA     NA 
+7.7627    NaN    NaN    NaN    NaN    NaN    NaN 
 > 
 > 
 > ## binary aka digital: put == 2.6710
-> print(BinaryOption("put", strike=80, underl=100, div=0.06, r=0.06,
+> print(BinaryOption(binType="cash", type="put", excType="european",
++                    strike=80, underl=100, div=0.06, r=0.06,
 +                    mat=0.75, vol=0.35, cash=10), digits=4)
 Concise summary of valuation for BinaryOption 
   value   delta   gamma    vega   theta     rho  divRho 

@@ -55,6 +55,7 @@ print(BarrierOption("downin", barrier=95, rebate=3, type="call",
 
 
 ## binary aka digital: put == 2.6710
-print(BinaryOption("put", strike=80, underl=100, div=0.06, r=0.06,
+print(BinaryOption(binType="cash", type="put", excType="european",
+                   strike=80, underl=100, div=0.06, r=0.06,
                    mat=0.75, vol=0.35, cash=10), digits=4)
 

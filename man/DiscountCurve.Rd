@@ -1,4 +1,4 @@
-% $Id: DiscountCurve.Rd,v 1.4 2006/07/20 02:43:26 dsamperi Exp $
+% $Id: DiscountCurve.Rd,v 1.5 2007/12/31 02:12:27 edd Exp $
 \name{DiscountCurve}
 \alias{DiscountCurve}
 \alias{DiscountCurve.default}
@@ -66,6 +66,7 @@ DiscountCurve(params, tsQuotes, times)
   \item{discounts}{Corresponding discount factors}
   \item{forwards}{Corresponding forward rates with time span \code{dt}}
   \item{zerorates}{Corresponding zero coupon rates}
+  \item{flatQuotes}{True if a flat quote was used, False otherwise}
   \item{params}{The input parameter list}
 }
 \details{
