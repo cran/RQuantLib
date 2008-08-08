@@ -77,7 +77,7 @@ boost::shared_ptr<RateHelper> ObservableDB::getRateHelper(string& ticker, Rate r
 	    Handle<Quote>(quote),
             n1*units, fixingDays,	
             calendar, ModifiedFollowing, 
-	    true, fixingDays, depositDayCounter));
+	    true, /*fixingDays,*/ depositDayCounter));
 	return depo;
     }
     else if(type == RQLSwap) {
@@ -104,6 +104,7 @@ boost::shared_ptr<RateHelper> ObservableDB::getRateHelper(string& ticker, Rate r
 	    Handle<Quote>(quote),
             imm,
             futMonths, calendar, ModifiedFollowing,
+	    true, // added bool endOfMonth variable
             depositDayCounter));
 	return future;
     }
@@ -112,7 +113,7 @@ boost::shared_ptr<RateHelper> ObservableDB::getRateHelper(string& ticker, Rate r
 	boost::shared_ptr<RateHelper> FRA(new FraRateHelper(
             Handle<Quote>(quote),
             n1, n2, fixingDays, calendar, ModifiedFollowing,
-            true, fixingDays, depositDayCounter));
+            true, /*fixingDays,*/ depositDayCounter));
 	return FRA;
     }
     else {
@@ -126,68 +127,94 @@ boost::shared_ptr<YieldTermStructure> getTermStructure
 (string& interpWhat, string& interpHow, const Date& settlementDate,
 const std::vector<boost::shared_ptr<RateHelper> >& curveInput,
  DayCounter& dayCounter, Real tolerance) {
-    
     if(interpWhat.compare("discount") == 0 &&
        interpHow.compare("linear") == 0) {
 	boost::shared_ptr<YieldTermStructure> ts(new
 	       PiecewiseYieldCurve<Discount,Linear>(settlementDate, 
-	       curveInput, dayCounter, tolerance));
+	       curveInput, dayCounter, 
+  	       std::vector<Handle<Quote> >(),
+  	       std::vector<Date>(),
+  	       tolerance));
 	return ts;
     }
     else if(interpWhat.compare("discount") == 0 &&
             interpHow.compare("loglinear") == 0) {
 	boost::shared_ptr<YieldTermStructure> ts(new
 	       PiecewiseYieldCurve<Discount,LogLinear>(settlementDate, 
-	       curveInput, dayCounter, tolerance));
+	       curveInput, dayCounter, 
+  	       std::vector<Handle<Quote> >(),
+  	       std::vector<Date>(),
+  	       tolerance));
 	return ts;
     }
     else if(interpWhat.compare("discount") == 0 &&
             interpHow.compare("spline") == 0) {
 	boost::shared_ptr<YieldTermStructure> ts(new
-	       PiecewiseYieldCurve<Discount,CubicSpline>(settlementDate, 
-	       curveInput, dayCounter, tolerance));
+  	       PiecewiseYieldCurve<Discount, Cubic>(settlementDate, 
+	       curveInput, dayCounter, 
+  	       std::vector<Handle<Quote> >(),
+  	       std::vector<Date>(),
+  	       tolerance));
 	return ts;
     }
     else if(interpWhat.compare("forward") == 0 &&
             interpHow.compare("linear") == 0) {
 	boost::shared_ptr<YieldTermStructure> ts(new
 	       PiecewiseYieldCurve<ForwardRate,Linear>(settlementDate, 
-	       curveInput, dayCounter, tolerance));
+	       curveInput, dayCounter, 
+  	       std::vector<Handle<Quote> >(),
+  	       std::vector<Date>(),
+  	       tolerance));
 	return ts;
     }
     else if(interpWhat.compare("forward") == 0 &&
             interpHow.compare("loglinear") == 0) {
 	boost::shared_ptr<YieldTermStructure> ts(new
 	       PiecewiseYieldCurve<ForwardRate,LogLinear>(settlementDate, 
-	       curveInput, dayCounter, tolerance));
+	       curveInput, dayCounter, 
+  	       std::vector<Handle<Quote> >(),
+  	       std::vector<Date>(),
+  	       tolerance));
 	return ts;
     }
     else if(interpWhat.compare("forward") == 0 &&
             interpHow.compare("spline") == 0) {
 	boost::shared_ptr<YieldTermStructure> ts(new
-	       PiecewiseYieldCurve<ForwardRate,CubicSpline>(settlementDate, 
-	       curveInput, dayCounter, tolerance));
+	       PiecewiseYieldCurve<ForwardRate,Cubic>(settlementDate, 
+	       curveInput, dayCounter, 
+  	       std::vector<Handle<Quote> >(),
+  	       std::vector<Date>(),
+  	       tolerance));
 	return ts;
     }
     else if(interpWhat.compare("zero") == 0 &&
             interpHow.compare("linear") == 0) {
 	boost::shared_ptr<YieldTermStructure> ts(new
 	       PiecewiseYieldCurve<ZeroYield,Linear>(settlementDate, 
-	       curveInput, dayCounter, tolerance));
+	       curveInput, dayCounter, 
+  	       std::vector<Handle<Quote> >(),
+  	       std::vector<Date>(),
+	       tolerance));
 	return ts;
     }
     else if(interpWhat.compare("zero") == 0 &&
             interpHow.compare("loglinear") == 0) {
 	boost::shared_ptr<YieldTermStructure> ts(new
 	       PiecewiseYieldCurve<ZeroYield,LogLinear>(settlementDate, 
-	       curveInput, dayCounter, tolerance));
+	       curveInput, dayCounter, 
+  	       std::vector<Handle<Quote> >(),
+  	       std::vector<Date>(),
+  	       tolerance));
 	return ts;
     }
     else if(interpWhat.compare("zero") == 0 &&
             interpHow.compare("spline") == 0) {
 	boost::shared_ptr<YieldTermStructure> ts(new
-	       PiecewiseYieldCurve<ZeroYield,CubicSpline>(settlementDate, 
-	       curveInput, dayCounter, tolerance));
+	       PiecewiseYieldCurve<ZeroYield,Cubic>(settlementDate, 
+	       curveInput, dayCounter, 
+  	       std::vector<Handle<Quote> >(),
+  	       std::vector<Date>(),
+  	       tolerance));
 	return ts;
     }
     else {
