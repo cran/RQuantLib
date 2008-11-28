@@ -6,27 +6,15 @@
 #
 # $Id: configure.in,v 1.16 2008/01/01 23:52:23 edd Exp $
 
-# require at least autoconf 2.13
-# requirements inflation: now require 2.50
+# require at least autoconf 2.50
 AC_PREREQ(2.50)
 
 # Process this file with autoconf to produce a configure script.
-# AC_INIT(src/RQuantLib.cc)
-AC_INIT(RQuantlib, 0.2.9)
+AC_INIT(RQuantlib, 0.2.10)
 
 # We are using C++
 AC_LANG(C++)
-# autoconf2.13: AC_LANG_CPLUSPLUS
 AC_REQUIRE_CPP
-
-# Next segment by Kurt
-: ${R_HOME=`R RHOME`}
-if test -z "${R_HOME}"; then
-    echo "could not determine R_HOME"
-    exit 1
-fi
-CXX=`${R_HOME}/bin/R CMD config CXX`
-CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
 
 AC_PROG_CXX
 if test "${GXX}" = yes; then
@@ -40,34 +28,63 @@ if test "${GXX}" = yes; then
     esac
 fi
 
-# borrowed from a check for gnome in GNU gretl
-# define a check for quantlib-config
+AC_DEFUN(AC_PROG_R, [AC_CHECK_PROG(R,R,yes)])
+AC_PROG_R
+
+# Next segment by Kurt
+: ${R_HOME=`R RHOME`}
+if test -z "${R_HOME}"; then
+    AC_MSG_ERROR([Could not determine R_HOME.])   
+fi
+CXX=`${R_HOME}/bin/R CMD config CXX`
+CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
+
+## look for Rscript, but use the one found via R_HOME to allow for multiple installations
+AC_DEFUN(AC_PROG_RSCRIPT, [AC_CHECK_PROG(RSCRIPT,Rscript,yes)])
+AC_PROG_RSCRIPT
+#AC_MSG_CHECKING([for Rscript])
+if test x"${RSCRIPT}" == x"yes" ; then
+#     AC_MSG_RESULT([yes])    
+     ## Rcpp compile flag providing header directory containing Rcpp.h
+     rcpp_cxxflags=`${R_HOME}/bin/Rscript -e 'cat(Rcpp:::RcppCxxFlags())'`
+     ## link flag providing libary as well as path to library, and optionally rpath
+     rcpp_ldflags=`${R_HOME}/bin/Rscript -e 'cat(Rcpp:::RcppLdFlags())'`
+     ## now use all these
+     AC_SUBST([CXXFLAGS],["${CXXFLAGS} $rcpp_cxxflags"])
+     AC_SUBST([LDFLAGS],["${LDFLAGS} $rcpp_ldflags"])
+else
+#    AC_MSG_RESULT([no])    
+    echo "
+  Your installation does not appear to have Rscript installed.
+
+  Please make sure that you have a working and complete R installation.
+"
+    exit 1
+fi
+
+# borrowed from a check for gnome in GNU gretl: define a check for quantlib-config
 AC_DEFUN(AC_PROG_QUANTLIB, [AC_CHECK_PROG(QUANTLIB,quantlib-config,yes)])
-# and use it
 AC_PROG_QUANTLIB
 if test x"${QUANTLIB}" == x"yes" ; then
-    #echo "*** Found quantlib-config, using it for header and lib flags"
+    # use quantlib-config for QL settings
     pkg_cxxflags=`quantlib-config --cflags`
     pkg_libs=`quantlib-config --libs`
     pkg_version=`quantlib-config --version`
-    AC_SUBST([CXXFLAGS],["${CXXFLAGS} -DUSING_QUANTLIB"])
-    AC_SUBST([CXXFLAGS],["${CXXFLAGS} $pkg_cxxflags"])
-    AC_SUBST([CXXFLAGS],["${CXXFLAGS} -I../RcppSrc"])
-    AC_SUBST([LDFLAGS],["${LDFLAGS} -L../RcppSrc -lRcpp"])
-    AC_SUBST([LDFLAGS],["${LDFLAGS} $pkg_libs"])
-    echo "Building libRcpp.a in RcppSrc..."
-    cd RcppSrc
-    make RHOME=${R_HOME} CPPFLAGS="-DUSING_QUANTLIB $pkg_cxxflags"
-    cd ..
-    cp RcppSrc/Rcpp-license.txt inst
-else
-    echo "
-  Your installation does not appear to have QuantLib installed as the
-  quantlib-config utility script could not be found. 
 
-  Please make sure that QuantLib is installed before building RQuantLib.
-"
-    exit 1
+    # also test for quantlib version using result from quantlib-config --version
+    case ${pkg_version} in
+    0.1.*|0.2.*|0.3.*|0.4.*|0.8.*|0.9.0|0.9.5)
+	AC_MSG_WARN([RQuantLib requires QuantLib (>= 0.9.6).])
+	AC_MSG_ERROR([Please upgrade to a more recent version.])
+	;;
+    esac
+
+    # now use all these
+    AC_SUBST([CXXFLAGS],["${CXXFLAGS} "])
+    AC_SUBST([CXXFLAGS],["${CXXFLAGS} $pkg_cxxflags"])
+    AC_SUBST([LDFLAGS],["${LDFLAGS} $pkg_libs"])
+else
+    AC_MSG_ERROR([Please install QuantLib before trying to build RQuantLib.])
 fi
 
 ## check for boost, this segment as well as segment below are 
@@ -114,7 +131,7 @@ AC_DEFUN([QL_CHECK_BOOST_DEVEL],
 # ----------------------
 # Check whether the Boost installation is up to date
 AC_DEFUN([QL_CHECK_BOOST_VERSION],
-[AC_MSG_CHECKING([Boost version])
+[AC_MSG_CHECKING([for minimal Boost version])
  AC_REQUIRE([QL_CHECK_BOOST_DEVEL])
  AC_TRY_COMPILE(
     [@%:@include <boost/version.hpp>],
@@ -136,14 +153,6 @@ AC_DEFUN([QL_CHECK_BOOST],
 ])
 QL_CHECK_BOOST
 
-
-# also test for quantlib version using result from quantlib-config --version
-case ${pkg_version} in
-     0.1.*|0.2.*|0.3.*|0.4.*|0.8.*|0.9.0|0.9.5)
-	 AC_MSG_WARN([RQuantLib requires QuantLib (>= 0.9.6).])
-	 AC_MSG_ERROR([Please upgrade to a more recent version.])
-     ;;
-esac
 
 AC_SUBST(CXXFLAGS)
 AC_SUBST(LDFLAGS)

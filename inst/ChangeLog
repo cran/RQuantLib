@@ -1,3 +1,25 @@
+2008-12-04  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Release 0.2.10, updated for QL 0.9.7 and Rcpp 0.6.1
+	* configure.in: Updated for new scheme of external Rcpp package,
+	  added explicit check for Rscript, added some more messages, make
+	  sure Rscript is looked for inside R_HOME as well
+
+	* RcppSrc/: removed, we now use Rcpp (>= 0.6.1)
+	* configure.win: Just check for QUANTLIB_ROOT variable, no more
+	  building of RcppSrc/ as we use the externally supplied Rcpp package
+	* R/RcppVersion: removed as Rcpp is no longer include
+	* man/RcppVersion.Rd: removed as Rcpp is no longer include
+	* src/Makefile.win: Updated to reflect external Rcpp use
+
+	* src/rquantlib.hpp: include Rcpp.h, not .hpp; define dateFromR()
+	* src/utils.cpp: Added dateFromR() to deal with different date
+	  offsets between R (using the Unix epoch) and QL (using spreadsheet
+	  conventions)
+
+	* src/bermudan.cpp: A few small changes related to external Rcpp
+	* src/discount.cpp: A few small changes related to external Rcpp
+
 2008-08-09  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: Release 0.2.9, updated for QL 0.9.6

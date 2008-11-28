@@ -25,10 +25,13 @@
 #define rquantlib_hpp
 
 #include <ql/quantlib.hpp>
+
+using namespace QuantLib;
+
 #include <R.h>
 #include <Rinternals.h>
 
-#include "Rcpp.hpp"
+#include "Rcpp.h"
 
 #define NULL_RateHelper (boost::shared_ptr<RateHelper>)Null<boost::shared_ptr<RateHelper> >()
 
@@ -60,9 +63,9 @@ enum RQLObservableType { RQLDeposit, RQLSwap, RQLFuture, RQLFRA };
 class RQLObservable {
 public:
     RQLObservable(RQLObservableType type,
-		  int n1, int n2,
-		  TimeUnit units)
-	: type_(type), n1_(n1), n2_(n2), units_(units) {}
+                  int n1, int n2,
+                  TimeUnit units)
+        : type_(type), n1_(n1), n2_(n2), units_(units) {}
     RQLObservableType getType() { return type_; }
     int getN1() { return n1_; }
     int getN2() { return n2_; }
@@ -132,5 +135,7 @@ makeProcess(const boost::shared_ptr<Quote>& u,
             const boost::shared_ptr<YieldTermStructure>& q,
             const boost::shared_ptr<YieldTermStructure>& r,
             const boost::shared_ptr<BlackVolTermStructure>& vol);
+
+int dateFromR(const RcppDate &d);
 
 #endif

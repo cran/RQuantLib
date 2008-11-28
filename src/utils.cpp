@@ -134,3 +134,9 @@ makeProcess(const boost::shared_ptr<Quote>& u,
                                          Handle<BlackVolTermStructure>(vol)));
 }
 
+// R uses dates indexed to Jan 1, 1970. Rcpp uses an internal Julian Date representation,
+// but Quantlib uses the 'spreadsheet' format indexed to 1905 so we need to adjust
+int dateFromR(const RcppDate &d) {
+    return(d.getJDN() - RcppDate::Jan1970Offset + RcppDate::QLtoJan1970Offset);
+}
+

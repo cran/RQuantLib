@@ -1,24 +1,25 @@
-# Project: RQuantLib
-# Makefile created by Dev-C++ 4.9.9.2
-# modified by UL in order to fit mingw and R requirements, 16.09.2005
+# -*- mode: Makefile -*-
 #
-# $Id: Makefile.win,v 1.10 2007/12/31 02:13:56 edd Exp $
+# Copyright 2005, 2006 Dominick Samperi
+# Copyright 2005       Uwe Ligges
+# Copyright 2008       Dirk Eddelbuettel
 
 #include $(RHOME)/src/gnuwin32/MkRules
 
-OBJ = barrier_binary.o bermudan.o curves.o vanilla.o implieds.o utils.o discount.o
-LINKOBJ  = barrier_binary.o bermudan.o curves.o vanilla.o implieds.o utils.o discount.o $(RES)
-DLLLIBS = -s -L../RcppSrc -lRcpp -L"$(RHOME)/bin" -lR -L "$(QUANTLIB_ROOT)/lib" -lQuantLib-mgw-0_9_0 --no-export-all-symbols --add-stdcall-alias
-BIN  = RQuantLib.dll
-CXXFLAGS = -I../RcppSrc -I"$(RHOME)/include" -I"$(RHOME)/src/include" -I"$(QUANTLIB_ROOT)" -Wall -O2 -DBUILDING_DLL=1 -DUSING_QUANTLIB
-RM = rm -f
+RCPP_INCFLAGS=`Rscript -e 'cat(Rcpp:::RcppCxxFlags())'`
+RCPP_LDFLAGS=`Rscript -e 'cat(Rcpp:::RcppLdFlags())'`
+
+BIN      = RQuantLib.dll
+CXXFLAGS = -I$(RHOME)/include -I$(RHOME)/src/include $(RCPP_INCFLAGS) -I$(QUANTLIB_ROOT) -Wall -O2
+LINKOBJ  = barrier_binary.o bermudan.o curves.o vanilla.o implieds.o utils.o discount.o
+DLLLIBS  = -s -L$(RHOME)/bin -lR $(RCPP_LDFLAGS) -L$(QUANTLIB_ROOT)/lib -lQuantLib-mgw-0_9_7
 
 .PHONY: all clean
 
 all: RQuantLib.dll
 
 clean:
-	${RM} $(LINKOBJ) $(BIN)
+	rm -f $(LINKOBJ) $(BIN)
 
 $(BIN): $(LINKOBJ)
 	$(CXX) -shared $(LINKOBJ) $(DLLLIBS) -o $(BIN)

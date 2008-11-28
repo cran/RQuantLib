@@ -25,12 +25,14 @@ RcppExport SEXP QL_DiscountCurve(SEXP params, SEXP tsQuotes,
 
 	// Parameter wrapper classes.
 	RcppParams rparam(params);
-	RcppNamedList tslist(tsQuotes);
+	RcppNumList tslist(tsQuotes);
 
 	int i;
 
-	Date todaysDate = rparam.getDateValue("tradeDate");
-	Date settlementDate = rparam.getDateValue("settleDate");
+	Date todaysDate( dateFromR(rparam.getDateValue("tradeDate") )); 
+	Date settlementDate( dateFromR(rparam.getDateValue("settleDate") )); 
+	// cout << "TradeDate: " << todaysDate << endl << "Settle: " << settlementDate << endl;
+
 	RQLContext::instance().settleDate = settlementDate;
 	Settings::instance().evaluationDate() = todaysDate;
 	string firstQuoteName = tslist.getName(0);
@@ -71,7 +73,7 @@ RcppExport SEXP QL_DiscountCurve(SEXP params, SEXP tsQuotes,
 	else {
 	    // Build curve based on a set of observed rates and/or prices.
 	    std::vector<boost::shared_ptr<RateHelper> > curveInput;
-	    for(i = 0; i < tslist.getLength(); i++) {
+	    for(i = 0; i < tslist.size(); i++) {
 		string name = tslist.getName(i);
 		double val = tslist.getValue(i);
 		boost::shared_ptr<RateHelper> rh = 

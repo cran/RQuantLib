@@ -51,7 +51,7 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 
 	// Parameter wrapper classes.
 	RcppParams rparam(params);
-	RcppNamedList tslist(tsQuotes);
+	RcppNumList tslist(tsQuotes);
 
 	Size i;
 	int *swaptionMat=0, *swapLengths=0;
@@ -60,8 +60,10 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 	double notional = 10000; // prices in basis points
 
 
-	Date todaysDate = rparam.getDateValue("tradeDate");
-	Date settlementDate = rparam.getDateValue("settleDate");
+	Date todaysDate( dateFromR(rparam.getDateValue("tradeDate") )); 
+	Date settlementDate( dateFromR(rparam.getDateValue("settleDate") )); 
+	//cout << "TradeDate: " << todaysDate << endl << "Settle: " << settlementDate << endl;
+
 	RQLContext::instance().settleDate = settlementDate;
         Settings::instance().evaluationDate() = todaysDate;
 
@@ -103,7 +105,7 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 	else {
 	    // Get yield curve based on a set of market rates and/or prices.
 	    std::vector<boost::shared_ptr<RateHelper> > curveInput;
-	    for(i = 0; i < (Size)tslist.getLength(); i++) {
+	    for(i = 0; i < (Size)tslist.size(); i++) {
 		string name = tslist.getName(i);
 		double val = tslist.getValue(i);
 		boost::shared_ptr<RateHelper> rh = 
@@ -134,12 +136,12 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 	
 	// Get swaption maturities
 	RcppVector<int> myMats(maturities);
-	int numRows = myMats.getLength();
+	int numRows = myMats.size();
 	swaptionMat = myMats.cVector();
 
 	// Get swap tenors
 	RcppVector<int> myLengths(tenors);
-	int numCols = myLengths.getLength();
+	int numCols = myLengths.size();
 	swapLengths = myLengths.cVector();
 
 	if(numRows*numCols != dim1*dim2) {
