@@ -1,3 +1,13 @@
+2009-03-03  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Release 0.2.11, updated for Rcpp 0.6.4
+
+	* src/{*.cpp,rquantlib.hpp}: Updated for Rcpp 0.6.4 and the
+	  requirement to explicit reference all object from namespace
+	  std, e.g. now use std::string
+
+	* src/*: Updated all copyright notices to 2009
+
 2008-12-04  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: Release 0.2.10, updated for QL 0.9.7 and Rcpp 0.6.1

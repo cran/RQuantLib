@@ -1,8 +1,9 @@
 // RQuantLib function BermudanSwaption
 //
-// Copyright 2005 Dominick Samperi
+// Copyright (C) 2005 - 2006 Dominick Samperi
+// Copyright (C) 2007 - 2009 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: bermudan.cpp,v 1.9 2007/12/31 01:56:43 edd Exp $
+// $Id: bermudan.cpp 50 2009-03-04 01:30:15Z edd $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -69,11 +70,11 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 
 	double strike = rparam.getDoubleValue("strike");
 
-	string method = rparam.getStringValue("method");
+	std::string method = rparam.getStringValue("method");
 
-	string firstQuoteName = tslist.getName(0);
+	std::string firstQuoteName = tslist.getName(0);
 
-	string interpWhat, interpHow;
+	std::string interpWhat, interpHow;
 	if(firstQuoteName.compare("flat") != 0) {
 
 	    // Get interpolation method (not needed for "flat" case)
@@ -106,7 +107,7 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 	    // Get yield curve based on a set of market rates and/or prices.
 	    std::vector<boost::shared_ptr<RateHelper> > curveInput;
 	    for(i = 0; i < (Size)tslist.size(); i++) {
-		string name = tslist.getName(i);
+		std::string name = tslist.getName(i);
 		double val = tslist.getValue(i);
 		boost::shared_ptr<RateHelper> rh = 
 		    ObservableDB::instance().getRateHelper(name, val);
@@ -145,7 +146,7 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 	swapLengths = myLengths.cVector();
 
 	if(numRows*numCols != dim1*dim2) {
-	    ostringstream oss;
+	    std::ostringstream oss;
 	    oss << "Swaption vol matrix size (" << dim1 << " x " << dim2 << ") "
 		<< "incompatible\nwith size of swaption maturity vector ("
 		<< numRows << ") and swap tenor vector ("

@@ -2,10 +2,10 @@
 //
 // RQuantLib function prototypes and macros
 //
-// Copyright 2002, 2003, 2004, 2005  Dirk Eddelbuettel <edd@debian.org>
-// Copyright 2005  Dominick Samperi
+// Copyright 2002 - 2009  Dirk Eddelbuettel <edd@debian.org>
+// Copyright 2005 - 2006  Dominick Samperi
 //
-// $Id: rquantlib.hpp,v 1.8 2007/12/31 01:59:44 edd Exp $
+// $Id: rquantlib.hpp 50 2009-03-04 01:30:15Z edd $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -76,20 +76,20 @@ private:
     TimeUnit units_; // not used for futures and FRA's
 };
 
-typedef map<string, RQLObservable*> RQLMap;
-typedef map<string, RQLObservable*>::const_iterator RQLMapIterator;
+typedef std::map<std::string, RQLObservable*> RQLMap;
+typedef std::map<std::string, RQLObservable*>::const_iterator RQLMapIterator;
 
 // Database used to maintain curve construction instrument details.
 class ObservableDB : public Singleton<ObservableDB> {
 public:
     ObservableDB();
-    boost::shared_ptr<RateHelper> getRateHelper(string& ticker, Rate r);
+    boost::shared_ptr<RateHelper> getRateHelper(std::string& ticker, Rate r);
 private:
     RQLMap db_;
 };
 
 boost::shared_ptr<YieldTermStructure> 
-getTermStructure(string& interpWhat, string& interpHow, 
+getTermStructure(std::string& interpWhat, std::string& interpHow, 
                  const Date& settleDate,
                  const std::vector<boost::shared_ptr<RateHelper> >& curveInput,
                  DayCounter& dayCounter, Real tolerance);

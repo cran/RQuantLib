@@ -2,9 +2,9 @@
 //
 // RQuantLib -- R interface to the QuantLib libraries
 //
-// Copyright 2002-2006 Dirk Eddelbuettel <edd@debian.org>
+// Copyright (C) 2002 - 2009 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: implieds.cpp,v 1.14 2007/12/31 01:58:24 edd Exp $
+// $Id: implieds.cpp 50 2009-03-04 01:30:15Z edd $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -37,7 +37,7 @@ RcppExport  SEXP QL_EuropeanOptionImpliedVolatility(SEXP optionParameters) {
 
         RcppParams rparam(optionParameters);    	// Parameter wrapper class
 
-        string type = rparam.getStringValue("type");
+        std::string type = rparam.getStringValue("type");
         double value = rparam.getDoubleValue("value");
         double underlying = rparam.getDoubleValue("underlying");
         double strike = rparam.getDoubleValue("strike");
@@ -115,7 +115,7 @@ RcppExport  SEXP QL_AmericanOptionImpliedVolatility(SEXP optionParameters) {
 
         RcppParams rparam(optionParameters);    	// Parameter wrapper class
 
-        string type = rparam.getStringValue("type");
+        std::string type = rparam.getStringValue("type");
         double value = rparam.getDoubleValue("value");
         double underlying = rparam.getDoubleValue("underlying");
         double strike = rparam.getDoubleValue("strike");

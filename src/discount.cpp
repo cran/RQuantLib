@@ -1,8 +1,9 @@
 // RQuantLib function DiscountCurve
 //
-// Copyright (C) 2005  Dominick Samperi
+// Copyright (C) 2005 - 2006 Dominick Samperi
+// Copyright (C) 2007 - 2009 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: discount.cpp,v 1.6 2007/12/31 02:08:42 edd Exp $
+// $Id: discount.cpp 50 2009-03-04 01:30:15Z edd $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -35,11 +36,11 @@ RcppExport SEXP QL_DiscountCurve(SEXP params, SEXP tsQuotes,
 
 	RQLContext::instance().settleDate = settlementDate;
 	Settings::instance().evaluationDate() = todaysDate;
-	string firstQuoteName = tslist.getName(0);
+	std::string firstQuoteName = tslist.getName(0);
 
 	double dt = rparam.getDoubleValue("dt");
 	
-	string interpWhat, interpHow;
+	std::string interpWhat, interpHow;
 	bool flatQuotes = true;
 	if(firstQuoteName.compare("flat") != 0) {
 
@@ -74,7 +75,7 @@ RcppExport SEXP QL_DiscountCurve(SEXP params, SEXP tsQuotes,
 	    // Build curve based on a set of observed rates and/or prices.
 	    std::vector<boost::shared_ptr<RateHelper> > curveInput;
 	    for(i = 0; i < tslist.size(); i++) {
-		string name = tslist.getName(i);
+		std::string name = tslist.getName(i);
 		double val = tslist.getValue(i);
 		boost::shared_ptr<RateHelper> rh = 
 		    ObservableDB::instance().getRateHelper(name, val);

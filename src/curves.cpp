@@ -1,8 +1,9 @@
 // RQuantLib helper functions for term structure construction
 //
-// Copyright 2005 Dominick Samperi
+// Copyright (C) 2005 - 2006 Dominick Samperi
+// Copyright (C) 2007 - 2009 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: curves.cpp,v 1.7 2007/12/31 01:57:42 edd Exp $
+// $Id: curves.cpp 50 2009-03-04 01:30:15Z edd $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -52,10 +53,10 @@ ObservableDB::ObservableDB() {
 
 // Get RateHelper used to build the yield curve corresponding to a
 // database key ('ticker') and observed rate/price.
-boost::shared_ptr<RateHelper> ObservableDB::getRateHelper(string& ticker, Rate r) {
+boost::shared_ptr<RateHelper> ObservableDB::getRateHelper(std::string& ticker, Rate r) {
     RQLMapIterator iter = db_.find(ticker);
     if(iter == db_.end()) {
-	ostringstream oss;
+      std::ostringstream oss;
 	oss << "Unknown curve construction instrument: " << ticker;
 	throw std::range_error(oss.str());
     }
@@ -117,14 +118,14 @@ boost::shared_ptr<RateHelper> ObservableDB::getRateHelper(string& ticker, Rate r
 	return FRA;
     }
     else {
-	throw range_error("Bad type in curve construction");
+      throw std::range_error("Bad type in curve construction");
     }
 }
 
 // Return the term structure built using a set of RateHelpers (curveInput)
 // employing the specified interpolation method and day counter.
 boost::shared_ptr<YieldTermStructure> getTermStructure
-(string& interpWhat, string& interpHow, const Date& settlementDate,
+(std::string& interpWhat, std::string& interpHow, const Date& settlementDate,
 const std::vector<boost::shared_ptr<RateHelper> >& curveInput,
  DayCounter& dayCounter, Real tolerance) {
     if(interpWhat.compare("discount") == 0 &&
@@ -218,8 +219,8 @@ const std::vector<boost::shared_ptr<RateHelper> >& curveInput,
 	return ts;
     }
     else {
-      Rprintf((char*)"interpWhat = %s\n", interpWhat.c_str());
-      Rprintf((char*)"interpHow  = %s\n", interpHow.c_str());
-	throw range_error("What/How term structure options not recognized");
+        Rprintf((char*)"interpWhat = %s\n", interpWhat.c_str());
+        Rprintf((char*)"interpHow  = %s\n", interpHow.c_str());
+        throw std::range_error("What/How term structure options not recognized");
     }
 }

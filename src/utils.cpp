@@ -2,9 +2,9 @@
 //
 // RQuantLib -- R interface to the QuantLib libraries
 //
-// Copyright 2002-2006 Dirk Eddelbuettel <edd@debian.org>
+// Copyright (C) 2002 - 2009 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: utils.cpp,v 1.14 2007/12/31 02:00:08 edd Exp $
+// $Id: utils.cpp 50 2009-03-04 01:30:15Z edd $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public

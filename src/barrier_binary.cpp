@@ -2,9 +2,9 @@
 //
 // RQuantLib -- R interface to the QuantLib libraries
 //
-// Copyright 2002-2007 Dirk Eddelbuettel <edd@debian.org>
+// Copyright (C) 2002 - 2009 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: barrier_binary.cpp,v 1.15 2007/12/31 01:56:07 edd Exp $
+// $Id: barrier_binary.cpp 50 2009-03-04 01:30:15Z edd $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -35,9 +35,9 @@ RcppExport  SEXP QL_BinaryOption(SEXP optionParameters) {
 
         RcppParams rparam(optionParameters);    	// Parameter wrapper class
 
-        string binType = rparam.getStringValue("binType");
-        string type = rparam.getStringValue("type");
-        string excType = rparam.getStringValue("excType");
+        std::string binType = rparam.getStringValue("binType");
+        std::string type = rparam.getStringValue("type");
+        std::string excType = rparam.getStringValue("excType");
         double underlying = rparam.getDoubleValue("underlying");
         double strike = rparam.getDoubleValue("strike");
         Spread dividendYield = rparam.getDoubleValue("dividendYield");
@@ -161,7 +161,7 @@ RcppExport  SEXP QL_BinaryOptionImpliedVolatility(SEXP optionParameters) {
 
         RcppParams rparam(optionParameters);    	// Parameter wrapper class
 
-        string type = rparam.getStringValue("type");
+        std::string type = rparam.getStringValue("type");
         double value = rparam.getDoubleValue("value");
         double underlying = rparam.getDoubleValue("underlying");
         double strike = rparam.getDoubleValue("strike");
@@ -241,8 +241,8 @@ RcppExport  SEXP QL_BarrierOption(SEXP optionParameters) {
 
         RcppParams rparam(optionParameters);    	// Parameter wrapper class
 
-        string barrType = rparam.getStringValue("barrType");
-        string type = rparam.getStringValue("type");
+        std::string barrType = rparam.getStringValue("barrType");
+        std::string type = rparam.getStringValue("type");
         double underlying = rparam.getDoubleValue("underlying");
         double strike = rparam.getDoubleValue("strike");
         Spread dividendYield = rparam.getDoubleValue("dividendYield");

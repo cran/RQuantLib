@@ -4,7 +4,7 @@
 # Greatly simplified thanks to quantlib-config
 # Another contribution by Kurt Hornik gratefully acknowledged
 #
-# $Id: configure.in,v 1.16 2008/01/01 23:52:23 edd Exp $
+# $Id: configure.in 51 2009-03-04 01:33:40Z edd $
 
 # require at least autoconf 2.50
 AC_PREREQ(2.50)
@@ -46,9 +46,9 @@ AC_PROG_RSCRIPT
 if test x"${RSCRIPT}" == x"yes" ; then
 #     AC_MSG_RESULT([yes])    
      ## Rcpp compile flag providing header directory containing Rcpp.h
-     rcpp_cxxflags=`${R_HOME}/bin/Rscript -e 'cat(Rcpp:::RcppCxxFlags())'`
+     rcpp_cxxflags=`${R_HOME}/bin/Rscript -e 'Rcpp:::CxxFlags()'`
      ## link flag providing libary as well as path to library, and optionally rpath
-     rcpp_ldflags=`${R_HOME}/bin/Rscript -e 'cat(Rcpp:::RcppLdFlags())'`
+     rcpp_ldflags=`${R_HOME}/bin/Rscript -e 'Rcpp:::LdFlags()'`
      ## now use all these
      AC_SUBST([CXXFLAGS],["${CXXFLAGS} $rcpp_cxxflags"])
      AC_SUBST([LDFLAGS],["${LDFLAGS} $rcpp_ldflags"])
