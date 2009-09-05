@@ -1,11 +1,13 @@
 
-R version 2.6.1 (2007-11-26)
-Copyright (C) 2007 The R Foundation for Statistical Computing
+R version 2.9.0 (2009-04-17)
+Copyright (C) 2009 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
 Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
 
 R is a collaborative project with many contributors.
 Type 'contributors()' for more information and
@@ -17,7 +19,6 @@ Type 'q()' to quit R.
 
 > 
 > stopifnot(require(RQuantLib))
-Loading required package: RQuantLib
 > 
 > ## values from Quantlib's test-suite
 > ## Reference: Haug, Option Pricing Formulas, McGraw-Hill, 1998
@@ -115,5 +116,341 @@ Concise summary of valuation for BarrierOption
 Concise summary of valuation for BinaryOption 
   value   delta   gamma    vega   theta     rho  divRho 
  2.6710 -0.1061  0.0031  8.1539 -1.7423 -9.9577  7.9545 
+> 
+> ## asianoption.cpp:  put == 4.6922 (from testAnalyticContinuousGeometricAveragePrice())
+> print( AsianOption("geometric", "put", underlying=80, strike=85, div=-0.03, riskFree=0.05, maturity=0.25, vol=0.2))
+Concise summary of valuation for AsianOption 
+  value   delta   gamma    vega   theta     rho  divRho 
+ 4.6922 -0.8031  0.0594  6.8662  0.0580 -9.2039  8.0309 
+> 
+> # simple call with unnamed parameters
+> bond <- list(faceAmount=100, issueDate=as.Date("2004-11-30"),
++              maturityDate=as.Date("2008-11-30"), redemption=100 )
+> dateparams <-list(settlementDays=1, calendar="us", businessDayConvention=4)
+> discountCurve <- list(todayDate=as.Date("2004-11-04"), riskFreeRate=0.03)
+> print(ZeroCouponBond(bond, discountCurve, dateparams))
+Concise summary of valuation for ZeroCouponBond 
+ Net present value :  88.34535 
+       clean price :  88.537 
+       dirty price :  88.537 
+    accrued coupon :  0 
+             yield :  0.030455 
+        cash flows : 
+       Date Amount
+ 2008-11-30    100
+> 
+> ## bond.cpp: examples from Fixed Income page of Matlab
+> ZeroYield(95, 100, as.Date("1993-6-24"), as.Date("1993-11-1"))
+$yield
+[1] 0.1477733
+
+attr(,"class")
+[1] "ZeroYield"
+> 
+> ## bond.cpp: test theoretical price of bond by its yield
+> ZeroPriceByYield(0.1478, 100, as.Date("1993-6-24"), as.Date("1993-11-1"))
+$cleanPrice
+[1] 94.99914
+
+attr(,"class")
+[1] "ZeroPriceByYield"
+> 
+> ## bond.cpp: test theoretical yield of a fixed rate bond, = 0.0307
+> FixedRateBondYield(,99.282, 100000, as.Date("2004-11-30"), as.Date("2008-11-30"), 3, , c(0.02875), , , , ,as.Date("2004-11-30"))
+$yield
+[1] 0.03066984
+
+attr(,"class")
+[1] "FixedRateBondYield"
+> 
+> ## bond.cpp: test theoretical price of a fixed rate bond  = 99.2708
+> FixedRateBondPriceByYield(,0.0307, 100000, as.Date("2004-11-30"), as.Date("2008-11-30"), 3, , c(0.02875), , , , ,as.Date("2004-11-30"))
+$cleanPrice
+[1] 99.27077
+
+attr(,"class")
+[1] "FixedRateBondPriceByYield"
+> 
+> ## bond.cpp
+> bond <- list(faceAmount=100, issueDate=as.Date("2004-11-30"),
++              maturityDate=as.Date("2008-11-30"), redemption=100, 
++              effectiveDate=as.Date("2004-11-30"))
+> dateparams <- list(settlementDays=1, calendar="us", dayCounter = 1, period=3, 
++                    businessDayConvention = 4, terminationDateConvention=4,
++                    dateGeneration=1, endOfMonth=1)
+> curve <- list(todayDate=as.Date("2004-11-04"), riskFreeRate=0.03)
+> rates <- c(0.02875)
+>                        
+> print(FixedRateBond(bond, rates, curve, dateparams))
+Concise summary of valuation for FixedRateBond 
+ Net present value :  99.07476 
+       clean price :  99.29 
+       dirty price :  99.29 
+    accrued coupon :  0 
+             yield :  0.030455 
+        cash flows : 
+       Date   Amount
+ 2005-05-31   1.4336
+ 2005-11-30   1.4414
+ 2006-05-31   1.4336
+ 2006-11-30   1.4414
+ 2007-05-31   1.4336
+ 2007-11-30   1.4414
+ 2008-05-30   1.4336
+ 2008-11-30   1.4493
+ 2008-11-30 100.0000
+> 
+> ## bond.cpp FloatingRateBond, following test-suite/bonds.cpp
+> bond <- list(faceAmount=100, issueDate=as.Date("2004-11-30"),
++              maturityDate=as.Date("2008-11-30"), redemption=100, 
++              effectiveDate=as.Date("2004-11-30"))
+> dateparams <- list(settlementDays=1, calendar="us", dayCounter = 1, period=3, 
++                    businessDayConvention = 1, terminationDateConvention=1,
++                    dateGeneration=0, endOfMonth=0, fixingDays = 1)
+> gearings <- c()
+> spreads <- c()
+> caps <- c()
+> floors <- c()
+> length2 <- list(todayDate=as.Date("2004-11-22"), riskFreeRate=0.025)
+> curve <- length2
+> termstructure <- length2
+> iborindex <- list(type="USDLibor", length=6, 
++                   inTermOf="Month", term=termstructure)                      
+> print(FloatingRateBond(bond, gearings, spreads, caps, floors, 
++                  iborindex, curve, dateparams))
+Concise summary of valuation for FloatingRateBond 
+ Net present value :  99.81262 
+       clean price :  99.868 
+       dirty price :  99.868 
+    accrued coupon :  0 
+             yield :  0.025315 
+        cash flows : 
+       Date   Amount
+ 2005-05-31   1.2545
+ 2005-11-30   1.2614
+ 2006-05-30   1.2476
+ 2006-11-30   1.2684
+ 2007-05-30   1.2476
+ 2007-11-30   1.2684
+ 2008-05-30   1.2545
+ 2008-11-28   1.2545
+ 2008-11-28 100.0000
+> 
+> ## CallableBond, following Example/CallableBond
+> #set-up a HullWhite according to example from QuantLib
+> HullWhite <- list(term = 0.055, alpha = 0.03, sigma = 0.01,
++                   gridIntervals = 40)
+> 
+> #callability schedule dataframe
+> Price <- rep(as.double(100),24)
+> Type <- rep(as.character("C"), 24)
+> Date <- seq(as.Date("2006-09-15"), by = '3 months', length = 24)
+> callSch <- data.frame(Price, Type, Date)
+> callSch$Type <- as.character(callSch$Type)
+> 
+> bondparams <- list(faceAmount=100, issueDate = as.Date("2004-09-16"),
++                    maturityDate=as.Date("2012-09-16"), redemption=100,
++                    callabilitySchedule = callSch)
+> dateparams <- list(settlementDays=3, calendar="us", 
++                    dayCounter = "ActualActual", 
++                    period="Quarterly", 
++                    businessDayConvention = "Unadjusted", 
++                    terminationDateConvention= "Unadjusted")
+> coupon <- c(0.0465)
+> 
+> CallableBond(bondparams, HullWhite, coupon, dateparams)
+Concise summary of valuation for CallableBond 
+ Net present value :  92.58479 
+       clean price :  91.683 
+       dirty price :  92.585 
+    accrued coupon :  0.90205 
+             yield :  0.059916 
+        cash flows : 
+       Date   Amount
+ 2004-12-16   1.1561
+ 2005-03-16   1.1460
+ 2005-06-16   1.1721
+ 2005-09-16   1.1721
+ 2005-12-16   1.1593
+ 2006-03-16   1.1466
+ 2006-06-16   1.1721
+ 2006-09-16   1.1721
+ 2006-12-16   1.1593
+ 2007-03-16   1.1466
+ 2007-06-16   1.1721
+ 2007-09-16   1.1721
+ 2007-12-16   1.1593
+ 2008-03-16   1.1567
+ 2008-06-16   1.1689
+ 2008-09-16   1.1689
+ 2008-12-16   1.1561
+ 2009-03-16   1.1460
+ 2009-06-16   1.1721
+ 2009-09-16   1.1721
+ 2009-12-16   1.1593
+ 2010-03-16   1.1466
+ 2010-06-16   1.1721
+ 2010-09-16   1.1721
+ 2010-12-16   1.1593
+ 2011-03-16   1.1466
+ 2011-06-16   1.1721
+ 2011-09-16   1.1721
+ 2011-12-16   1.1593
+ 2012-03-16   1.1567
+ 2012-06-16   1.1689
+ 2012-09-16   1.1689
+ 2012-09-16 100.0000
+> 
+> ## ConvertibleFixedCouponBond, test-suite/convertiblebond.cpp for ConvertibleFixedCouponBond
+> 
+> #set up arguments to build a pricing engine.
+> today <- as.Date("2009-08-01")
+> 
+> params <- list(tradeDate=today-2,
++                settleDate=today,
++                dt=.25,
++                interpWhat="discount",
++                interpHow="loglinear")
+> times <- seq(0,10,.1)
+> 
+> dividendYield <- DiscountCurve(params, list(flat=0.02), times)
+> riskFreeRate <- DiscountCurve(params, list(flat=0.05), times)
+> 
+> dividendSchedule <- data.frame(Type=character(0), Amount=numeric(0),
++                             Rate = numeric(0), Date = as.Date(character(0)))
+> callabilitySchedule <- data.frame(Price = numeric(0), Type=character(0),
++                           Date = as.Date(character(0)))
+> 
+> process <- list(underlying=50, divYield = dividendYield,
++                 rff = riskFreeRate, volatility=0.15)
+> 
+> 
+> bondparams <- list(exercise="am", faceAmount=100, divSch = dividendSchedule, 
++                    callSch = callabilitySchedule, redemption=100, 
++                    creditSpread=0.005, conversionRatio = 0.0000000001, 
++                    issueDate=as.Date(today+2), 
++                    maturityDate=as.Date(today+3650))
+> dateparams <- list(settlementDays=3, 
++                    dayCounter="Actual360", 
++                    period = "Once", calendar = "us", 
++                    businessDayConvention="Following", 
++                    todayDate=as.Date(today))
+> coupon <- c(0.05)
+> ConvertibleFixedCouponBond(bondparams, coupon, process, dateparams)
+Concise summary of valuation for ConvertibleFixedCouponBond 
+ Net present value :  87.00573 
+       clean price :  86.992 
+       dirty price :  87.006 
+    accrued coupon :  0.013889 
+             yield :  0.055698 
+        cash flows : 
+       Date  Amount
+ 2019-07-30  50.667
+ 2019-07-30 100.000
+> 
+> ## ConvertibleFloatingCouponBond, test-suite/convertiblebond.cpp for ConvertibleZeroCouponBond
+> 
+> today <- as.Date("2009-08-01")
+> 
+> params <- list(tradeDate=today-2,
++                settleDate=today,
++                dt=.25,
++                interpWhat="discount",
++                interpHow="loglinear")
+> times <- seq(0,10,.1)
+> 
+> 
+> dividendYield <- DiscountCurve(params, list(flat=0.02), times)
+> riskFreeRate <- DiscountCurve(params, list(flat=0.05), times)
+> 
+> dividendSchedule <- data.frame(Type=character(0), Amount=numeric(0),
++                             Rate = numeric(0), Date = as.Date(character(0)))
+> callabilitySchedule <- data.frame(Price = numeric(0), Type=character(0),
++                           Date = as.Date(character(0)))
+> 
+> process <- list(underlying=50, divYield = dividendYield,
++                 rff = riskFreeRate, volatility=0.15)
+> 
+> 
+> bondparams <- list(exercise="am", faceAmount=100, divSch = dividendSchedule, 
++                    callSch = callabilitySchedule, redemption=100, 
++                    creditSpread=0.005, conversionRatio = 0.0000000001, 
++                    issueDate=as.Date(today+2), 
++                    maturityDate=as.Date(today+3650))
+> dateparams <- list(settlementDays=3, 
++                    dayCounter="Actual360", 
++                    period = "Once", calendar = "us", 
++                    businessDayConvention="Following", 
++                    todayDate=as.Date(today))
+> 
+> lengths <- c(2,4,6,8,10,12,14,16,18,20,22,24,26,28,30)
+> coupons <- c( 0.0200, 0.0225, 0.0250, 0.0275, 0.0300,
++               0.0325, 0.0350, 0.0375, 0.0400, 0.0425,
++               0.0450, 0.0475, 0.0500, 0.0525, 0.0550 )
+> curvedateparams <- list(settlementDays=0, period="Annual", 
++                    dayCounter="SimpleDayCounter", 
++                   businessDayConvention ="Unadjusted")
+> curveparams <- list(method="ExponentialSplinesFitting", 
++                     origDate = today)
+> curve <- FittedBondCurve(curveparams, lengths, coupons, curvedateparams)
+> iborindex <- list(type="USDLibor", length=6, 
++                   inTermOf="Month", term=curve)   
+> spreads <- c()
+> ConvertibleFloatingCouponBond(bondparams, iborindex,spreads, process, dateparams)
+Concise summary of valuation for ConvertibleFloatingCouponBond 
+ Net present value :  78.10836 
+       clean price :  78.099 
+       dirty price :  78.108 
+    accrued coupon :  0.0096654 
+             yield :  0.055698 
+        cash flows : 
+       Date  Amount
+ 2019-07-30  35.259
+ 2019-07-30 100.000
+> 
+> ## ConvertibleZeroCouponBond, test-suite/convertiblebond.cpp for ConvertibleZeroCouponBond
+> today <- as.Date("2009-08-01")
+> params <- list(tradeDate=today-2,
++                settleDate=today,
++                dt=.25,
++                interpWhat="discount",
++                interpHow="loglinear")
+> times <- seq(0,10,.1)
+> 
+> 
+> dividendYield <- DiscountCurve(params, list(flat=0.02), times)
+> riskFreeRate <- DiscountCurve(params, list(flat=0.05), times)
+> 
+> dividendSchedule <- data.frame(Type=character(0), Amount=numeric(0),
++                             Rate = numeric(0), Date = as.Date(character(0)))
+> callabilitySchedule <- data.frame(Price = numeric(0), Type=character(0),
++                           Date = as.Date(character(0)))
+> 
+> process <- list(underlying=50, divYield = dividendYield,
++                 rff = riskFreeRate, volatility=0.15)
+> 
+> 
+> bondparams <- list(exercise="am", faceAmount=100, divSch = dividendSchedule, 
++                    callSch = callabilitySchedule, redemption=100, 
++                    creditSpread=0.005, conversionRatio = 0.0000000001, 
++                    issueDate=as.Date(today+2), 
++                    maturityDate=as.Date(today+3650))
+> dateparams <- list(settlementDays=3, 
++                    dayCounter="Actual360", 
++                    period = "Once", calendar = "us", 
++                    businessDayConvention="Following", 
++                    todayDate=as.Date(today))
+> 
+> ConvertibleZeroCouponBond(bondparams, process, dateparams)
+Concise summary of valuation for ConvertibleZeroCouponBond 
+ Net present value :  57.74716 
+       clean price :  57.747 
+       dirty price :  57.747 
+    accrued coupon :  0 
+             yield :  0.055698 
+        cash flows : 
+       Date Amount
+ 2019-07-30    100
+> 
 > 
 > 

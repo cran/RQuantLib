@@ -6,7 +6,7 @@
 \description{
 This function evaluations an Binary option on a common stock
 using a closed-form solution. The option value as well as the common first
-derivatives (\"Greeks\") are returned.}
+derivatives ("Greeks") are returned.}
 \usage{
 \method{BinaryOption}{default}(binType, type, excType, underlying,
         strike, dividendYield,

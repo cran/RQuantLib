@@ -3,6 +3,8 @@ AmericanOption          American Option evaluation using Finite
 AmericanOptionImpliedVolatility
                         Implied Volatility calculation for American
                         Option
+AsianOption             Asian Option evaluation using Closed-Form
+                        solution
 BarrierOption           Barrier Option evaluation using Closed-Form
                         solution
 BermudanSwaption        Bermudan swaption valuation using several
@@ -12,8 +14,18 @@ BinaryOption            Binary Option evaluation using Closed-Form
 BinaryOptionImpliedVolatility
                         Implied Volatility calculation for Binary
                         Option
+Bond                    Base class for Bond price evalution
+businessDay             Calendar functions from QuantLib
+CallableBond            CallableBond evaluation
+ConvertibleFixedCouponBond
+                        Convertible Fixed Coupon Bond evaluation
+ConvertibleFloatingCouponBond
+                        Convertible Floating Coupon Bond evaluation
+ConvertibleZeroCouponBond
+                        Convertible Zero Coupon Bond evaluation
 DiscountCurve           Returns the discount curve (with zero rates and
                         forwards) given times
+Enum                    Documentation for parameters
 EuropeanOption          European Option evaluation using Closed-Form
                         solution
 EuropeanOptionArrays    European Option evaluation using Closed-Form
@@ -21,6 +33,20 @@ EuropeanOptionArrays    European Option evaluation using Closed-Form
 EuropeanOptionImpliedVolatility
                         Implied Volatility calculation for European
                         Option
+FittedBondCurve         Returns the discount curve (with zero rates and
+                        forwards) given times
+FixedRateBond           Fixed rate bond evaluation using discount curve
+                        solution
+FixedRateBondPriceByYield
+                        Zero Coupon Bond Yield evaluation
+FixedRateBondYield      Fixed Rate Bond Yield Yield evaluation
+FloatingRateBond        Fixed rate bond evaluation using discount curve
+                        solution
 ImpliedVolatility       Base class for option-price implied volatility
                         evalution
+matchBDC                Bond parameter conversion utilities
 Option                  Base class for option price evalution
+ZeroCouponBond          Zero-oupon bond evaluation using discount curve
+                        solution
+ZeroPriceByYield        Zero Coupon Bond Theoretical Price evaluation
+ZeroYield               Zero Coupon Bond Yield evaluation

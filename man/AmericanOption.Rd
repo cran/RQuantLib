@@ -6,7 +6,7 @@
 \description{
 This function evaluations an American-style option on a common stock
 using finite differences. The option value as well as the common first
-derivatives (\"Greeks\") are returned.}
+derivatives ("Greeks") are returned.}
 \usage{
 \method{AmericanOption}{default}(type, underlying, strike, dividendYield, riskFreeRate,
 maturity, volatility, timeSteps=150, gridPoints=151)

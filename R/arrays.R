@@ -1,6 +1,6 @@
 ## RQuantLib -- R interface to the QuantLib libraries
 ##
-## Copyright 2002 Dirk Eddelbuettel <edd@debian.org>
+## Copyright (C) 2002 - 2009 Dirk Eddelbuettel <edd@debian.org>
 ##
 ## $Id: arrays.R,v 1.2 2002/11/15 01:49:28 edd Exp $
 ##

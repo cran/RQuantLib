@@ -14,6 +14,8 @@
 ## PURPOSE.  See the GNU General Public License for more
 ## details.
 
+
+
 DiscountCurve <- function(params, tsQuotes, times) {
   UseMethod("DiscountCurve")
 }
@@ -43,7 +45,8 @@ DiscountCurve.default <- function(params, tsQuotes, times) {
   # Finally ready to make the call...
   val <- .Call("QL_DiscountCurve", params, tsQuotes, times,
                PACKAGE="RQuantLib")
-  class(val) <- c("DiscountCurve")
+  class(val) <- c("DiscountCurve")     
+  val$table <- as.data.frame(val$table)
   val
 }
 

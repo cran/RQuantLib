@@ -1,9 +1,9 @@
 // RQuantLib helper functions for term structure construction
 //
-// Copyright (C) 2005 - 2006 Dominick Samperi
+// Copyright (C) 2005 - 2007 Dominick Samperi
 // Copyright (C) 2007 - 2009 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: curves.cpp 50 2009-03-04 01:30:15Z edd $
+// $Id: curves.cpp 54 2009-03-04 02:00:16Z edd $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public

@@ -3,8 +3,9 @@
 // RQuantLib -- R interface to the QuantLib libraries
 //
 // Copyright (C) 2002 - 2009 Dirk Eddelbuettel <edd@debian.org>
+// Copyright (C) 2005 - 2006  Dominick Samperi
 //
-// $Id: utils.cpp 50 2009-03-04 01:30:15Z edd $
+// $Id: utils.cpp 95 2009-07-16 04:52:55Z knguyen $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -90,6 +91,181 @@ makeOption(const boost::shared_ptr<StrikedTypePayoff>& payoff,
 
 // QuantLib option setup utils, copied from the test-suite sources
 
+boost::shared_ptr<YieldTermStructure> buildTermStructure(SEXP params,
+                                                         SEXP tsQuotes,
+                                                         SEXP times){
+    char* exceptionMesg = NULL;
+    boost::shared_ptr<YieldTermStructure> curve;
+    try {
+        
+        // Parameter wrapper classes.
+        RcppParams rparam(params);
+        RcppNumList tslist(tsQuotes);
+        
+        int i;
+        
+        Date todaysDate( dateFromR(rparam.getDateValue("tradeDate") )); 
+        Date settlementDate( dateFromR(rparam.getDateValue("settleDate") )); 
+        // cout << "TradeDate: " << todaysDate << endl << "Settle: " << settlementDate << endl;
+        
+        RQLContext::instance().settleDate = settlementDate;
+        Settings::instance().evaluationDate() = todaysDate;
+        std::string firstQuoteName = tslist.getName(0);
+        
+        double dt = rparam.getDoubleValue("dt");
+        
+        std::string interpWhat, interpHow;
+        bool flatQuotes = true;
+        if(firstQuoteName.compare("flat") != 0) {
+            
+            // Get interpolation method (not needed for "flat" case)
+            interpWhat = rparam.getStringValue("interpWhat");
+            interpHow  = rparam.getStringValue("interpHow");
+            flatQuotes = false;
+        }
+        
+        Calendar calendar = TARGET();
+        RQLContext::instance().calendar = calendar;
+        Integer fixingDays = 2;
+        RQLContext::instance().fixingDays = fixingDays;
+        
+        // Any DayCounter would be fine.
+        // ActualActual::ISDA ensures that 30 years is 30.0
+        DayCounter termStructureDayCounter =
+            ActualActual(ActualActual::ISDA);
+        double tolerance = 1.0e-15;
+        
+
+        if(firstQuoteName.compare("flat") == 0) {
+            // Create a flat term structure.
+            double rateQuote = tslist.getValue(0);
+            boost::shared_ptr<Quote> flatRate(new SimpleQuote(rateQuote));
+            boost::shared_ptr<FlatForward> ts(new FlatForward(settlementDate,
+                                                              Handle<Quote>(flatRate),
+                                                              Actual365Fixed()));
+            curve =  ts;
+        }
+        else {
+            // Build curve based on a set of observed rates and/or prices.
+            std::vector<boost::shared_ptr<RateHelper> > curveInput;
+            for(i = 0; i < tslist.size(); i++) {
+                std::string name = tslist.getName(i);
+                double val = tslist.getValue(i);
+                boost::shared_ptr<RateHelper> rh = 
+                    ObservableDB::instance().getRateHelper(name, val);
+                if(rh == NULL_RateHelper)
+                    throw std::range_error("Unknown rate in getRateHelper");
+                curveInput.push_back(rh);
+            }
+            boost::shared_ptr<YieldTermStructure> ts =
+                getTermStructure(interpWhat, interpHow, 
+                                 settlementDate, curveInput,
+                                 termStructureDayCounter, tolerance);
+            
+            curve = ts;
+        }
+        
+    } catch(std::exception& ex) {
+        exceptionMesg = copyMessageToR(ex.what());
+    } catch(...) {
+        exceptionMesg = copyMessageToR("unknown reason");
+    }
+    return curve;    
+}
+
+Schedule getSchedule(SEXP sch){
+   
+    RcppParams rparam(sch);
+    RcppDate iDate = rparam.getDateValue("effectiveDate");
+    QuantLib::Date effectiveDate(dateFromR(iDate));
+    RcppDate mDate = rparam.getDateValue("maturityDate");
+    QuantLib::Date maturityDate(dateFromR(mDate));      
+    double frequency = rparam.getDoubleValue("period");
+    std::string cal = rparam.getStringValue("calendar");
+    double businessDayConvention = rparam.getDoubleValue("businessDayConvention");
+    double terminationDateConvention = rparam.getDoubleValue("terminationDateConvention");
+    Calendar calendar = UnitedStates(UnitedStates::GovernmentBond);
+    if (cal == "us"){
+        calendar = UnitedStates(UnitedStates::GovernmentBond);
+    }
+    else if (cal == "uk"){
+        calendar = UnitedKingdom(UnitedKingdom::Exchange);
+    }
+    BusinessDayConvention bdc = getBusinessDayConvention(businessDayConvention);   
+    BusinessDayConvention t_bdc = getBusinessDayConvention(terminationDateConvention);
+    Schedule schedule(effectiveDate,
+                      maturityDate,
+                      Period(getFrequency(frequency)),
+                      calendar, bdc, t_bdc, 
+                      DateGeneration::Backward, false);
+    return schedule;
+    
+}
+
+boost::shared_ptr<YieldTermStructure> rebuildCurveFromZeroRates(
+                                                                SEXP dateSexp,
+                                                                SEXP zeroSexp){
+    RcppDateVector rcppdates  = RcppDateVector(dateSexp);
+    int n = rcppdates.size();
+    std::vector<QuantLib::Date> dates(rcppdates.size());
+    for (int i = 0;i<n;i++){
+        QuantLib::Date day(dateFromR(rcppdates(i)) );
+        dates[i] = day;
+        
+    }
+    //extract coupon rates vector
+    RcppVector<double> RcppVec(zeroSexp); 
+    std::vector<double> zeros(RcppVec.stlVector());
+    
+    boost::shared_ptr<YieldTermStructure>  
+        rebuilt_curve(new 
+                      InterpolatedZeroCurve<LogLinear>(                        
+                                                       dates,
+                                                       zeros,
+                                                       ActualActual()));
+    return rebuilt_curve;
+}
+
+boost::shared_ptr<YieldTermStructure> getFlatCurve(SEXP flatcurve){
+    RcppParams curve(flatcurve);
+    Rate riskFreeRate = curve.getDoubleValue("riskFreeRate");
+    RcppDate today_Date = curve.getDateValue("todayDate");       
+    QuantLib::Date today(dateFromR(today_Date));
+    
+    boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(riskFreeRate));
+    Settings::instance().evaluationDate() = today;
+    return flatRate(today,rRate,Actual360());
+}
+
+boost::shared_ptr<IborIndex> getIborIndex(SEXP index, const Date today){
+    RcppParams rparam(index);
+    std::string type = rparam.getStringValue("type");
+
+    if (type == "USDLibor"){
+        double riskFreeRate = rparam.getDoubleValue("riskFreeRate");
+        double period = rparam.getDoubleValue("period");
+        boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(riskFreeRate));
+        Settings::instance().evaluationDate() = today;
+        Handle<YieldTermStructure> curve(flatRate(today,rRate,Actual360()));
+        boost::shared_ptr<IborIndex> iindex(new USDLibor(period * Months, curve));
+        return iindex;
+    }
+    else return boost::shared_ptr<IborIndex>();
+}
+
+std::vector<double> getDoubleVector(SEXP vector){
+    try {
+        RcppVector<double> RcppVec(vector);
+        if (RcppVec.size() > 0){
+            return  std::vector<double>(RcppVec.stlVector());
+        }
+        else return std::vector<double>();
+    }
+    catch (std::exception& e){       
+        return std::vector<double>();
+    }
+}
+
 boost::shared_ptr<YieldTermStructure>
 makeFlatCurve(const Date& today,
 	      const boost::shared_ptr<Quote>& forward,
@@ -139,4 +315,47 @@ makeProcess(const boost::shared_ptr<Quote>& u,
 int dateFromR(const RcppDate &d) {
     return(d.getJDN() - RcppDate::Jan1970Offset + RcppDate::QLtoJan1970Offset);
 }
+DayCounter getDayCounter(const double n){
+    if (n==0) return Actual360();
+    else if (n==1) return Actual365Fixed();
+    else if (n==2) return ActualActual();
+    else if (n==3) return Business252();
+    else if (n==4) return OneDayCounter();
+    else if (n==5) return SimpleDayCounter();
+    else  return Thirty360();
+}
+BusinessDayConvention getBusinessDayConvention(const double n){
+    if (n==0) return Following;
+    else if (n==1) return ModifiedFollowing;
+    else if (n==2) return Preceding;
+    else if (n==3) return ModifiedPreceding;
+    else  return Unadjusted;
+}
+Compounding getCompounding(const double n){
+    if (n==0) return Simple;
+    else if (n==1) return Compounded;
+    else if (n==2) return Continuous;
+    else return SimpleThenCompounded;
+}
+Frequency getFrequency(const double n){
+    if (n==0) return NoFrequency;
+    else if (n==1) return Once;
+    else if (n==2) return Annual;
+    else if (n==3) return Semiannual;
+    else if (n==4) return EveryFourthMonth;
+    else if (n==5) return Quarterly;
+    else if (n==6) return Bimonthly;
+    else if (n==7) return EveryFourthWeek;
+    else if (n==8) return Biweekly;
+    else if (n==9) return Weekly;
+    else return Daily;
+}
+DateGeneration::Rule getDateGenerationRule(const double n){
+    if (n==0) return DateGeneration::Backward;
+    else if (n==1) return DateGeneration::Forward;
+    else if (n==2) return DateGeneration::Zero;
+    else if (n==3) return DateGeneration::ThirdWednesday;
+    else if (n==4) return DateGeneration::Twentieth;
+    else return DateGeneration::TwentiethIMM;
 
+}

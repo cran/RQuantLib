@@ -1,23 +1,23 @@
-% $Id: EuropeanOption.Rd,v 1.5 2006/11/11 04:12:45 edd Exp $
-\name{EuropeanOption}
-\alias{EuropeanOption}
-\alias{EuropeanOption.default}
-\title{European Option evaluation using Closed-Form solution}
+% $Id: AsianOption.Rd 58 2009-03-31 03:50:44Z edd $
+\name{AsianOption}
+\alias{AsianOption}
+\alias{AsianOption.default}
+\title{Asian Option evaluation using Closed-Form solution}
 \description{
-  The \code{EuropeanOption} function evaluations an European-style
-  option on a common stock using the Black-Scholes-Merton solution. The
-  option value, the common first derivatives ("Greeks") as well as the
-  calling parameters are returned.
+  The \code{AsianOption} function evaluates an Asian-style
+  option on a common stock using an analytic solution for continuous
+  geometric average price. The option value, the common first
+  derivatives ("Greeks") as well as the calling parameters are returned.
 }
 \usage{
-\method{EuropeanOption}{default}(type, underlying, strike,
-	dividendYield, riskFreeRate, maturity, volatility)
-
+\method{AsianOption}{default}(averageType, type, underlying, strike,
+	dividendYield, riskFreeRate, maturity, volatility, timeSteps=150, gridPoints=151)
 \method{plot}{Option}
 \method{print}{Option}
 \method{summary}{Option}
 }
 \arguments{
+  \item{averageType}{Specifiy averaging type, either "geometric" or "arithmetic" }
   \item{type}{A string with one of the values \code{call} or \code{put}}
   \item{underlying}{Current price of the underlying stock}
   \item{strike}{Strike price of the option}
@@ -25,10 +25,12 @@
   \item{riskFreeRate}{Risk-free rate}
   \item{maturity}{Time to maturity (in fractional years)}
   \item{volatility}{Volatility of the underlying stock}
+  \item{timeSteps}{Time steps for the Finite Differences method, default value is 150}
+  \item{gridPoints}{Grid points for the Finite Differences method, default value is 151}
 }
 \value{
-  The \code{EuropeanOption} function returns an object of class
-  \code{EuropeanOption} (which inherits from class 
+  The \code{AsianOption} function returns an object of class
+  \code{AsianOption} (which inherits from class 
   \code{\link{Option}}). It contains a list with the following
   components:
   \item{value}{Value of option}
@@ -43,7 +45,6 @@
   \item{dividendRho}{Sensitivity of the option value for a change in the
     dividend yield}
   \item{parameters}{List with parameters with which object was created}
-
 }
 \details{
   The well-known closed-form solution derived by Black, Scholes and
@@ -59,16 +60,9 @@
   the QuantLib Group for \code{QuantLib}}
 \note{The interface might change in future release as \code{QuantLib}
   stabilises its own API.}
-\seealso{\code{\link{EuropeanOptionImpliedVolatility}},
-  \code{\link{EuropeanOptionArrays}},
-  \code{\link{AmericanOption}},\code{\link{BinaryOption}}}
-
 \examples{
-# simple call with unnamed parameters
-EuropeanOption("call", 100, 100, 0.01, 0.03, 0.5, 0.4)
 # simple call with some explicit parameters, and slightly increased vol:
-EuropeanOption(type="call", underlying=100, strike=100, dividendYield=0.01, 
-riskFreeRate=0.03, maturity=0.5, volatility=0.5)
+AsianOption("geometric", "put", underlying=80, strike=85, div=-0.03, riskFree=0.05, maturity=0.25, vol=0.2)
 }
 \keyword{misc}
 

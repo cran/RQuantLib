@@ -1,9 +1,9 @@
 // RQuantLib function DiscountCurve
 //
-// Copyright (C) 2005 - 2006 Dominick Samperi
+// Copyright (C) 2005 - 2007 Dominick Samperi
 // Copyright (C) 2007 - 2009 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: discount.cpp 50 2009-03-04 01:30:15Z edd $
+// $Id: discount.cpp 99 2009-07-18 09:04:19Z knguyen $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -16,6 +16,8 @@
 // details.
 
 #include "rquantlib.hpp"
+
+
 
 RcppExport SEXP QL_DiscountCurve(SEXP params, SEXP tsQuotes,
 				     SEXP times) {
@@ -65,11 +67,16 @@ RcppExport SEXP QL_DiscountCurve(SEXP params, SEXP tsQuotes,
 	if(firstQuoteName.compare("flat") == 0) {
 	    // Create a flat term structure.
 	    double rateQuote = tslist.getValue(0);
-	    boost::shared_ptr<Quote> flatRate(new SimpleQuote(rateQuote));
-	    boost::shared_ptr<FlatForward> ts(new FlatForward(settlementDate,
-					      Handle<Quote>(flatRate),
-					      Actual365Fixed()));
-	    curve = ts;
+	    //boost::shared_ptr<Quote> flatRate(new SimpleQuote(rateQuote));
+	    //boost::shared_ptr<FlatForward> ts(new FlatForward(settlementDate,
+            //			      Handle<Quote>(flatRate),
+            //			      ActualActual()));
+
+            boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(rateQuote));
+            curve = flatRate(settlementDate,rRate,ActualActual());
+
+
+	    
 	}
 	else {
 	    // Build curve based on a set of observed rates and/or prices.
@@ -91,17 +98,48 @@ RcppExport SEXP QL_DiscountCurve(SEXP params, SEXP tsQuotes,
 	}
 
 	// Return discount, forward rate, and zero coupon curves
+        int numCol = 2;
+        std::vector<std::string> colNames(numCol);
+        colNames[0] = "date";
+        colNames[1] = "zeroRates";
+        
+        
+
+
+        RcppFrame frame(colNames);
+        
 	int ntimes = length(times);
 	SEXP disc  = PROTECT(allocVector(REALSXP, ntimes));
 	SEXP fwds  = PROTECT(allocVector(REALSXP, ntimes));
 	SEXP zero  = PROTECT(allocVector(REALSXP, ntimes));
+        
+        
+        Date current = settlementDate;
 	double t;
-	for(i = 0; i < ntimes; i++) {
-	    t = REAL(times)[i];
+	for(i = 0; i < ntimes; i++) {          
+	    t = REAL(times)[i];                                                    
 	    REAL(disc)[i] = curve->discount(t);
 	    REAL(fwds)[i] = curve->forwardRate(t, t+dt, Continuous);
 	    REAL(zero)[i] = curve->zeroRate(t, Continuous);
+
+    
 	}
+
+
+        int n = curve->maxDate() - settlementDate;
+        for (int i = 0; i<n;i++){
+        std::vector<ColDatum> row(numCol);
+            Date d = current; 
+            row[0].setDateValue(RcppDate(d.month(),
+                                         d.dayOfMonth(),
+                                         d.year()));
+            
+            double zrate = curve->zeroRate(current, ActualActual(),
+                                            Continuous);
+            row[1].setDoubleValue(zrate);                        
+            frame.addRow(row);
+            current++;
+        }
 
 	RcppResultSet rs;
 	rs.add("times", times, false);
@@ -110,6 +148,7 @@ RcppExport SEXP QL_DiscountCurve(SEXP params, SEXP tsQuotes,
 	rs.add("zerorates", zero, true);
 	rs.add("flatQuotes", flatQuotes);
 	rs.add("params", params, false);
+        rs.add("table", frame);
 	rl = rs.getReturnList();
 
     } catch(std::exception& ex) {

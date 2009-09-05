@@ -5,7 +5,7 @@
 // Copyright 2002 - 2009  Dirk Eddelbuettel <edd@debian.org>
 // Copyright 2005 - 2006  Dominick Samperi
 //
-// $Id: rquantlib.hpp 50 2009-03-04 01:30:15Z edd $
+// $Id: rquantlib.hpp 90 2009-06-26 04:54:23Z knguyen $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,8 +25,11 @@
 #define rquantlib_hpp
 
 #include <ql/quantlib.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace QuantLib;
+
 
 #include <R.h>
 #include <Rinternals.h>
@@ -138,4 +141,20 @@ makeProcess(const boost::shared_ptr<Quote>& u,
 
 int dateFromR(const RcppDate &d);
 
+//utility functions for parameters of fixed-income instrument function
+Frequency getFrequency(const double n);
+Compounding getCompounding(const double n);
+BusinessDayConvention getBusinessDayConvention(const double n);
+DayCounter getDayCounter(const double n);
+DateGeneration::Rule getDateGenerationRule(const double n);
+boost::shared_ptr<YieldTermStructure> buildTermStructure(SEXP params,
+                                                         SEXP tsQuotes,
+                                                         SEXP times);
+Schedule getSchedule(SEXP sch);
+boost::shared_ptr<IborIndex> getIborIndex(SEXP index, const Date today);
+std::vector<double> getDoubleVector(SEXP vector);
+boost::shared_ptr<YieldTermStructure> getFlatCurve(SEXP flatcurve);
+boost::shared_ptr<YieldTermStructure> rebuildCurveFromZeroRates(
+                                                                SEXP dateSexp,
+                                                                SEXP zeroSexp);
 #endif
