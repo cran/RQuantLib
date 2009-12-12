@@ -1,46 +1,27 @@
 # -*- mode: Makefile -*-
 #
-# Copyright 2005, 2006 Dominick Samperi
-# Copyright 2005       Uwe Ligges
-# Copyright 2008       Dirk Eddelbuettel
+# Copyright 2005 - 2006 Dominick Samperi
+# Copyright 2005        Uwe Ligges
+# Copyright 2008 - 2009 Dirk Eddelbuettel
 
-#include $(RHOME)/src/gnuwin32/MkRules
+RCPP_INCFLAGS	= `Rscript -e 'Rcpp:::CxxFlags()'`
+RCPP_LDFLAGS	= `Rscript -e 'Rcpp:::LdFlags()'`
 
-RCPP_INCFLAGS=`Rscript -e 'cat(Rcpp:::RcppCxxFlags())'`
-RCPP_LDFLAGS=`Rscript -e 'cat(Rcpp:::RcppLdFlags())'`
+BIN		= RQuantLib.dll
+CXXFLAGS	= -I$(RHOME)/include -I$(RHOME)/src/include $(RCPP_INCFLAGS) -I$(QUANTLIB_ROOT) -Wall -O2
 
-BIN      = RQuantLib.dll
-CXXFLAGS = -I$(RHOME)/include -I$(RHOME)/src/include $(RCPP_INCFLAGS) -I$(QUANTLIB_ROOT) -Wall -O2
-LINKOBJ  = barrier_binary.o bermudan.o curves.o vanilla.o implieds.o utils.o discount.o
-DLLLIBS  = -s -L$(RHOME)/bin -lR $(RCPP_LDFLAGS) -L$(QUANTLIB_ROOT)/lib -lQuantLib-mgw-0_9_7
+SOURCES		:= $(wildcard *.cpp)
+LINKOBJ		:= $(SOURCES:.cpp=.o)
 
-.PHONY: all clean
+DLLLIBS		= -s -L$(RHOME)/bin -lR $(RCPP_LDFLAGS) -L$(QUANTLIB_ROOT)/lib -lQuantLib-mgw-0_9_9
 
-all: RQuantLib.dll
+.PHONY: 	all clean
+
+all: 		RQuantLib.dll
 
 clean:
-	rm -f $(LINKOBJ) $(BIN)
+		rm -f $(LINKOBJ) $(BIN)
 
-$(BIN): $(LINKOBJ)
-	$(CXX) -shared $(LINKOBJ) $(DLLLIBS) -o $(BIN)
+$(BIN): 	$(LINKOBJ)
+		$(CXX) -shared $(LINKOBJ) $(DLLLIBS) -o $(BIN)
 
-barrier_binary.o: barrier_binary.cpp
-	$(CXX) -c barrier_binary.cpp -o barrier_binary.o $(CXXFLAGS)
-
-bermudan.o: bermudan.cpp
-	$(CXX) -c bermudan.cpp -o bermudan.o $(CXXFLAGS)
-
-curves.o: curves.cpp
-	$(CXX) -c curves.cpp -o curves.o $(CXXFLAGS)
-
-vanilla.o: vanilla.cpp
-	$(CXX) -c vanilla.cpp -o vanilla.o $(CXXFLAGS)
-
-implieds.o: implieds.cpp
-	$(CXX) -c implieds.cpp -o implieds.o $(CXXFLAGS)
-
-utils.o: utils.cpp
-	$(CXX) -c utils.cpp -o utils.o $(CXXFLAGS)
-
-discount.o: discount.cpp
-	$(CXX) -c discount.cpp -o discount.o $(CXXFLAGS)

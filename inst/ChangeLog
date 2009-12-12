@@ -1,8 +1,37 @@
+2009-12-12  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Release 0.3.1 for QuantLib 0.9.9
+
+	* src/Makefile.win: Update to QL 0.9.9 as well
+
+2009-11-02  Dirk Eddelbuettel  <edd@debian.org>
+
+	* man/*.Rd: Commented-out a few empty sections as noticed by R 2.10.0
+	* man/*.Rd: Update the curve data for the curve examples using data
+	  from QuantLib's Examples/Swap/swapvaluation.cpp; with QuantLib
+	  0.9.9 all numerical issues appear to be gone
+	* man/*.Rd: Some minor white-space changes
+
+	* src/*cpp: Small updates for QuantLib 0.9.9:
+	  - FDEuropeanEngine now needs a template argument for the scheme,
+ 	    current default is CrankNicholson
+	  - NULL_RateHelper construct no longer works, so we test the return
+	    from getRateHelper() via ptr.get() == NULL 
+
+2009-10-16  Dirk Eddelbuettel  <edd@debian.org>
+
+	* man/DiscountCurve.Rd: Change as per QL 0.9.7's Swap/swapvaluation.cpp
+
+2009-09-06  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/Makefile.win: Small rewrite to automatically build over all
+	  included .cpp files and some other fixes
+
 2009-09-05  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: Release 0.3.0 reflecting all the excellent
 	  Google Summer of Code 2009 work by Khanh Nguyen as well
-	  as other smal enhancements
+	  as other small enhancements
 
 	[ Changes by Khanh Nguyen below ]
 

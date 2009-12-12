@@ -5,7 +5,7 @@
 \description{
 Reference for parameters when constructing a bond
 }
-\usage{}
+%\usage{}
 \arguments{
 \item{DayCounter}{an int value
        \tabular{ll}{

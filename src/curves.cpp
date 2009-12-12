@@ -1,9 +1,11 @@
+// -*- mode: c++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- 
+//
 // RQuantLib helper functions for term structure construction
 //
 // Copyright (C) 2005 - 2007 Dominick Samperi
 // Copyright (C) 2007 - 2009 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: curves.cpp 54 2009-03-04 02:00:16Z edd $
+// $Id: curves.cpp 116 2009-11-02 22:40:41Z edd $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -56,9 +58,9 @@ ObservableDB::ObservableDB() {
 boost::shared_ptr<RateHelper> ObservableDB::getRateHelper(std::string& ticker, Rate r) {
     RQLMapIterator iter = db_.find(ticker);
     if(iter == db_.end()) {
-      std::ostringstream oss;
-	oss << "Unknown curve construction instrument: " << ticker;
-	throw std::range_error(oss.str());
+        std::ostringstream oss;
+        oss << "Unknown curve construction instrument: " << ticker;
+        throw std::range_error(oss.str());
     }
     RQLObservable *p = iter->second;
     RQLObservableType type = p->getType();
@@ -73,152 +75,141 @@ boost::shared_ptr<RateHelper> ObservableDB::getRateHelper(std::string& ticker, R
     // Tried to use a switch statement here, but there was an
     // internal compiler error using g++ Version 3.2.2.
     if(type == RQLDeposit) {
-	boost::shared_ptr<Quote> quote(new SimpleQuote(r));
-	boost::shared_ptr<RateHelper> depo(new DepositRateHelper(
-	    Handle<Quote>(quote),
+        boost::shared_ptr<Quote> quote(new SimpleQuote(r));
+        boost::shared_ptr<RateHelper> depo(new DepositRateHelper(
+	        Handle<Quote>(quote),
             n1*units, fixingDays,	
             calendar, ModifiedFollowing, 
-	    true, /*fixingDays,*/ depositDayCounter));
-	return depo;
-    }
-    else if(type == RQLSwap) {
-	Frequency swFixedLegFrequency = Annual;
-	BusinessDayConvention swFixedLegConvention = Unadjusted;
-	DayCounter swFixedLegDayCounter = Thirty360(Thirty360::European);
+            true, /*fixingDays,*/ depositDayCounter));
+        return depo;
+    } else if (type == RQLSwap) {
+        Frequency swFixedLegFrequency = Annual;
+        BusinessDayConvention swFixedLegConvention = Unadjusted;
+        DayCounter swFixedLegDayCounter = Thirty360(Thirty360::European);
         boost::shared_ptr<IborIndex> swFloatingLegIndex(new Euribor6M);
-	boost::shared_ptr<Quote> quote(new SimpleQuote(r));
-	boost::shared_ptr<RateHelper> swap(new SwapRateHelper(
+        boost::shared_ptr<Quote> quote(new SimpleQuote(r));
+        boost::shared_ptr<RateHelper> swap(new SwapRateHelper(
             Handle<Quote>(quote),
             n1*Years, /*fixingDays,*/
             calendar, swFixedLegFrequency,
             swFixedLegConvention, swFixedLegDayCounter,
             swFloatingLegIndex));
-	return swap;
+        return swap;
     }
     else if(type == RQLFuture) {
-	Integer futMonths = 3;
-	Date imm = IMM::nextDate(settlementDate);
-	for(int i = 1; i < n1; i++)
-	    imm = IMM::nextDate(imm+1);
-	boost::shared_ptr<Quote> quote(new SimpleQuote(r));
-	boost::shared_ptr<RateHelper> future(new FuturesRateHelper(
-	    Handle<Quote>(quote),
+        Integer futMonths = 3;
+        Date imm = IMM::nextDate(settlementDate);
+        for(int i = 1; i < n1; i++)
+            imm = IMM::nextDate(imm+1);
+        std::cout << "Curves: IMM Date is " << imm << std::endl;
+        boost::shared_ptr<Quote> quote(new SimpleQuote(r));
+        boost::shared_ptr<RateHelper> future(new FuturesRateHelper(
+	    	Handle<Quote>(quote),
             imm,
             futMonths, calendar, ModifiedFollowing,
-	    true, // added bool endOfMonth variable
+            true, // added bool endOfMonth variable
             depositDayCounter));
-	return future;
-    }
-    else if(type == RQLFRA) {
-	boost::shared_ptr<Quote> quote(new SimpleQuote(r));
-	boost::shared_ptr<RateHelper> FRA(new FraRateHelper(
+        return future;
+    } else if(type == RQLFRA) {
+        boost::shared_ptr<Quote> quote(new SimpleQuote(r));
+        boost::shared_ptr<RateHelper> FRA(new FraRateHelper(
             Handle<Quote>(quote),
             n1, n2, fixingDays, calendar, ModifiedFollowing,
             true, /*fixingDays,*/ depositDayCounter));
-	return FRA;
-    }
-    else {
+        return FRA;
+    } else {
       throw std::range_error("Bad type in curve construction");
     }
 }
 
 // Return the term structure built using a set of RateHelpers (curveInput)
 // employing the specified interpolation method and day counter.
-boost::shared_ptr<YieldTermStructure> getTermStructure
-(std::string& interpWhat, std::string& interpHow, const Date& settlementDate,
-const std::vector<boost::shared_ptr<RateHelper> >& curveInput,
- DayCounter& dayCounter, Real tolerance) {
+boost::shared_ptr<YieldTermStructure> 
+getTermStructure (std::string& interpWhat, std::string& interpHow, const Date& settlementDate,
+                  const std::vector<boost::shared_ptr<RateHelper> >& curveInput,
+                  DayCounter& dayCounter, Real tolerance) {
     if(interpWhat.compare("discount") == 0 &&
        interpHow.compare("linear") == 0) {
-	boost::shared_ptr<YieldTermStructure> ts(new
+        boost::shared_ptr<YieldTermStructure> ts(new
 	       PiecewiseYieldCurve<Discount,Linear>(settlementDate, 
 	       curveInput, dayCounter, 
   	       std::vector<Handle<Quote> >(),
   	       std::vector<Date>(),
   	       tolerance));
-	return ts;
-    }
-    else if(interpWhat.compare("discount") == 0 &&
-            interpHow.compare("loglinear") == 0) {
-	boost::shared_ptr<YieldTermStructure> ts(new
+        return ts;
+    } else if(interpWhat.compare("discount") == 0 &&
+              interpHow.compare("loglinear") == 0) {
+        boost::shared_ptr<YieldTermStructure> ts(new
 	       PiecewiseYieldCurve<Discount,LogLinear>(settlementDate, 
 	       curveInput, dayCounter, 
   	       std::vector<Handle<Quote> >(),
   	       std::vector<Date>(),
   	       tolerance));
-	return ts;
-    }
-    else if(interpWhat.compare("discount") == 0 &&
-            interpHow.compare("spline") == 0) {
-	boost::shared_ptr<YieldTermStructure> ts(new
+        return ts;
+    } else if(interpWhat.compare("discount") == 0 &&
+              interpHow.compare("spline") == 0) {
+        boost::shared_ptr<YieldTermStructure> ts(new
   	       PiecewiseYieldCurve<Discount, Cubic>(settlementDate, 
 	       curveInput, dayCounter, 
   	       std::vector<Handle<Quote> >(),
   	       std::vector<Date>(),
   	       tolerance));
-	return ts;
-    }
-    else if(interpWhat.compare("forward") == 0 &&
-            interpHow.compare("linear") == 0) {
-	boost::shared_ptr<YieldTermStructure> ts(new
+        return ts;
+    } else if(interpWhat.compare("forward") == 0 &&
+              interpHow.compare("linear") == 0) {
+        boost::shared_ptr<YieldTermStructure> ts(new
 	       PiecewiseYieldCurve<ForwardRate,Linear>(settlementDate, 
 	       curveInput, dayCounter, 
   	       std::vector<Handle<Quote> >(),
   	       std::vector<Date>(),
   	       tolerance));
-	return ts;
-    }
-    else if(interpWhat.compare("forward") == 0 &&
+        return ts;
+    } else if(interpWhat.compare("forward") == 0 &&
             interpHow.compare("loglinear") == 0) {
-	boost::shared_ptr<YieldTermStructure> ts(new
+        boost::shared_ptr<YieldTermStructure> ts(new
 	       PiecewiseYieldCurve<ForwardRate,LogLinear>(settlementDate, 
 	       curveInput, dayCounter, 
   	       std::vector<Handle<Quote> >(),
   	       std::vector<Date>(),
   	       tolerance));
-	return ts;
-    }
-    else if(interpWhat.compare("forward") == 0 &&
-            interpHow.compare("spline") == 0) {
-	boost::shared_ptr<YieldTermStructure> ts(new
+        return ts;
+    } else if(interpWhat.compare("forward") == 0 &&
+              interpHow.compare("spline") == 0) {
+        boost::shared_ptr<YieldTermStructure> ts(new
 	       PiecewiseYieldCurve<ForwardRate,Cubic>(settlementDate, 
 	       curveInput, dayCounter, 
   	       std::vector<Handle<Quote> >(),
   	       std::vector<Date>(),
   	       tolerance));
-	return ts;
-    }
-    else if(interpWhat.compare("zero") == 0 &&
-            interpHow.compare("linear") == 0) {
-	boost::shared_ptr<YieldTermStructure> ts(new
+        return ts;
+    } else if(interpWhat.compare("zero") == 0 &&
+              interpHow.compare("linear") == 0) {
+        boost::shared_ptr<YieldTermStructure> ts(new
 	       PiecewiseYieldCurve<ZeroYield,Linear>(settlementDate, 
 	       curveInput, dayCounter, 
   	       std::vector<Handle<Quote> >(),
   	       std::vector<Date>(),
 	       tolerance));
-	return ts;
-    }
-    else if(interpWhat.compare("zero") == 0 &&
-            interpHow.compare("loglinear") == 0) {
-	boost::shared_ptr<YieldTermStructure> ts(new
+        return ts;
+    } else if(interpWhat.compare("zero") == 0 &&
+              interpHow.compare("loglinear") == 0) {
+        boost::shared_ptr<YieldTermStructure> ts(new
 	       PiecewiseYieldCurve<ZeroYield,LogLinear>(settlementDate, 
 	       curveInput, dayCounter, 
   	       std::vector<Handle<Quote> >(),
   	       std::vector<Date>(),
   	       tolerance));
-	return ts;
-    }
-    else if(interpWhat.compare("zero") == 0 &&
-            interpHow.compare("spline") == 0) {
-	boost::shared_ptr<YieldTermStructure> ts(new
+        return ts;
+    } else if(interpWhat.compare("zero") == 0 &&
+              interpHow.compare("spline") == 0) {
+        boost::shared_ptr<YieldTermStructure> ts(new
 	       PiecewiseYieldCurve<ZeroYield,Cubic>(settlementDate, 
 	       curveInput, dayCounter, 
   	       std::vector<Handle<Quote> >(),
   	       std::vector<Date>(),
   	       tolerance));
-	return ts;
-    }
-    else {
+        return ts;
+    } else {
         Rprintf((char*)"interpWhat = %s\n", interpWhat.c_str());
         Rprintf((char*)"interpHow  = %s\n", interpHow.c_str());
         throw std::range_error("What/How term structure options not recognized");

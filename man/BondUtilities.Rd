@@ -1,4 +1,4 @@
-% $Id: BondUtilities.Rd 103 2009-08-08 14:30:08Z edd $
+% $Id: BondUtilities.Rd 121 2009-11-02 22:50:50Z edd $
 \name{BondUtilities}
 \alias{matchBDC}
 \alias{matchCompounding}
@@ -42,7 +42,6 @@ matchParams(params)
   the QuantLib Group for \code{QuantLib}}
 \note{The interface might change in future release as \code{QuantLib}
   stabilises its own API.}
-\examples{
-}
+%\examples{}
 \keyword{misc}
 

@@ -5,7 +5,7 @@
 // Copyright 2002 - 2009  Dirk Eddelbuettel <edd@debian.org>
 // Copyright 2005 - 2006  Dominick Samperi
 //
-// $Id: rquantlib.hpp 90 2009-06-26 04:54:23Z knguyen $
+// $Id: rquantlib.hpp 115 2009-11-02 22:39:31Z edd $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ using namespace QuantLib;
 
 #include "Rcpp.h"
 
-#define NULL_RateHelper (boost::shared_ptr<RateHelper>)Null<boost::shared_ptr<RateHelper> >()
+//#define NULL_RateHelper (boost::shared_ptr<RateHelper>)Null<boost::shared_ptr<RateHelper> >()
 
 // Prototypes for convenience functions (some macros)
 void insertListElement(SEXP &list, SEXP &names,

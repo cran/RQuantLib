@@ -1,4 +1,4 @@
-% $Id: FixedRateBondPriceByYield.Rd 97 2009-07-18 06:27:53Z knguyen $
+% $Id: FixedRateBondPriceByYield.Rd 123 2009-11-02 22:52:00Z edd $
 \name{FixedRateBondPriceByYield}
 \alias{FixedRateBondPriceByYield}
 \alias{FixedRateBondPriceByYield.default}
@@ -41,8 +41,8 @@
   components:
   \item{yield}{yield of the bond}
 }
-\details{
-}
+%\details{
+%}
 \references{\url{http://quantlib.org} for details on \code{QuantLib}. \url{http://www.mathworks.com/access/helpdesk/help/toolbox/finfixed/FixedRateBondPriceByYield.html} for more details about this function}
 
 \author{Khanh Nguyen \email{knguyen@cs.umb.edu}}

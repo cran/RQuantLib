@@ -5,7 +5,7 @@
 // Copyright (C) 2002 - 2009 Dirk Eddelbuettel <edd@debian.org>
 // Copyright (C) 2005 - 2006  Dominick Samperi
 //
-// $Id: utils.cpp 95 2009-07-16 04:52:55Z knguyen $
+// $Id: utils.cpp 117 2009-11-02 22:42:03Z edd $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -65,7 +65,7 @@ makeOption(const boost::shared_ptr<StrikedTypePayoff>& payoff,
         engine = boost::shared_ptr<PricingEngine>(new BinomialVanillaEngine<Joshi4>(stochProcess, binomialSteps));
         break;
     case FiniteDifferences:
-        engine = boost::shared_ptr<PricingEngine>(new FDEuropeanEngine(stochProcess, binomialSteps, samples));
+        engine = boost::shared_ptr<PricingEngine>(new FDEuropeanEngine<CrankNicolson>(stochProcess, binomialSteps, samples));
         break;
     case Integral:
         engine = boost::shared_ptr<PricingEngine>(new IntegralEngine(stochProcess));
@@ -153,7 +153,9 @@ boost::shared_ptr<YieldTermStructure> buildTermStructure(SEXP params,
                 double val = tslist.getValue(i);
                 boost::shared_ptr<RateHelper> rh = 
                     ObservableDB::instance().getRateHelper(name, val);
-                if(rh == NULL_RateHelper)
+                // edd 2009-11-01 FIXME NULL_RateHelper no longer builds under 0.9.9
+                // if (rh == NULL_RateHelper)
+                if (rh.get() == NULL)
                     throw std::range_error("Unknown rate in getRateHelper");
                 curveInput.push_back(rh);
             }

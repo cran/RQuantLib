@@ -1,7 +1,7 @@
 Package: RQuantLib
 Title: R interface to the QuantLib library
-Version: 0.3.0
-Date: $Date: 2009-09-05 20:55:21 -0500 (Sat, 05 Sep 2009) $
+Version: 0.3.1
+Date: $Date: 2009-12-12 08:25:19 -0600 (Sat, 12 Dec 2009) $
 Maintainer: Dirk Eddelbuettel <edd@debian.org>
 Author: Dirk Eddelbuettel <edd@debian.org> and Khanh Nguyen
         <knguyen@cs.umb.edu>
@@ -27,12 +27,12 @@ Description: The RQuantLib package makes parts of QuantLib visible to
         later), QuantLib itself is released under a somewhat less
         restrictive Open Source license (see QuantLib-License.txt).
 Depends: R (>= 2.7.0), Rcpp (>= 0.6.4)
-SystemRequirements: QuantLib library (>= 0.9.7) from
+SystemRequirements: QuantLib library (>= 0.9.9) from
         http://quantlib.org, Boost library (>= 1.34.0) from
         http://www.boost.org
 License: GPL (>= 2)
 URL: http://quantlib.org
         http://dirk.eddelbuettel.com/code/rquantlib.html
-Packaged: 2009-09-06 02:02:01 UTC; edd
+Packaged: 2009-12-12 22:00:03 UTC; edd
 Repository: CRAN
-Date/Publication: 2009-09-06 06:16:58
+Date/Publication: 2009-12-13 10:19:50

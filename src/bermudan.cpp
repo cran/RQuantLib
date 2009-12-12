@@ -3,7 +3,7 @@
 // Copyright (C) 2005 - 2007 Dominick Samperi
 // Copyright (C) 2007 - 2009 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: bermudan.cpp 54 2009-03-04 02:00:16Z edd $
+// $Id: bermudan.cpp 119 2009-11-02 22:47:22Z edd $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -111,7 +111,9 @@ RcppExport SEXP QL_BermudanSwaption(SEXP params, SEXP tsQuotes,
 		double val = tslist.getValue(i);
 		boost::shared_ptr<RateHelper> rh = 
 		    ObservableDB::instance().getRateHelper(name, val);
-		if(rh == NULL_RateHelper)
+                // edd 2009-11-01 FIXME NULL_RateHelper no longer builds under 0.9.9
+ 		// if(rh == NULL_RateHelper)
+		if (rh.get() == NULL)
 		    throw std::range_error("Unknown rate in getRateHelper");
 		curveInput.push_back(rh);
 	    }
