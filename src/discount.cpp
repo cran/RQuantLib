@@ -5,7 +5,7 @@
 // Copyright (C) 2005 - 2007 Dominick Samperi
 // Copyright (C) 2007 - 2009 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: discount.cpp 118 2009-11-02 22:43:06Z edd $
+// $Id: discount.cpp 138 2010-01-13 21:42:07Z edd $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -97,10 +97,10 @@ RcppExport SEXP QL_DiscountCurve(SEXP params, SEXP tsQuotes, SEXP times) {
         
         RcppFrame frame(colNames);
         
-        int ntimes = length(times);
-        SEXP disc  = PROTECT(allocVector(REALSXP, ntimes));
-        SEXP fwds  = PROTECT(allocVector(REALSXP, ntimes));
-        SEXP zero  = PROTECT(allocVector(REALSXP, ntimes));
+        int ntimes = Rf_length(times);
+        SEXP disc  = PROTECT(Rf_allocVector(REALSXP, ntimes));
+        SEXP fwds  = PROTECT(Rf_allocVector(REALSXP, ntimes));
+        SEXP zero  = PROTECT(Rf_allocVector(REALSXP, ntimes));
         
         
         Date current = settlementDate;
@@ -142,7 +142,7 @@ RcppExport SEXP QL_DiscountCurve(SEXP params, SEXP tsQuotes, SEXP times) {
     }
 
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }

@@ -4,7 +4,7 @@
 //
 // Copyright (C) 2002 - 2009 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: calendars.cpp 63 2009-04-10 20:24:04Z edd $
+// $Id: calendars.cpp 135 2010-01-12 18:31:10Z knguyen $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -23,6 +23,9 @@
 // MA 02111-1307, USA
 
 #include "rquantlib.hpp"
+
+
+
 
 RcppExport SEXP QL_isBusinessDay(SEXP calParameters, SEXP dateSexp){
 
@@ -107,3 +110,427 @@ RcppExport SEXP QL_isBusinessDay(SEXP calParameters, SEXP dateSexp){
     
     return rl;
 }
+
+
+RcppExport SEXP QL_isHoliday(SEXP calParameters, SEXP dateSexp){
+
+    SEXP rl=R_NilValue;
+    char* exceptionMesg=NULL;
+
+    try {
+        Calendar* pcal = getCalendar(calParameters);
+
+        RcppDateVector dates  = RcppDateVector(dateSexp);
+        int n = dates.size();
+        std::vector<int> hdays(n);
+
+        for (int i=0; i<n; i++) {
+            QuantLib::Date day( dateFromR(dates(i)) );
+            hdays[i] = pcal->isHoliday(day);
+        }
+
+
+        delete pcal;
+
+        RcppResultSet rs;
+        rs.add("holidays", hdays);
+        rl = rs.getReturnList();
+
+    } catch(std::exception& ex) {
+        exceptionMesg = copyMessageToR(ex.what());
+    } catch(...) {
+        exceptionMesg = copyMessageToR("unknown reason");
+    }
+  
+    if(exceptionMesg != NULL)
+        Rf_error(exceptionMesg);
+    
+    return rl;
+}
+
+
+
+
+RcppExport SEXP QL_isWeekend(SEXP calParameters, SEXP dateSexp){
+
+    SEXP rl=R_NilValue;
+    char* exceptionMesg=NULL;
+
+    try {
+        Calendar* pcal = getCalendar(calParameters);
+
+        RcppDateVector dates  = RcppDateVector(dateSexp);
+        int n = dates.size();
+        std::vector<int> weekends(n);
+
+        for (int i=0; i<n; i++) {
+            QuantLib::Date day( dateFromR(dates(i)) );
+            weekends[i] = pcal->isWeekend(day.weekday());
+        }
+
+
+        delete pcal;
+
+        RcppResultSet rs;
+        rs.add("weekend", weekends);
+        rl = rs.getReturnList();
+
+    } catch(std::exception& ex) {
+        exceptionMesg = copyMessageToR(ex.what());
+    } catch(...) {
+        exceptionMesg = copyMessageToR("unknown reason");
+    }
+  
+    if(exceptionMesg != NULL)
+        Rf_error(exceptionMesg);
+    
+    return rl;
+}
+
+
+RcppExport SEXP QL_isEndOfMonth(SEXP calParameters, SEXP dateSexp){
+
+    SEXP rl=R_NilValue;
+    char* exceptionMesg=NULL;
+
+    try {
+        Calendar* pcal = getCalendar(calParameters);
+
+        RcppDateVector dates  = RcppDateVector(dateSexp);
+        int n = dates.size();
+        std::vector<int> eom(n);
+
+        for (int i=0; i<n; i++) {
+            QuantLib::Date day( dateFromR(dates(i)) );
+            eom[i] = pcal->isEndOfMonth(day);
+        }
+
+
+        delete pcal;
+
+        RcppResultSet rs;
+        rs.add("End.Of.Month", eom);
+        rl = rs.getReturnList();
+
+    } catch(std::exception& ex) {
+        exceptionMesg = copyMessageToR(ex.what());
+    } catch(...) {
+        exceptionMesg = copyMessageToR("unknown reason");
+    }
+  
+    if(exceptionMesg != NULL)
+        Rf_error(exceptionMesg);
+    
+    return rl;
+}
+
+
+RcppExport SEXP QL_endOfMonth(SEXP calParameters, SEXP dateSexp){
+
+    SEXP rl=R_NilValue;
+    char* exceptionMesg=NULL;
+
+    try {
+        Calendar* pcal = getCalendar(calParameters);
+
+        RcppDateVector dates  = RcppDateVector(dateSexp);
+        int n = dates.size();
+        std::vector<QuantLib::Date> eom(n);
+
+        RcppDateVector ret(dateSexp);
+        RcppResultSet rs;
+        
+        for (int i=0; i<n; i++) {
+            QuantLib::Date day( dateFromR(dates(i)) );
+            eom[i] = pcal->endOfMonth(day);
+            ret(i) =  RcppDate(eom[i].month(), eom[i].dayOfMonth(), eom[i].year());
+        }
+        
+        rs.add("ret", ret);
+        delete pcal;
+        
+
+       
+        rl = rs.getReturnList();
+
+    } catch(std::exception& ex) {
+        exceptionMesg = copyMessageToR(ex.what());
+    } catch(...) {
+        exceptionMesg = copyMessageToR("unknown reason");
+    }
+  
+    if(exceptionMesg != NULL)
+        Rf_error(exceptionMesg);
+    
+    return rl;
+}
+
+
+
+RcppExport SEXP QL_adjust(SEXP calParameters, SEXP dateSexp){
+
+    SEXP rl=R_NilValue;
+    char* exceptionMesg=NULL;
+
+    try {
+        Calendar* pcal = getCalendar(calParameters);
+        RcppParams rparam(calParameters);        
+        BusinessDayConvention bdc = getBusinessDayConvention(rparam.getDoubleValue("bdc"));
+
+        RcppDateVector dates  = RcppDateVector(dateSexp);
+        int n = dates.size();
+        std::vector<QuantLib::Date> adjusted(n);
+
+        RcppDateVector ret(dateSexp);
+        RcppResultSet rs;
+        
+        for (int i=0; i<n; i++) {
+            QuantLib::Date day( dateFromR(dates(i)) );
+            adjusted[i] = pcal->adjust(day, bdc);
+            ret(i) =  RcppDate(adjusted[i].month(), 
+                               adjusted[i].dayOfMonth(), 
+                               adjusted[i].year());
+        }
+        
+        rs.add("ret", ret);
+        delete pcal;        
+       
+        rl = rs.getReturnList();
+
+    } catch(std::exception& ex) {
+        exceptionMesg = copyMessageToR(ex.what());
+    } catch(...) {
+        exceptionMesg = copyMessageToR("unknown reason");
+    }
+  
+    if(exceptionMesg != NULL)
+        Rf_error(exceptionMesg);
+    
+    return rl;
+}
+
+
+RcppExport SEXP QL_advance1(SEXP calParameters, SEXP dateSexp){
+
+    SEXP rl=R_NilValue;
+    char* exceptionMesg=NULL;
+
+    try {
+        Calendar* pcal = getCalendar(calParameters);
+        RcppParams rparam(calParameters);        
+        BusinessDayConvention bdc = getBusinessDayConvention(rparam.getDoubleValue("bdc"));
+        double emr = rparam.getDoubleValue("emr");
+        double amount = rparam.getDoubleValue("amount");
+        double unit = rparam.getDoubleValue("unit");
+
+
+        RcppDateVector dates  = RcppDateVector(dateSexp);
+        int n = dates.size();
+        std::vector<QuantLib::Date> advance(n);
+
+        RcppDateVector ret(dateSexp);
+        RcppResultSet rs;
+        
+        for (int i=0; i<n; i++) {
+            QuantLib::Date day( dateFromR(dates(i)) );
+            advance[i] = pcal->advance(day, amount,getTimeUnit(unit), bdc, (emr == 1)?true:false );
+            ret(i) =  RcppDate(advance[i].month(), 
+                               advance[i].dayOfMonth(), 
+                               advance[i].year());
+        }
+        
+        rs.add("ret", ret);
+        delete pcal;        
+       
+        rl = rs.getReturnList();
+
+    } catch(std::exception& ex) {
+        exceptionMesg = copyMessageToR(ex.what());
+    } catch(...) {
+        exceptionMesg = copyMessageToR("unknown reason");
+    }
+  
+    if(exceptionMesg != NULL)
+        Rf_error(exceptionMesg);
+    
+    return rl;
+}
+
+
+RcppExport SEXP QL_advance2(SEXP calParameters, SEXP dateSexp){
+
+    SEXP rl=R_NilValue;
+    char* exceptionMesg=NULL;
+
+    try {
+        Calendar* pcal = getCalendar(calParameters);
+        RcppParams rparam(calParameters);        
+        BusinessDayConvention bdc = getBusinessDayConvention(rparam.getDoubleValue("bdc"));
+        double emr = rparam.getDoubleValue("emr");
+        double period = rparam.getDoubleValue("period");
+
+
+        RcppDateVector dates  = RcppDateVector(dateSexp);
+        int n = dates.size();
+        std::vector<QuantLib::Date> advance(n);
+
+        RcppDateVector ret(dateSexp);
+        RcppResultSet rs;
+        
+        for (int i=0; i<n; i++) {
+            QuantLib::Date day( dateFromR(dates(i)) );
+            advance[i] = pcal->advance(day, Period(getFrequency(period)), 
+                                       bdc, (emr == 1)?true:false );
+            ret(i) =  RcppDate(advance[i].month(), 
+                               advance[i].dayOfMonth(), 
+                               advance[i].year());
+        }
+        
+        rs.add("ret", ret);
+        delete pcal;        
+       
+        rl = rs.getReturnList();
+
+    } catch(std::exception& ex) {
+        exceptionMesg = copyMessageToR(ex.what());
+    } catch(...) {
+        exceptionMesg = copyMessageToR("unknown reason");
+    }
+  
+    if(exceptionMesg != NULL)
+        Rf_error(exceptionMesg);
+    
+    return rl;
+}
+RcppExport SEXP QL_businessDaysBetween(SEXP calParameters, 
+                                       SEXP from, SEXP to){
+
+    SEXP rl=R_NilValue;
+    char* exceptionMesg=NULL;
+
+    try {
+        Calendar* pcal = getCalendar(calParameters);
+        RcppParams rparam(calParameters);
+        double ifirst = rparam.getDoubleValue("includeFirst");
+        double ilast = rparam.getDoubleValue("includeLast");
+
+        RcppDateVector dates1  = RcppDateVector(from);
+        RcppDateVector dates2  = RcppDateVector(to);
+
+        int n = dates1.size();
+        std::vector<double> between(n);
+
+
+        RcppResultSet rs;
+        
+        for (int i=0; i<n; i++) {
+            QuantLib::Date day1( dateFromR(dates1(i)) );
+            QuantLib::Date day2( dateFromR(dates2(i)) );
+            between[i] = pcal->businessDaysBetween(day1, day2,
+                                                   (ifirst == 1)?true:false,
+                                                   (ilast ==1)?true:false);
+        }
+        
+        rs.add("ret", between);
+        delete pcal;        
+        
+        rl = rs.getReturnList();
+
+    } catch(std::exception& ex) {
+        exceptionMesg = copyMessageToR(ex.what());
+    } catch(...) {
+        exceptionMesg = copyMessageToR("unknown reason");
+    }
+  
+    if(exceptionMesg != NULL)
+        Rf_error(exceptionMesg);
+    
+    return rl;
+}
+
+
+RcppExport SEXP QL_holidayList(SEXP calParameters, 
+                                 SEXP from, 
+                                 SEXP to){
+
+    SEXP rl=R_NilValue;
+    char* exceptionMesg=NULL;
+
+    try {
+        Calendar* pcal = getCalendar(calParameters);
+        RcppParams rparam(calParameters);
+        double iw = rparam.getDoubleValue("includeWeekends");
+
+        RcppDate d1 = rparam.getDateValue("from");
+        RcppDate d2 = rparam.getDateValue("to");
+
+        std::vector<QuantLib::Date> 
+            holidays = QuantLib::Calendar::holidayList(*pcal,
+                                                       Date(dateFromR(d1)), 
+                                                       Date(dateFromR(d2)), (iw == 1)?true:false);                
+
+        int numCol = 1;
+        std::vector<std::string> colNames(numCol);
+        colNames[0] = "Date";
+        RcppFrame frame(colNames);
+
+        for (unsigned int i = 0; i< holidays.size(); i++){
+            std::vector<ColDatum> row(numCol);
+
+            row[0].setDateValue(RcppDate(holidays[i].month(), 
+                                         holidays[i].dayOfMonth(), 
+                                         holidays[i].year()));
+ 
+            frame.addRow(row);
+        }
+
+        delete pcal;
+        RcppResultSet rs;
+        if (holidays.size() > 0)
+            rs.add("ret", frame);
+        else 
+            rs.add("ret", -1);
+        rl = rs.getReturnList();
+
+    } catch(std::exception& ex) {
+        exceptionMesg = copyMessageToR(ex.what());
+    } catch(...) {
+        exceptionMesg = copyMessageToR("unknown reason");
+    }
+  
+    if(exceptionMesg != NULL)
+        Rf_error(exceptionMesg);
+    
+    return rl;
+}
+
+
+/*
+
+RcppExport SEXP QL_isBusinessDay(SEXP calParameters, SEXP dateSexp){
+
+    SEXP rl=R_NilValue;
+    char* exceptionMesg=NULL;
+
+    try {
+        Calendar* pcal = getCalendar(calParameters);
+        delete pcal;
+
+        RcppResultSet rs;
+        rs.add("bizdays", bizdays);
+        rl = rs.getReturnList();
+
+    } catch(std::exception& ex) {
+        exceptionMesg = copyMessageToR(ex.what());
+    } catch(...) {
+        exceptionMesg = copyMessageToR("unknown reason");
+    }
+  
+    if(exceptionMesg != NULL)
+        Rf_error(exceptionMesg);
+    
+    return rl;
+}
+
+
+*/

@@ -5,7 +5,7 @@
 // Copyright 2002 - 2009  Dirk Eddelbuettel <edd@debian.org>
 // Copyright 2005 - 2006  Dominick Samperi
 //
-// $Id: rquantlib.hpp 115 2009-11-02 22:39:31Z edd $
+// $Id: rquantlib.hpp 138 2010-01-13 21:42:07Z edd $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -31,8 +31,8 @@
 using namespace QuantLib;
 
 
-#include <R.h>
-#include <Rinternals.h>
+//#include <R.h>
+//#include <Rinternals.h>
 
 #include "Rcpp.h"
 
@@ -143,6 +143,7 @@ int dateFromR(const RcppDate &d);
 
 //utility functions for parameters of fixed-income instrument function
 Frequency getFrequency(const double n);
+TimeUnit getTimeUnit(const double n);
 Compounding getCompounding(const double n);
 BusinessDayConvention getBusinessDayConvention(const double n);
 DayCounter getDayCounter(const double n);
@@ -157,4 +158,5 @@ boost::shared_ptr<YieldTermStructure> getFlatCurve(SEXP flatcurve);
 boost::shared_ptr<YieldTermStructure> rebuildCurveFromZeroRates(
                                                                 SEXP dateSexp,
                                                                 SEXP zeroSexp);
+Calendar* getCalendar(SEXP calParameters);
 #endif

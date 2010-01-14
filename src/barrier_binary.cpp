@@ -4,7 +4,7 @@
 //
 // Copyright (C) 2002 - 2009 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: barrier_binary.cpp 55 2009-03-31 01:36:03Z edd $
+// $Id: barrier_binary.cpp 138 2010-01-13 21:42:07Z edd $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -140,7 +140,7 @@ RcppExport  SEXP QL_BinaryOption(SEXP optionParameters) {
     }
   
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -217,7 +217,7 @@ RcppExport  SEXP QL_BinaryOptionImpliedVolatility(SEXP optionParameters) {
     }
   
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -325,7 +325,7 @@ RcppExport  SEXP QL_BarrierOption(SEXP optionParameters) {
     }
   
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }

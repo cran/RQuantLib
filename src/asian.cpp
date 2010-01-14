@@ -5,7 +5,7 @@
 // Copyright (C) 2002 - 2009 Dirk Eddelbuettel <edd@debian.org>
 // Copyright (C) 2009        Khanh Nguyen <knguyen@cs.umb.edu>
 //
-// $Id: asian.cpp 58 2009-03-31 03:50:44Z edd $
+// $Id: asian.cpp 138 2010-01-13 21:42:07Z edd $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -115,7 +115,7 @@ RcppExport SEXP QL_AsianOption(SEXP optionParameters){
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }

@@ -3,7 +3,7 @@
 ## Copyright (C) 2002 - 2009 Dirk Eddelbuettel <edd@debian.org>
 ## Copyright (C) 2009        Khanh Nguyen <knguyen@cs.umb.edu>
 ##
-## $Id: bonds.cpp 114 2009-11-02 22:39:02Z edd $
+## $Id: bonds.cpp 138 2010-01-13 21:42:07Z edd $
 ##
 ## This file is part of the RQuantLib library for GNU R.
 ## It is made available under the terms of the GNU General Public
@@ -68,7 +68,7 @@ RcppExport  SEXP QL_ZeroPriceByYield(SEXP optionParameters) {
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -115,7 +115,7 @@ RcppExport  SEXP QL_ZeroYield(SEXP optionParameters) {
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -203,7 +203,7 @@ SEXP ZeroBond(SEXP bondparam,
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -228,7 +228,7 @@ RcppExport SEXP QL_ZBond1(SEXP bondparam, SEXP discountCurve, SEXP dateparams){
         exceptionMesg = copyMessageToR("unknown reason");
     }    
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -249,7 +249,7 @@ RcppExport SEXP QL_ZBond2(SEXP bondparam, SEXP params,
         exceptionMesg = copyMessageToR("unknown reason");
     }    
     if(exceptionMesg != NULL)
-        error(exceptionMesg);   
+        Rf_error(exceptionMesg);   
     return rl;
 }
 
@@ -351,7 +351,7 @@ SEXP FixedBond(SEXP bondparam, SEXP ratesVec,
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     return rl;
 }
 
@@ -376,7 +376,7 @@ RcppExport SEXP QL_FixedRateBond1(SEXP bondparam, SEXP ratesVec,
         exceptionMesg = copyMessageToR("unknown reason");
     }    
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -398,7 +398,7 @@ RcppExport SEXP QL_FixedRateBond2(SEXP bondparam, SEXP ratesVec,
         exceptionMesg = copyMessageToR("unknown reason");
     }    
     if(exceptionMesg != NULL)
-        error(exceptionMesg);   
+        Rf_error(exceptionMesg);   
     return rl;
 }
     
@@ -466,7 +466,7 @@ RcppExport  SEXP QL_FixedRateBondYield(SEXP optionParameters, SEXP ratesVec) {
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -534,7 +534,7 @@ RcppExport  SEXP QL_FixedRateBondPriceByYield(SEXP optionParameters, SEXP ratesV
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -668,7 +668,7 @@ SEXP FloatingBond(SEXP bondparam, SEXP gearingsVec, SEXP spreadsVec,
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -696,7 +696,7 @@ RcppExport SEXP QL_FloatBond1(SEXP bond, SEXP gearings, SEXP caps,
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -728,7 +728,7 @@ RcppExport SEXP QL_FloatBond2(SEXP bond, SEXP gearings, SEXP caps,
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -759,7 +759,7 @@ RcppExport SEXP QL_FloatBond3(SEXP bond, SEXP gearings, SEXP caps,
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -795,7 +795,7 @@ RcppExport SEXP QL_FloatBond4(SEXP bond, SEXP gearings, SEXP caps,
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -826,7 +826,7 @@ RcppExport SEXP QL_FloatingWithRebuiltCurve(SEXP bond, SEXP gearings,
    }
    
    if(exceptionMesg != NULL)
-       error(exceptionMesg);
+       Rf_error(exceptionMesg);
     
    return rl;
 }
@@ -848,7 +848,7 @@ RcppExport SEXP QL_FixedRateWithRebuiltCurve(SEXP bondparam, SEXP ratesVec,
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -874,7 +874,7 @@ RcppExport SEXP QL_ZeroBondWithRebuiltCurve(SEXP bond,
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -1073,7 +1073,7 @@ RcppExport SEXP QL_ConvertibleZeroBond(SEXP bondparams, SEXP process,
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -1270,7 +1270,7 @@ RcppExport SEXP QL_ConvertibleFixedBond(SEXP bondparams, SEXP coupon, SEXP proce
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -1489,7 +1489,7 @@ RcppExport SEXP QL_ConvertibleFloatingBond(SEXP bondparams,  SEXP process,
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -1529,7 +1529,7 @@ RcppExport SEXP QL_CallableBond(SEXP bondparams, SEXP hw, SEXP coupon,
         }
         catch (std::exception& ex){
             exceptionMesg = copyMessageToR(ex.what());
-             error(exceptionMesg);
+             Rf_error(exceptionMesg);
         }
 
         RcppParams rparam(bondparams);
@@ -1635,7 +1635,7 @@ RcppExport SEXP QL_CallableBond(SEXP bondparams, SEXP hw, SEXP coupon,
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -1751,7 +1751,7 @@ RcppExport SEXP QL_CMSBond(SEXP bondparams, SEXP iborIndex, SEXP swapIndexParam,
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -1919,7 +1919,7 @@ RcppExport SEXP QL_FittedBondCurve(SEXP curveparams, SEXP lengthVec,
     }
     
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }

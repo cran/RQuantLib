@@ -5,7 +5,7 @@
 // Copyright (C) 2002 - 2009 Dirk Eddelbuettel <edd@debian.org>
 // Copyright (C) 2005 - 2006  Dominick Samperi
 //
-// $Id: utils.cpp 117 2009-11-02 22:42:03Z edd $
+// $Id: utils.cpp 138 2010-01-13 21:42:07Z edd $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -112,7 +112,7 @@ boost::shared_ptr<YieldTermStructure> buildTermStructure(SEXP params,
         Settings::instance().evaluationDate() = todaysDate;
         std::string firstQuoteName = tslist.getName(0);
         
-        double dt = rparam.getDoubleValue("dt");
+        //double dt = rparam.getDoubleValue("dt");
         
         std::string interpWhat, interpHow;
         bool flatQuotes = true;
@@ -352,6 +352,12 @@ Frequency getFrequency(const double n){
     else if (n==9) return Weekly;
     else return Daily;
 }
+TimeUnit getTimeUnit(const double n){
+    if (n==0) return Days;
+    else if (n==1) return Weeks;
+    else if (n==2) return Months;
+    else return Years;
+}
 DateGeneration::Rule getDateGenerationRule(const double n){
     if (n==0) return DateGeneration::Backward;
     else if (n==1) return DateGeneration::Forward;
@@ -360,4 +366,52 @@ DateGeneration::Rule getDateGenerationRule(const double n){
     else if (n==4) return DateGeneration::Twentieth;
     else return DateGeneration::TwentiethIMM;
 
+}
+Calendar* getCalendar(SEXP calParameters){
+    RcppParams rparam(calParameters);
+    std::string    calstr = rparam.getStringValue("calendar");
+    Calendar* pcal = NULL;
+    if (calstr == "TARGET") { 		// generic calendar 
+        pcal = new TARGET();
+        
+    } else if (calstr == "Canada" || calstr == "Canada/Settlement") {
+        pcal = new Canada(Canada::Settlement);
+    } else if (calstr == "Canada/TSX") {
+        pcal = new Canada(Canada::TSX);
+        
+    } else if (calstr == "Germany" || calstr == "Germany/FrankfurtStockExchange") {
+        pcal = new Germany(Germany::FrankfurtStockExchange);
+    } else if (calstr == "Germany/Settlement") {
+        pcal = new Germany(Germany::Settlement);
+    } else if (calstr == "Germany/Xetra") {
+        pcal = new Germany(Germany::Xetra);
+        } else if (calstr == "Germany/Eurex") {
+        pcal = new Germany(Germany::Eurex);
+        
+    } else if (calstr == "Italy" || calstr == "Italy/Settlement") {
+        pcal = new Italy(Italy::Settlement);
+        } else if (calstr == "Italy/Exchange") {
+        pcal = new Italy(Italy::Exchange);
+        
+    } else if (calstr == "Japan") {
+        pcal = new Japan();
+        
+    } else if (calstr == "UnitedKingdom" || calstr == "UnitedKingdom/Settlement") {
+        pcal = new UnitedKingdom(UnitedKingdom::Settlement);
+        } else if (calstr == "UnitedKingdom/Exchange") {
+        pcal = new UnitedKingdom(UnitedKingdom::Exchange);
+    } else if (calstr == "UnitedKingdom/Metals") {
+        pcal = new UnitedKingdom(UnitedKingdom::Metals);
+        
+    } else if (calstr == "UnitedStates" || calstr == "UnitedStates/Settlement") {
+        pcal = new UnitedStates(UnitedStates::Settlement);
+    } else if (calstr == "UnitedStates/NYSE") {
+        pcal = new UnitedStates(UnitedStates::NYSE);
+        } else if (calstr == "UnitedStates/GovernmentBond") {
+        pcal = new UnitedStates(UnitedStates::GovernmentBond);
+    } else if (calstr == "UnitedStates/NERC") {
+        pcal = new UnitedStates(UnitedStates::NERC);
+    }
+
+    return pcal;
 }

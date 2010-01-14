@@ -4,7 +4,7 @@
 //
 // Copyright (C) 2002 - 2009 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: implieds.cpp 55 2009-03-31 01:36:03Z edd $
+// $Id: implieds.cpp 138 2010-01-13 21:42:07Z edd $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -96,7 +96,7 @@ RcppExport  SEXP QL_EuropeanOptionImpliedVolatility(SEXP optionParameters) {
         exceptionMesg = copyMessageToR("unknown reason");
     }
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }
@@ -166,7 +166,7 @@ RcppExport  SEXP QL_AmericanOptionImpliedVolatility(SEXP optionParameters) {
     }
   
     if(exceptionMesg != NULL)
-        error(exceptionMesg);
+        Rf_error(exceptionMesg);
     
     return rl;
 }

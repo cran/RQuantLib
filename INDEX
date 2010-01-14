@@ -1,3 +1,5 @@
+adjust                  Calendar functions from QuantLib
+advance                 Calendar functions from QuantLib
 AmericanOption          American Option evaluation using Finite
                         Differences
 AmericanOptionImpliedVolatility
@@ -16,6 +18,7 @@ BinaryOptionImpliedVolatility
                         Option
 Bond                    Base class for Bond price evalution
 businessDay             Calendar functions from QuantLib
+businessDaysBetween     Calendar functions from QuantLib
 CallableBond            CallableBond evaluation
 ConvertibleFixedCouponBond
                         Convertible Fixed Coupon Bond evaluation
@@ -23,8 +26,10 @@ ConvertibleFloatingCouponBond
                         Convertible Floating Coupon Bond evaluation
 ConvertibleZeroCouponBond
                         Convertible Zero Coupon Bond evaluation
+dayCount                DayCounter functions from QuantLib
 DiscountCurve           Returns the discount curve (with zero rates and
                         forwards) given times
+endOfMonth              Calendar functions from QuantLib
 Enum                    Documentation for parameters
 EuropeanOption          European Option evaluation using Closed-Form
                         solution
@@ -42,10 +47,15 @@ FixedRateBondPriceByYield
 FixedRateBondYield      Fixed Rate Bond Yield Yield evaluation
 FloatingRateBond        Fixed rate bond evaluation using discount curve
                         solution
+holidayList             Calendar functions from QuantLib
 ImpliedVolatility       Base class for option-price implied volatility
                         evalution
+isEndOfMonth            Calendar functions from QuantLib
+isHoliday               Calendar functions from QuantLib
+isWeekend               Calendar functions from QuantLib
 matchBDC                Bond parameter conversion utilities
 Option                  Base class for option price evalution
+yearFraction            DayCounter functions from QuantLib
 ZeroCouponBond          Zero-oupon bond evaluation using discount curve
                         solution
 ZeroPriceByYield        Zero Coupon Bond Theoretical Price evaluation

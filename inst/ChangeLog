@@ -1,3 +1,49 @@
+2010-01-14  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Release 0.3.2 which works with QuantLib 0.9.9
+	  (as well as with the brand-new first beta for QuantLib 1.0.0)
+
+	* src/Makefile.win: Keep QL 0.9.9 hard-coded until 1.0.0 is out
+
+2010-01-14  Khanh Nguyen <knguyen@cs.umb.edu>
+
+	* pkg/R/calendars.R: Fix generic function issue with advance
+	* man/advance_by_timeunit.Rd: idem
+	* man/advance_by_period.Rd: idem
+	* man/advance.Rd: deleted
+
+	* src/dayCounter.cpp: Added dayCounter functions
+	* pkg/R/dayCounter.R: idem
+	* man/dayCount.R: idem
+	* man/yearFraction.R: idem
+
+2010-01-13  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/asian.cpp: updated for Rcpp (>= 0.7.0), switched to explicit
+	  Rf_error() and Rf_length() where needed with R_NO_REMAP defined
+	* src/barrier_binary.cpp: idem
+	* src/bermudan.cpp: idem
+	* src/bonds.cpp: idem
+	* src/discount.cpp: idem
+	* src/implieds.cpp: idem
+	* src/rquantlib.hpp: idem
+	* src/utils.cpp: idem
+	* src/vanilla.cpp: idem
+	* DESCRIPTION: Depends on Rcpp (>= 0.7.0)
+
+2010-01-12  Khanh Nguyen <knguyen@cs.umb.edu>
+
+	* src/calendars.cpp: Add new calendaring functionality
+	* src/calendars.hpp: idem
+	* R/calendars.R: idem
+	* man/endOfMonth.Rd: idem
+	* man/isHoliday.Rd: idem
+	* man/holidayList.Rd: idem
+	* man/businessDaysBetwee.Rd: idem
+	* man/adjust.Rd: idem
+	* man/isEndOfMonth.Rd: idem
+	* man/isWeekend.Rd: idem
+
 2009-12-12  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: Release 0.3.1 for QuantLib 0.9.9
