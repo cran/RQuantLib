@@ -8,11 +8,9 @@ This function evaluations an Barrier option on a common stock
 using a closed-form solution. The option value as well as the common first
 derivatives ("Greeks") are returned.}
 \usage{
-\method{BarrierOption}{default}(barrType, type, 
-                      underlying, strike, dividendYield,
-                      riskFreeRate, maturity, volatility,
-		      barrier, rebate=0.0)
-
+\method{BarrierOption}{default}(barrType, type, underlying, strike, 
+                                dividendYield, riskFreeRate, maturity, 
+                                volatility, barrier, rebate=0.0)
 \method{print}{Option}
 \method{summary}{Option}
 }

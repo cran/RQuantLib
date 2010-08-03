@@ -1,4 +1,4 @@
-% $Id: AsianOption.Rd 58 2009-03-31 03:50:44Z edd $
+% $Id: AsianOption.Rd 277 2010-08-02 16:45:46Z edd $
 \name{AsianOption}
 \alias{AsianOption}
 \alias{AsianOption.default}
@@ -11,7 +11,8 @@
 }
 \usage{
 \method{AsianOption}{default}(averageType, type, underlying, strike,
-	dividendYield, riskFreeRate, maturity, volatility, timeSteps=150, gridPoints=151)
+	                  dividendYield, riskFreeRate, maturity, 
+	                  volatility, first=0, length=0, fixings=0)
 \method{plot}{Option}
 \method{print}{Option}
 \method{summary}{Option}
@@ -25,8 +26,9 @@
   \item{riskFreeRate}{Risk-free rate}
   \item{maturity}{Time to maturity (in fractional years)}
   \item{volatility}{Volatility of the underlying stock}
-  \item{timeSteps}{Time steps for the Finite Differences method, default value is 150}
-  \item{gridPoints}{Grid points for the Finite Differences method, default value is 151}
+  \item{first}{to be written}
+  \item{length}{to be written}
+  \item{fixings}{to be written}
 }
 \value{
   The \code{AsianOption} function returns an object of class
@@ -47,6 +49,9 @@
   \item{parameters}{List with parameters with which object was created}
 }
 \details{
+  
+  When "arithmetic" evaluation is used, only the NPV() is returned.
+  
   The well-known closed-form solution derived by Black, Scholes and
   Merton is used for valuation. Implied volatilities are calculated
   numerically.

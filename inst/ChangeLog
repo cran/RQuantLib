@@ -1,3 +1,142 @@
+2010-08-03  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Release 0.3.3
+
+2010-08-02  Dirk Eddelbuettel  <edd@debian.org>
+
+	* inst/unitTests/runit.options.R: Updated asian option test for
+	arithmetic averaging based on QuantLib's test-suite code
+	* R/asian.R: Removed two unused parameters, updated use of maturity
+	used only for geometric averaging
+	* man/asian.Rd: Corresponding manual page update
+
+        * src/Makevars.win: Simplified Makefile.win into Makevars.win and
+	updated to e.g. the new sub-arch path for Rscript.exe
+
+2010-07-05  Khanh Nguyen  <knguyen@cs.umb.edu>
+
+	* src/asian.cpp: Added arithmetic average case
+	* R/asian.R: Idem
+	* man/asian.Rd: Idem
+
+2010-06-30  Dirk Eddelbuettel  <edd@debian.org>
+
+	* inst/unitTests/runit.calendar.R: Beginnings of calendar unit tests
+
+2010-06-23  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/*: Converted remainder of code to new Rcpp API
+
+2010-06-20  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/calendar.R: New helper function setCalendarContext()
+	setting calendar, fixingDays and settleDate
+	* src/calendar.cpp: Implementation, setting RQLContext
+	* man/setCalendarContext.Rd: Documentation
+
+	* src/bermudan.cpp: take calendar info from RQLContext
+	* src/discount.cpp: idem
+	* src/utils.cpp: idem
+
+	* src/*.cpp: Some minor cleanup and reindentation,
+	  ensure Settings::instance().evaluationDate() is set
+
+2010-06-19  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/bonds.cpp: Converted to new API
+
+	* src/utils.cpp: Factored-out utility functions from bonds.cpp
+	* src/rquantlib.hpp: Declarations for new utility functions
+	* src/bonds.cpp: Some refactoring
+
+2010-06-18  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/bonds.cpp: Converted to new API
+
+2010-06-17  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/curves.cpp: Converted to new API
+	* src/discount.cpp: Idem
+	* src/hullwhite.cpp: Idem
+	* src/bermudan.cpp: Idem
+
+2010-06-16  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/utils.cpp: Added simple getOptionType() helper
+	* src/rquantlib.hpp: Added simple getOptionType() helper definition
+	* src/*cpp: Use getOptionType()
+
+	* src/asian.cpp: Converted to new API
+	* src/barrier_binary.cpp: Idem
+	* src/implieds.cpp: Idem
+	* src/cbond.cpp: Idem
+	* src/daycounter.cpp: Idem
+	* src/zero.cpp: Idem
+
+2010-06-15  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/vanilla.cpp: Converted to new API
+
+2010-06-14  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/calendars.cpp: Yet more simplification from "new" Rcpp API
+	* R/calendars.R: Simpler too as we get simpler result objects back
+
+2010-06-12  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/calendars.cpp: More code simplification using "new" Rcpp API
+
+	* src/utils.cpp: Add Brazil + South Korea to getCalendar()
+	* src/calendars.cpp: Move getCalendar() into this file
+
+2010-06-11  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/calendars.cpp: Simplified code by using more of Rcpp's new API
+	* DESCRIPTION: Encode "Rcpp (>= 0.8.2.2)" aka current SVN
+
+	* DESCRIPTION: Switch to 'LinkingTo: Rcpp'
+	* configure.in: No longer need CxxFlags for Rcpp thanks to LinkingTo
+	* src/Makefile.win: Idem
+
+2010-06-09  Dirk Eddelbuettel  <edd@debian.org>
+
+	* man/DiscountCurve.Rd: Uncomment futures entries as there are
+	numerical issues (in QuantLib) with the spline curve fit when present
+
+2010-04-29  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/*.cpp: Suppress a few g++ warnings
+
+	* src/calendar.cpp: Added South Korea and Brazil
+
+2010-04-21  Dirk Eddelbuettel  <edd@debian.org>
+
+	* inst/unitTests/runitOptions.R: Updated binary option test
+
+2010-04-05  Khanh Nguyen  <knguyen@cs.umb.edu>
+
+	* R/hullWhiteCalibration.R: added Hull-White calibration
+	* src/hullwhite.cpp: added Hull-White calibration
+
+2010-02-12  Khanh Nguyen  <knguyen@cs.umb.edu>
+
+	* R/*,src/*: Remove some deprecated fixed income code
+	* tests/*: Remove corresponding tests
+
+2010-01-23  Dirk Eddelbuettel  <edd@debian.org>
+
+	* NAMESPACE: Some small cleanups
+
+2010-01-22  Khanh Nguyen <knguyen@cs.umb.edu>
+
+	* NAMESPACE: Added, filled with functions and methods
+
+	* R/*Bond.R: add default values to bond functions, especially the date
+	parameters (dayCounter, settlement days, compounding frequency,..)
+	so that it is less confusing when using the functions.
+	* man/*Bond.Rd: idem
+	* New examples that use default values for bonds.
+
 2010-01-14  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: Release 0.3.2 which works with QuantLib 0.9.9
@@ -8,14 +147,12 @@
 2010-01-14  Khanh Nguyen <knguyen@cs.umb.edu>
 
 	* pkg/R/calendars.R: Fix generic function issue with advance
-	* man/advance_by_timeunit.Rd: idem
-	* man/advance_by_period.Rd: idem
-	* man/advance.Rd: deleted
 
 	* src/dayCounter.cpp: Added dayCounter functions
 	* pkg/R/dayCounter.R: idem
 	* man/dayCount.R: idem
 	* man/yearFraction.R: idem
+	* man/advance.R: idem
 
 2010-01-13  Dirk Eddelbuettel  <edd@debian.org>
 
@@ -39,7 +176,7 @@
 	* man/endOfMonth.Rd: idem
 	* man/isHoliday.Rd: idem
 	* man/holidayList.Rd: idem
-	* man/businessDaysBetwee.Rd: idem
+	* man/businessDaysBetween.Rd: idem
 	* man/adjust.Rd: idem
 	* man/isEndOfMonth.Rd: idem
 	* man/isWeekend.Rd: idem
@@ -254,18 +391,20 @@
 	* man/DiscountCurve.Rd: Fixed typo and commented out rates
 	  needing to be fractions in fixed formating in DiscountCurve example
 
-	* src/Rcpp.{hpp,cpp},src/{curves,discount,bermudan}.cpp: 
-	  modified to throw exceptions instead of calling R's error() function.	  
+	* src/Rcpp.{hpp,cpp},src/{curves,discount,bermudan}.cpp:
+	  modified to throw exceptions instead of calling R's error()
+	  function.
+
 2005-10-27  Dominick Samperi <dsamperi@DecisionSynergy.com>
 
 	* src/Rcpp.{hpp,cpp}: Some minor adjustments. Moved matrix and
 	  vector indexing into header file.
-	
+
 	* src/rquantlib.hpp: Added ifdef to protect against multiple includes.
 
 2005-10-26  Dirk Eddelbuettel  <edd@debian.org>
 
-	* Preparing release 0.2.0 regrouping the numerous changes -- 
+	* Preparing release 0.2.0 regrouping the numerous changes --
 	  contributed mostly by Dominick -- since the 0.1.13 release
 
 2005-10-13  Dominick Samperi <dsamperi@DecisionSynergy.com>
@@ -278,7 +417,7 @@
 	  modified discount.cpp and bermudan.cpp to use it.
 
 	* src/Rcpp.hpp: Header files for latter.
-	
+
 2005-10-03  Dominick Samperi <dsamperi@DecisionSynergy.com>
 
 	* inst/Boost-License.txt, inst/QuantLib-License.txt: License files
@@ -287,22 +426,22 @@
 	* Windows is now supported using a binary package that does not
 	  require the user to install a compiler, Boost, or QuantLib. Had
 	  to add Makefile.win, configure.win, etc.
-	
-	* R/discount.R: new DiscountCurve function that constructs the 
-	  spot term structure of interest rates based on 
-	  market observables like 
+
+	* R/discount.R: new DiscountCurve function that constructs the
+	  spot term structure of interest rates based on
+	  market observables like
 	  deposit rates, futures prices, FRA rates, and swap rates. Supports
-	  the fitting of discount factors, forward rates, or zero coupon 
+	  the fitting of discount factors, forward rates, or zero coupon
 	  rates, using linear, log-linear, and cubic spline interpolation.
 
 	* man/DiscountCurve.Rd: man page for DiscountCurve.
-	
-	* R/bermudan.R: new function that prices a Bermudan swaption 
+
+	* R/bermudan.R: new function that prices a Bermudan swaption
 	  using a choice of four models: G2 analytic, Hull-White analytic,
 	  Hull-White tree, and Black-Karasinski tree.
 
 	* man/BermudanSwaption.Rd: man page for BermudanSwaption.
-	
+
 	* src/curves.cpp: utility code for curve construction.
 
 	* src/discount.cpp: implements DiscountCurve.
@@ -316,7 +455,7 @@
 	  new definitions for Windows.
 
 	* Changed: suffix .cc to .cpp, and .h to .hpp.
-	
+
 2005-09-16  Dirk Eddelbuettel  <edd@debian.org>
 
 	* demo/OptionSurfaces.R: added demo with OpenGL visualizations
@@ -327,20 +466,19 @@
 
 	* Release 0.1.13 matching the new QuantLib 0.3.10 release
 
-	* Implied volatilies are back! 
+	* Implied volatilies are back!
 	  With gcc/g++ 4.0, the segmentation fault that I was seeing
 	  on implied volatility using gcc/g++ 3.3 (but which others did
-	  not see with gcc/g++ 3.2) has disappeared, so the 
+	  not see with gcc/g++ 3.2) has disappeared, so the
 	  corresponding code has been reactivated.
-	* BinaryOptionImpliedVolatility() is also back 
+	* BinaryOptionImpliedVolatility() is also back
 
 	* src/*.cc, R/*.R: Removed a lot of commented-out code
-	
 
 2005-04-26  Dirk Eddelbuettel  <edd@debian.org>
 
 	* Release 0.1.12 matching the upcoming QuantLib 0.3.9 release
-	
+
 	* configure.in: Test for QuantLib >= 0.3.8
 
 	* src/*.cc: Several changes for QuantLib 0.3.9:
@@ -355,15 +493,15 @@
 	* configure.in: Added tests for Boost headers, with thanks and
 	  a nod to QuantLib for the actual autoconf code
 
-	* src/{barrier_binary.cc,implieds.cc,vanilla.cc}: Option type 
+	* src/{barrier_binary.cc,implieds.cc,vanilla.cc}: Option type
 	  'Straddle' now unsupported, hence commented out
 	* man/*.Rd: Similarly removed reference to straddle from docs
-	
-	* src/{barrier_binary.cc,implieds.cc,utils.cc,vanilla.cc}: 
-	  Renamed BlackScholesStochasticProcess to BlackScholesProcess 
 
-	* src/vanilla.cc: Changed Handle to boost::shared_ptr 
-	
+	* src/{barrier_binary.cc,implieds.cc,utils.cc,vanilla.cc}:
+	  Renamed BlackScholesStochasticProcess to BlackScholesProcess
+
+	* src/vanilla.cc: Changed Handle to boost::shared_ptr
+
 2004-09-12  Dirk Eddelbuettel  <edd@debian.org>
 
 	* Release 0.1.10
@@ -371,7 +509,7 @@
 	* Switched to using Boost library as per QuantLin 0.3.7
 
         * AmericanOption now uses the Barone-Adesi-Whaley approximation
-	
+
 	* Implied volatility for both European and American options
 	  currently segfaults when called from R, though the code itself
 	  works as a standalone. The code also works from R when the implied
@@ -395,20 +533,19 @@
 
 	* Release 0.1.8
 
-	* src/{barrier_binary,implieds,utils,vanilla}.cc: Updated to the 
+	* src/{barrier_binary,implieds,utils,vanilla}.cc: Updated to the
 	  new QuantLib 0.3.5 pricer framework.  This currently implies
 	  that options priced using the binomial engines do not have
 	  Greeks; this should be addressed in a future QuantLib release.
 
 	* man/{BarrierOption,AmericanOption}.Rd: Note that Greeks are
 	  currently unavailable with binary pricers
-	 
 
 2003-11-28  Dirk Eddelbuettel  <edd@debian.org>
 
 	* Release 0.1.7
 
-	* src/barrier_binary.cc: 
+	* src/barrier_binary.cc:
 	  -- split off from RQuantLib.cc
 	  -- added three more greeks to Barrier Option
 	  -- reflected small change in QuantLib types for Barrier Options
@@ -417,13 +554,13 @@
 	  -- split off from RQuantLib.cc
 	  -- rewritten functions for implied volatility on European and
 	     American options using new QuantLib framework
-	
+
 	* src/utils.cc
 	  -- split off from RQuantLib.cc
 
 	* src/vanilla.cc
 	  -- rump of RQuantLib.cc, renamed
-	
+
 2003-07-31  Dirk Eddelbuettel  <edd@debian.org>
 
 	* Release 0.1.6
@@ -437,23 +574,23 @@
 
 	* R/{option,implied}.R: generic/method consistency improved
 	  following heads-up, and subsequent help, from BDR. Thanks!
-	
+
 2003-03-25  Dirk Eddelbuettel  <edd@debian.org>
 
 	* Release 0.1.4
-	
+
 	* data/:  Removed empty directory as suggested by Kurt
 
 	* configure.in: Several additions:
 	  - test for g++ >= 3.0, kindly provided by Kurt
 	  - test for QuantLib >= 0.3, along the same lines
 	  - converted from autoconf 2.13 to 2.50
-	
+
 	* cleanup: Remove temp dir created by autoconf
 
 2003-02-05  Dirk Eddelbuettel  <edd@debian.org>
 
-	* Release 0.1.3 
+	* Release 0.1.3
 
 	* R/*.R: Added PACKAGE="RQuantLib" to .Call() as suggested by Kurt
 
@@ -468,12 +605,12 @@
 
 2002-11-11  Dirk Eddelbuettel  <edd@debian.org>
 
-	* Release 0.1.1 
+	* Release 0.1.1
 
 	* Added barrier option
 
 	* Several small corrections and completions to documentation
-	  
+
 2002-02-25  Dirk Eddelbuettel  <edd@debian.org>
 
 	* Initial 0.1.0 release

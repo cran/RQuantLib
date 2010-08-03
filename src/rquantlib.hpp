@@ -5,7 +5,7 @@
 // Copyright 2002 - 2009  Dirk Eddelbuettel <edd@debian.org>
 // Copyright 2005 - 2006  Dominick Samperi
 //
-// $Id: rquantlib.hpp 138 2010-01-13 21:42:07Z edd $
+// $Id: rquantlib.hpp 264 2010-06-23 20:27:13Z edd $
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,19 +30,15 @@
 
 using namespace QuantLib;
 
-
-//#include <R.h>
-//#include <Rinternals.h>
-
-#include "Rcpp.h"
+#include <Rcpp.h>
 
 //#define NULL_RateHelper (boost::shared_ptr<RateHelper>)Null<boost::shared_ptr<RateHelper> >()
 
 // Prototypes for convenience functions (some macros)
-void insertListElement(SEXP &list, SEXP &names,
-                       const int pos, const double value, 
-                       const char *label);
-SEXP getListElement(SEXP list, char *str);
+//void insertListElement(SEXP &list, SEXP &names,
+//                       const int pos, const double value, 
+//                       const char *label);
+//SEXP getListElement(SEXP list, char *str);
 
 // Used to maintain context while in an R function.
 class RQLContext : public Singleton<RQLContext> {
@@ -53,6 +49,7 @@ public:
         settleDate = Date::todaysDate()+2;
     }
     // The tradeDate (evaluation date) is maintained by Settings,
+    // (which is a singleton structure provided by QuantLib)
     // and used to translate between dates and real-valued times.
     Date settleDate;
     Calendar calendar;
@@ -139,7 +136,8 @@ makeProcess(const boost::shared_ptr<Quote>& u,
             const boost::shared_ptr<YieldTermStructure>& r,
             const boost::shared_ptr<BlackVolTermStructure>& vol);
 
-int dateFromR(const RcppDate &d);
+// int dateFromR(const RcppDate &d); 	// using 'classic' API's RcppDate 
+int dateFromR(const Rcpp::Date &d); // using 'new' API's Rcpp::Date
 
 //utility functions for parameters of fixed-income instrument function
 Frequency getFrequency(const double n);
@@ -155,8 +153,20 @@ Schedule getSchedule(SEXP sch);
 boost::shared_ptr<IborIndex> getIborIndex(SEXP index, const Date today);
 std::vector<double> getDoubleVector(SEXP vector);
 boost::shared_ptr<YieldTermStructure> getFlatCurve(SEXP flatcurve);
-boost::shared_ptr<YieldTermStructure> rebuildCurveFromZeroRates(
-                                                                SEXP dateSexp,
-                                                                SEXP zeroSexp);
+boost::shared_ptr<YieldTermStructure> rebuildCurveFromZeroRates(SEXP dateSexp, SEXP zeroSexp);
+boost::shared_ptr<IborIndex> buildIborIndex(std::string type,
+                                            const Handle<YieldTermStructure>& iborStrc);
 Calendar* getCalendar(SEXP calParameters);
+Period periodByTimeUnit(int length, std::string unit);
+
+// simple option type creator based on string
+Option::Type getOptionType(const std::string &t);
+
+// create a data.frame with dates and amounts
+Rcpp::DataFrame getCashFlowDataFrame(const Leg &bondCashFlow);
+
+// fill QL data structures based on data.frames
+DividendSchedule getDividendSchedule(SEXP dividendScheduleFrame);
+CallabilitySchedule getCallabilitySchedule(SEXP callabilityScheduleFrame);
+
 #endif

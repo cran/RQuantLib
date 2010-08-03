@@ -9,9 +9,8 @@
   the other required parameters to value an option.}
 \usage{
 \method{AmericanOptionImpliedVolatility}{default}(type, value,
-		underlying, strike,
-		dividendYield, riskFreeRate, maturity, volatility,
-                timeSteps=150, gridPoints=151)
+		underlying, strike,dividendYield, riskFreeRate, maturity, volatility,
+        timeSteps=150, gridPoints=151)
 
 \method{print}{ImpliedVolatility}
 \method{summary}{ImpliedVolatility}

@@ -1,8 +1,8 @@
-% $Id: ZeroCouponBond.Rd 106 2009-08-19 02:21:27Z knguyen $
+% $Id: ZeroCouponBond.Rd 201 2010-03-17 01:58:59Z edd $
 \name{ZeroCouponBond}
 \alias{ZeroCouponBond}
 \alias{ZeroCouponBond.default}
-\title{Zero-oupon bond evaluation using discount curve solution}
+\title{Zerocoupon bond pricing}
 \description{
   The \code{ZeroCouponBond} function evaluates a zero-coupon plainly using discount curve. 
   More specificly, the calculation is done by DiscountingBondEngine from QuantLib.
@@ -19,36 +19,48 @@
 }
 \arguments{
 
-
-\item{bond}{bond parameters:
-	\tabular{ll}{
-           \code{faceAmount}    \tab a double, face amount of the bond \cr
-           \code{issueDate}     \tab a Date, the bond's issue date \cr
-           \code{maturityDate}  \tab a Date, the bond's maturity date \cr
-           \code{redemption}    \tab a double, percentage of the initial face amount that will be returned at maturity date. Normally set at 100 \cr
-	}
+\item{bond}{bond parameters, a named list whose elements are: 
+  \tabular{ll}{
+    \code{issueDate}     \tab a Date, the bond's issue date\cr
+    \code{maturityDate}  \tab a Date, the bond's maturity date\cr
+    \code{faceAmount}    \tab (Optional) a double, face amount of the bond.\cr
+    \code{}        \tab  Default value is 100. \cr
+    \code{redemption}    \tab (Optional) a double, percentage of the initial \cr
+    \code{}        \tab 	face amount that will be returned at maturity \cr
+    \code{}        \tab    date. Default value is 100.\cr
+  }
+}
+\item{discountCurve}{Can be one of the following:
+  \tabular{ll}{
+    \code{a DiscountCurve} \tab  a object of DiscountCurve class \cr
+    \code{}                \tab For more detail, see example or \cr 
+    \code{}                \tab the discountCurve function \cr
+    \code{A 2 items list} \tab specifies a flat curve in two \cr 
+    \code{}               \tab values "todayDate" and "rate"   \cr
+    \code{A 3 items list} \tab specifies three values to construct a \cr
+    \code{}                \tab DiscountCurve object, "params" , \cr 
+    \code{} \tab "tsQuotes", "times". \cr
+    \code{}                \tab For more detail, see example or \cr 
+    \code{}                \tab the discountCurve function \cr
+  }
 }
 
 
 
-\item{discountCurve}{ Can be on of the following:
-\tabular{l}{
-	\code{a DiscountCurve object}   \cr
-	\code{A list that specifies a flat curve in two values "todayDate" and "rate"}   \cr
-	\code{A list that specified 3 values to construct a DiscountCurve object, "params" , "tsQuotes", "times". For more detail, see example or the discountCurve function} \cr
+\item{dateparams}{(Optional) a named list, QuantLib's date parameters of the bond. 
+  \tabular{ll}{
+    \code{settlementDays} \tab (Optional) a double, settlement days. \cr 
+    \code{}        \tab Default value is 1.\cr
+    \code{calendar} \tab (Optional) a string, either 'us' or 'uk' \cr 
+    \code{}        \tab corresponding to US Goverment Bond \cr
+    \code{}		   \tab calendar and UK Exchange calendar.\cr
+    \code{}        \tab  Default value is 'us'.\cr
+    \code{businessDayConvention} \tab (Optional) a number or string, \cr 
+    \code{}                 \tab business day convention. \cr 
+    \tab See \link{Enum}. Default value is 'Following'. \cr
+  }
+  See example below.
 }
-}
-
-
-\item{dateparams}{QuantLib's date parameters of the bond. 
-	\tabular{ll}{
-	   \code{settlementDays} \tab a double, settlement days. \cr
-	   \code{calendar} \tab a string, either 'us' or 'uk' corresponding to US Goverment Bond calendar and UK Exchange calendar. \cr
-	   \code{businessDayConvention} \tab a number or string, business day convention. See \link{Enum} \cr
-	}
-	See example below.
-}
-
 }
 \value{
   The \code{ZeroCouponBond} function returns an object of class
@@ -56,7 +68,7 @@
   \code{Bond}). It contains a list with the following
   components:
   \item{NPV}{net present value of the bond}
-  \item{cleanPrice}{price price of the bond}
+  \item{cleanPrice}{clean price of the bond}
   \item{dirtyPrice}{dirty price of the bond}
   \item{accruedAmount}{accrued amount of the bond}
   \item{yield}{yield of the bond}
@@ -78,22 +90,23 @@
 
 
 \examples{
-# simple call with unnamed parameters
-bond <- list(faceAmount=100, issueDate=as.Date("2004-11-30"),
+# Simple call with all parameter and a flat curve
+bond <- list(faceAmount=100,issueDate=as.Date("2004-11-30"),
              maturityDate=as.Date("2008-11-30"), redemption=100 )
 
-dateparams <-list(settlementDays=1, calendar="us", businessDayConvention=4)
+dateparams <-list(settlementDays=1, calendar="us", businessDayConvention='Unadjusted')
 
-discountCurve <- list(todayDate=as.Date("2004-11-04"), riskFreeRate=0.03)
 
-ZeroCouponBond(bond, discountCurve, dateparams)
+discountCurve.param <- list(tradeDate=as.Date('2002-2-15'),
+                           settleDate=as.Date('2002-2-15'),
+                           dt=0.25,
+                           interpWhat='discount', interpHow='loglinear')
+discountCurve.flat <- DiscountCurve(discountCurve.param, list(flat=0.05))
 
-params <- list(tradeDate=as.Date('2002-2-15'),
-               settleDate=as.Date('2002-2-19'),
-               dt=.25,
-               interpWhat="discount",
-               interpHow="loglinear")
+ZeroCouponBond(bond, discountCurve.flat, dateparams)
 
+
+# The same bond with a discount curve constructed from market quotes
 tsQuotes <- list(d1w  =0.0382,
                  d1m  =0.0372,
                  fut1=96.2875,
@@ -108,24 +121,17 @@ tsQuotes <- list(d1w  =0.0382,
                  s5y  =0.0443,
                  s10y =0.05165,
                  s15y =0.055175)
-
-times <- seq(0,10,.1)
-discountCurve <- list(params, tsQuotes, times)
-
-# depreciated
+discountCurve <- DiscountCurve(discountCurve.param, tsQuotes)
 ZeroCouponBond(bond, discountCurve, dateparams)
 
-# construct a curve
-curves <- DiscountCurve(params, tsQuotes, times)
-ZeroCouponBond(bond, curves, dateparams)
 
-#construct a flat curve
-flatquote <- list(flat=0.04)
-flatCurve <- DiscountCurve(params, flatquote, times)
-dateparams <-list(settlementDays=1, calendar="us", 
-                  businessDayConvention="Following")
+#examples with default arguments
+ZeroCouponBond(bond, discountCurve)
 
-ZeroCouponBond(bond, flatCurve, dateparams)
+bond <- list(issueDate=as.Date("2004-11-30"),
+             maturityDate=as.Date("2008-11-30"))
+dateparams <-list(settlementDays=1)
+ZeroCouponBond(bond, discountCurve, dateparams)
 
 }
 \keyword{misc}

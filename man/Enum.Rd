@@ -40,17 +40,19 @@ Reference for parameters when constructing a bond
 
 \item{period or frequency}{an int value
      \tabular{ll}{
-       \code{0} \tab NoFrequency \cr
-       \code{1} \tab Once \cr
-       \code{2} \tab Annual \cr
-       \code{3} \tab Semiannual \cr
-       \code{4} \tab EveryFourthMonth \cr
-       \code{5} \tab Quarterly \cr
+       \code{-1} \tab NoFrequency \cr
+       \code{0} \tab Once \cr
+       \code{1} \tab Annual \cr
+       \code{2} \tab Semiannual \cr
+       \code{3} \tab EveryFourthMonth \cr
+       \code{4} \tab Quarterly \cr
        \code{6} \tab BiMonthtly \cr
-       \code{7} \tab EveryFourthWeek \cr
-       \code{8} \tab Biweekly \cr
-       \code{9} \tab Weekly \cr
-       \code{anything else} \tab Daily 
+       \code{12} \tab Monthly \cr
+       \code{13} \tab EveryFourthWeek \cr
+       \code{26} \tab BiWeekly \cr
+       \code{52} \tab Weekly \cr
+       \code{365} \tab Daily \cr       
+       \code{anything else} \tab OtherFrequency
      }
 }
 

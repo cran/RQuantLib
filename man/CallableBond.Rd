@@ -4,9 +4,8 @@
 \alias{CallableBond.default}
 \title{CallableBond evaluation}
 \description{
-  The \code{CallableBond} function sets up and evaluates a callable fixed rate bond using Hull-White model and a TreeCallableFixedBondEngine pricing engine.  
-  For more detail, see the source codes in quantlib's example folder, Examples/CallableBond/CallableBond.cpp
-
+  The \code{CallableBond} function sets up and evaluates a callable fixed rate bond using Hull-White model 
+  and a TreeCallableFixedBondEngine pricing engine. For more detail, see the source codes in quantlib's example folder, Examples/CallableBond/CallableBond.cpp
 }
 \usage{
 \method{CallableBond}{default}(bondparams, hullWhite, coupon, dateparams)
@@ -15,34 +14,55 @@
 \method{summary}{Bond}
 }
 \arguments{
-\item{bondparams}{bond parameters:
-	\tabular{ll}{
-           \code{faceAmount}    \tab a double, face amount of the bond\cr
-           \code{issueDate}     \tab a Date, the bond's issue date\cr
-           \code{maturityDate}  \tab a Date, the bond's maturity date\cr
-           \code{redemption}    \tab a double, percentage of the initial face amount that will be returned at maturity date. Normally set at 100\cr
-	}
+\item{bondparams}{a named list whose elements are: 
+  \tabular{ll}{
+    \code{issueDate}  \tab a Date, the bond's issue date \cr
+    \code{maturityDate} \tab a Date, the bond's maturity date \cr
+    \code{faceAmount} \tab (Optional) a double, face amount of the bond. \cr
+    \code{}           \tab Default value is 100.\cr
+    \code{redemption} \tab (Optional) a double, percentage of the initial face \cr 
+    \code{}           \tab amount that will be returned at maturity date. \cr
+    \code{}           \tab Default value is 100. \cr
+    \code{callSch} \tab (Optional) a data frame whose columns are "Price",\cr
+    \code{}        \tab "Type" and "Date" corresponding to QuantLib's \cr
+    \code{}        \tab CallabilitySchedule. Defaule is an empty frame, or no callability.\cr
+  } 
 }
-\item{hullWhite}{arguments that are needed to set up a HullWhite pricing engine in QuantLib: 
-	\tabular{ll}{
-	   \code{term}  \tab a double, to set up a flat rate yield term structure \cr
-	   \code{alpha} \tab a double, Hull-White model's alpha value \cr
-	   \code{sigma} \tab a double, Hull-White model's sigma value \cr
-	   \code{gridIntervals}. \tab a double, time intervals parameter to set up the TreeCallableFixedBondEngine \cr
-	}
-	Currently, the codes only support a flat rate yield term structure. For more detail, see QuantLib's doc on HullWhite and TreeCallableFixedBondEngine.
+\item{hullWhite}{a named list whose elements are parameters needed to set up a HullWhite pricing engine in QuantLib: 
+  \tabular{ll}{
+    \code{term}  \tab a double, to set up a flat rate yield term structure \cr
+    \code{alpha} \tab a double, Hull-White model's alpha value \cr
+    \code{sigma} \tab a double, Hull-White model's sigma value \cr
+    \code{gridIntervals}. \tab a double, time intervals parameter to \cr
+    \code{}              \tab set up the TreeCallableFixedBondEngine \cr
+  } 
+  Currently, the codes only support a flat rate yield term structure. For more detail, see QuantLib's doc on HullWhite 
+  and TreeCallableFixedBondEngine.
 }
-\item{coupon}{ a double vector of coupon rates}
-\item{dateparams}{QuantLib's date parameters of the bond. 
-	\tabular{ll}{
-	   \code{settlementDays} \tab a double, settlement days. \cr
-	   \code{calendar} \tab a string, either 'us' or 'uk' corresponding to US Goverment Bond calendar and UK Exchange calendar. \cr
-	   \code{dayCounter} \tab a number or string, day counter convention. See \link{Enum} \cr
-	   \code{period}  \tab a number or string, interest compounding interval. See \link{Enum} \cr
-	   \code{businessDayConvention} \tab a number or string, business day convention. See \link{Enum} \cr
-	   \code{terminationDateConvention} \tab a number or string, termination day convention. See \link{Enum} \cr
-	}
-	See example below.}
+\item{coupon}{a numeric vector of coupon rates}
+\item{dateparams}{(Optional) a named list, QuantLib's date parameters of the bond. 
+  \tabular{ll}{
+    \code{settlementDays} \tab (Optional) a double, settlement days. \cr 
+    \code{}        \tab Default value is 1.\cr
+    \code{calendar} \tab (Optional) a string, either 'us' or 'uk' \cr 
+    \code{}        \tab corresponding to US Goverment Bond \cr
+    \code{}		   \tab calendar and UK Exchange calendar.\cr
+    \code{}        \tab  Default value is 'us'.\cr
+    \code{dayCounter} \tab (Optional) a number or string, \cr 
+    \code{}        \tab day counter convention.\cr
+    \code{}        \tab  See \link{Enum}. Default value is 'Thirty360' \cr 
+    \code{period}  \tab (Optional) a number or string, \cr
+    \code{}       \tab  interest compounding interval. See \link{Enum}. \cr
+    \code{}       \tab Default value is 'Semiannual'.\cr
+    \code{businessDayConvention} \tab (Optional) a number or string, \cr 
+    \code{}                 \tab business day convention. \cr 
+    \code{} \tab See \link{Enum}. Default value is 'Following'. \cr
+    \code{terminationDateConvention} \tab (Optional) a number or string \cr 
+    \code{}                         \tab termination day convention.\cr
+    \code{}                         \tab See \link{Enum}. Default value is'Following'.\cr
+  }
+  See example below.
+}
 }
 \value{
   The \code{CallableBond} function returns an object of class
@@ -81,7 +101,7 @@ callSch$Type <- as.character(callSch$Type)
 
 bondparams <- list(faceAmount=100, issueDate = as.Date("2004-09-16"),
                    maturityDate=as.Date("2012-09-16"), redemption=100,
-                   callabilitySchedule = callSch)
+                   callSch = callSch)
 dateparams <- list(settlementDays=3, calendar="us", 
                    dayCounter = "ActualActual", 
                    period="Quarterly", 
@@ -90,7 +110,19 @@ dateparams <- list(settlementDays=3, calendar="us",
 coupon <- c(0.0465)
 
 CallableBond(bondparams, HullWhite, coupon, dateparams)
+#examples using default values
+CallableBond(bondparams, HullWhite, coupon)
+dateparams <- list(                   
+                   period="Quarterly", 
+                   businessDayConvention = "Unadjusted", 
+                   terminationDateConvention= "Unadjusted")
+CallableBond(bondparams, HullWhite, coupon, dateparams)
 
+
+bondparams <- list(issueDate = as.Date("2004-09-16"),
+                   maturityDate=as.Date("2012-09-16")
+                   )
+CallableBond(bondparams, HullWhite, coupon, dateparams)
 }
 \keyword{misc}
 

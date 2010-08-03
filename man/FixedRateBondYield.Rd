@@ -1,4 +1,4 @@
-% $Id: FixedRateBondYield.Rd 123 2009-11-02 22:52:00Z edd $
+% $Id: FixedRateBondYield.Rd 201 2010-03-17 01:58:59Z edd $
 \name{FixedRateBondYield}
 \alias{FixedRateBondYield}
 \alias{FixedRateBondYield.default}
@@ -11,7 +11,8 @@
                                  effectiveDate, maturityDate,
                                  period, calendar="us", 
                                  rates, dayCounter=2,
-                                 businessDayConvention=0, compound = 0, redemption=100, 
+                                 businessDayConvention=0, 
+                                 compound = 0, redemption=100, 
                                  issueDate)
 
 \method{plot}{Bond}

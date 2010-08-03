@@ -2,10 +2,10 @@
 //
 // RQuantLib -- R interface to the QuantLib libraries
 //
-// Copyright (C) 2002 - 2009 Dirk Eddelbuettel <edd@debian.org>
-// Copyright (C) 2009        Khanh Nguyen <knguyen@cs.umb.edu>
+// Copyright (C) 2002 - 2009  Dirk Eddelbuettel 
+// Copyright (C) 2009 - 2010  Dirk Eddelbuettel and Khanh Nguyen
 //
-// $Id: asian.cpp 138 2010-01-13 21:42:07Z edd $
+// $Id: asian.cpp 276 2010-07-21 04:23:24Z knguyen $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -23,53 +23,30 @@
 // Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 // MA 02111-1307, USA
 
-#include "rquantlib.hpp"
+#include <rquantlib.hpp>
 
 RcppExport SEXP QL_AsianOption(SEXP optionParameters){
-    SEXP rl=R_NilValue;
-    char* exceptionMesg=NULL;
 
     try{
-        RcppParams rparam(optionParameters);
+        Rcpp::List rparam(optionParameters);
 
-        std::string avgType = rparam.getStringValue("averageType");
-        std::string type = rparam.getStringValue("type");
-        double underlying = rparam.getDoubleValue("underlying");
-        double strike = rparam.getDoubleValue("strike");
-        Spread dividendYield = rparam.getDoubleValue("dividendYield");
-        Rate riskFreeRate = rparam.getDoubleValue("riskFreeRate");
-        Time maturity = rparam.getDoubleValue("maturity");
-        int length = int(maturity*360 + 0.5);
-        double volatility = rparam.getDoubleValue("volatility");
+        std::string avgType = Rcpp::as<std::string>(rparam["averageType"]);
+        std::string type = Rcpp::as<std::string>(rparam["type"]);
+        double underlying = Rcpp::as<double>(rparam["underlying"]);
+        double strike = Rcpp::as<double>(rparam["strike"]);
+        Spread dividendYield = Rcpp::as<double>(rparam["dividendYield"]);
+        Rate riskFreeRate = Rcpp::as<double>(rparam["riskFreeRate"]);
+        Time maturity = Rcpp::as<double>(rparam["maturity"]);
+        //        int length = int(maturity*360 + 0.5); // FIXME: this could be better
+        double volatility = Rcpp::as<double>(rparam["volatility"]);
 
-        Option::Type optionType = Option::Call;
-        if (type=="call") {
-            optionType = Option::Call;
-        }
-        else if (type == "put") {
-            optionType = Option::Put;
-        }
-        else {
-            throw std::range_error("Unknown option " + type);
-        }
-
-        Average::Type averageType = Average::Geometric;
-        if (avgType=="geometric"){
-            averageType = Average::Geometric;
-        }
-        else if (avgType=="arithmetic"){
-            averageType = Average::Arithmetic;
-        }
-        else{
-            throw std::range_error("Unknown average type " + type);
-        }
-        
+        Option::Type optionType = getOptionType(type);
 
         //from test-suite/asionoptions.cpp
-
         DayCounter dc = Actual360();
         Date today = Date::todaysDate();
-        
+        Settings::instance().evaluationDate() = today;
+
         boost::shared_ptr<SimpleQuote> spot(new SimpleQuote(underlying));
         boost::shared_ptr<SimpleQuote> qRate(new SimpleQuote(dividendYield));
         boost::shared_ptr<YieldTermStructure> qTS = flatRate(today, qRate, dc);
@@ -84,39 +61,93 @@ RcppExport SEXP QL_AsianOption(SEXP optionParameters){
                                                    Handle<YieldTermStructure>(qTS),
                                                    Handle<YieldTermStructure>(rTS),
                                                    Handle<BlackVolTermStructure>(volTS)));
-        
-        boost::shared_ptr<PricingEngine> 
-            engine(new
-                   AnalyticContinuousGeometricAveragePriceAsianEngine(stochProcess));
-
 
         boost::shared_ptr<StrikedTypePayoff> payoff(new PlainVanillaPayoff(optionType,strike));
 
-        Date exDate = today + length;
-        boost::shared_ptr<Exercise> exercise(new EuropeanExercise(exDate));
-        
-        ContinuousAveragingAsianOption option(averageType, payoff, exercise);
-        option.setPricingEngine(engine);
+      
 
-        RcppResultSet rs;
-        rs.add("value", option.NPV());
-        rs.add("delta", option.delta());
-        rs.add("gamma", option.gamma());
-        rs.add("vega", option.vega());
-        rs.add("theta", option.theta());
-        rs.add("rho", option.rho());
-        rs.add("divRho", option.dividendRho());
-        rs.add("parameters", optionParameters, false);
-        rl = rs.getReturnList();
-    }catch(std::exception& ex) {
-        exceptionMesg = copyMessageToR(ex.what());
-    } catch(...) {
-        exceptionMesg = copyMessageToR("unknown reason");
+        Average::Type averageType = Average::Geometric;
+        Rcpp::List rl = R_NilValue;
+   
+        if (avgType=="geometric"){
+            averageType = Average::Geometric;
+            boost::shared_ptr<PricingEngine> 
+                engine(new
+                       AnalyticContinuousGeometricAveragePriceAsianEngine(stochProcess));        
+            
+            Date exDate = today + int(maturity * 360 + 0.5);
+            boost::shared_ptr<Exercise> exercise(new EuropeanExercise(exDate));        
+            ContinuousAveragingAsianOption option(averageType, payoff, exercise);
+            option.setPricingEngine(engine);
+            
+            rl = Rcpp::List::create(Rcpp::Named("value") = option.NPV(),
+                                    Rcpp::Named("delta") = option.delta(),
+                                    Rcpp::Named("gamma") = option.gamma(),
+                                    Rcpp::Named("vega") = option.vega(),
+                                    Rcpp::Named("theta") = option.theta(),
+                                    Rcpp::Named("rho") = option.rho(),
+                                    Rcpp::Named("divRho") = option.dividendRho(),
+                                    Rcpp::Named("parameters") = optionParameters);
+            
+        } else if (avgType=="arithmetic"){
+            averageType = Average::Arithmetic;
+
+            boost::shared_ptr<PricingEngine> engine =
+                MakeMCDiscreteArithmeticAPEngine<LowDiscrepancy>(stochProcess)
+                .withSamples(2047)
+                .withControlVariate();
+            
+            //boost::shared_ptr<PricingEngine> engine =
+            //    MakeMCDiscreteArithmeticASEngine<LowDiscrepancy>(stochProcess)
+            //    .withSeed(3456789)
+            //    .withSamples(1023);
+            
+            Size fixings = Rcpp::as<double>(rparam["fixings"]);
+            Time length = Rcpp::as<double>(rparam["length"]);
+            Time first = Rcpp::as<double>(rparam["first"]);
+            Time dt = length / (fixings - 1);
+
+            std::vector<Time> timeIncrements(fixings);
+            std::vector<Date> fixingDates(fixings);
+            timeIncrements[0] = first;
+            fixingDates[0] = today + Integer(timeIncrements[0] * 360 + 0.5);
+            for (Size i=1; i<fixings; i++) {
+                timeIncrements[i] = i*dt + first;
+                fixingDates[i] = today + Integer(timeIncrements[i]*360+0.5);
+            }
+            Real runningSum = 0.0;
+            Size pastFixing = 0;
+
+            boost::shared_ptr<Exercise> exercise(new
+                                                 EuropeanExercise(fixingDates[fixings-1]));
+
+            DiscreteAveragingAsianOption option(Average::Arithmetic, 
+                                                runningSum,
+                                                pastFixing, 
+                                                fixingDates,
+                                                payoff, 
+                                                exercise);
+            option.setPricingEngine(engine);
+            rl = Rcpp::List::create(Rcpp::Named("value") = option.NPV(),
+                                    Rcpp::Named("delta") = R_NaN,
+                                    Rcpp::Named("gamma") = R_NaN,
+                                    Rcpp::Named("vega") = R_NaN,
+                                    Rcpp::Named("theta") = R_NaN,
+                                    Rcpp::Named("rho") = R_NaN,
+                                    Rcpp::Named("divRho") = R_NaN,
+                                    Rcpp::Named("parameters") = optionParameters);
+        } else {
+            throw std::range_error("Unknown average type " + type);
+        }      
+    
+        return rl;
+
+    } catch(std::exception &ex) { 
+        forward_exception_to_r(ex); 
+    } catch(...) { 
+        ::Rf_error("c++ exception (unknown reason)"); 
     }
-    
-    if(exceptionMesg != NULL)
-        Rf_error(exceptionMesg);
-    
-    return rl;
+
+    return R_NilValue;
 }
 

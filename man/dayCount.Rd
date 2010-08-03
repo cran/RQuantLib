@@ -28,8 +28,7 @@ input.
 \note{The interface might change in future release as \code{QuantLib}
   stabilises its own API.}
 \examples{
-  startDates <- seq(from=as.Date("2009-04-07"), to=as.Date("2009-04-14"),
-by=1)
+startDates <- seq(from=as.Date("2009-04-07"), to=as.Date("2009-04-14"),by=1)
 endDates <- seq(from=as.Date("2009-11-07"), to=as.Date("2009-11-14"), by=1)
 dayCounters <- c(0,1,2,3,4,5,6,1)
 dayCount(startDates, endDates, dayCounters)

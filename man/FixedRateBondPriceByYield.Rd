@@ -1,4 +1,4 @@
-% $Id: FixedRateBondPriceByYield.Rd 123 2009-11-02 22:52:00Z edd $
+% $Id: FixedRateBondPriceByYield.Rd 201 2010-03-17 01:58:59Z edd $
 \name{FixedRateBondPriceByYield}
 \alias{FixedRateBondPriceByYield}
 \alias{FixedRateBondPriceByYield.default}

@@ -1,4 +1,4 @@
-% $Id: BondUtilities.Rd 121 2009-11-02 22:50:50Z edd $
+% $Id: BondUtilities.Rd 201 2010-03-17 01:58:59Z edd $
 \name{BondUtilities}
 \alias{matchBDC}
 \alias{matchCompounding}
