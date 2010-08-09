@@ -1,16 +1,20 @@
 % $Id: EuropeanOptionArrays.Rd,v 1.4 2004/12/28 03:20:07 edd Exp $
 \name{EuropeanOptionArrays}
 \alias{EuropeanOptionArrays}
+\alias{oldEuropeanOptionArrays}
+\alias{plotOptionSurface}
 \title{European Option evaluation using Closed-Form solution}
 \description{
-  The \code{EuropeanOptionArrays} function allows any of the numerical
-  input parameters to be a list, and a list of arrays is returned. Each
-  of the returned arrays has as many dimension as there were lists among
-  the input parameters, and each multi-dimensional array element
+  The \code{EuropeanOptionArrays} function allows any two of the numerical
+  input parameters to be a vector, and a list of matrices is
+  returned for the option value as well as each of the 'greeks'. For
+  each of the returned matrices, each element 
   corresponds to an evaluation under the given set of parameters.
 }
 \usage{
 EuropeanOptionArrays(type, underlying, strike, dividendYield, riskFreeRate, maturity, volatility)
+oldEuropeanOptionArrays(type, underlying, strike, dividendYield, riskFreeRate, maturity, volatility)
+plotOptionSurface(EOres, ylabel="", xlabel="", zlabel="", fov=60) 
 }
 \arguments{
   \item{type}{A string with one of the values \code{call} or \code{put}}
@@ -20,22 +24,32 @@ EuropeanOptionArrays(type, underlying, strike, dividendYield, riskFreeRate, matu
   \item{riskFreeRate}{(Scalar or list) risk-free rate(s)}
   \item{maturity}{(Scalar or list) time(s) to maturity (in fractional years)}
   \item{volatility}{(Scalar or list) volatilit(y|ies) of the underlying stock}
+  \item{EOres}{result matrix produced by \code{EuropeanOptionArrays}}
+  \item{ylabel}{label for y-axsis}
+  \item{xlabel}{label for x-axsis}
+  \item{zlabel}{label for z-axsis}
+  \item{fov}{viewpoint for 3d rendering}
 }
 \value{
-  The \code{EuropeanOptionArrays} function allows each of the numerical
-  input parameters to be a list (or vector, or sequence). A list of
-  multi-dimensional arrays is returned. Each array point corresponds to
+  The \code{EuropeanOptionArrays} function allows any two of the numerical
+  input parameters to be a vector or sequence. A list of
+  two-dimensional matrices is returned. Each cell corresponds to
   an evaluation under the given set of parameters. 
 
   For these functions, the following components are returned:
-  \item{value}{(Scalar or array) value of option}
-  \item{delta}{(Scalar or array) change in value for a change in the underlying}
-  \item{gamma}{(Scalar or array) change in value for a change in delta}
-  \item{vega}{(Scalar or array) change in value for a change in the underlying's volatility}
-  \item{theta}{(Scalar or array) change in value for a change in delta}
-  \item{rho}{(Scalar or array) change in value for a change in time to maturity}
-  \item{dividendRho}{(Scalar or array) change in value for a change in delta}
+  \item{value}{(matrix) value of option}
+  \item{delta}{(matrix) change in value for a change in the underlying}
+  \item{gamma}{(matrix) change in value for a change in delta}
+  \item{vega}{(matrix) change in value for a change in the underlying's volatility}
+  \item{theta}{(matrix) change in value for a change in delta}
+  \item{rho}{(matrix) change in value for a change in time to maturity}
+  \item{dividendRho}{(matrix) change in value for a change in delta}
   \item{parameters}{List with parameters with which object was created}
+
+  The \code{oldEuropeanOptionArrays} function is an older implementation
+  which vectorises this at the R level instead but allows more general
+  multidimensional arrays.
+  
 }
 \details{
   The well-known closed-form solution derived by Black, Scholes and
@@ -64,23 +78,23 @@ EOarr <- EuropeanOptionArrays("call", underlying=und.seq,
 # and look at four of the result arrays: value, delta, gamma, vega
 old.par <- par(no.readonly = TRUE)
 par(mfrow=c(2,2),oma=c(5,0,0,0),mar=c(2,2,2,1))
-plot(EOarr$parameter$underlying, EOarr$value[,1], type='n',
+plot(EOarr$parameters.underlying, EOarr$value[,1], type='n',
      main="option value", xlab="", ylab="") 
 topocol <- topo.colors(length(vol.seq))
 for (i in 1:length(vol.seq))
-  lines(EOarr$parameter$underlying, EOarr$value[,i], col=topocol[i])
-plot(EOarr$parameter$underlying, EOarr$delta[,1],type='n',
+  lines(EOarr$parameters.underlying, EOarr$value[,i], col=topocol[i])
+plot(EOarr$parameters.underlying, EOarr$delta[,1],type='n',
      main="option delta", xlab="", ylab="")
 for (i in 1:length(vol.seq))
-  lines(EOarr$parameter$underlying, EOarr$delta[,i], col=topocol[i])
-plot(EOarr$parameter$underlying, EOarr$gamma[,1],type='n',
+  lines(EOarr$parameters.underlying, EOarr$delta[,i], col=topocol[i])
+plot(EOarr$parameters.underlying, EOarr$gamma[,1],type='n',
      main="option gamma", xlab="", ylab="")
 for (i in 1:length(vol.seq))
-  lines(EOarr$parameter$underlying, EOarr$gamma[,i], col=topocol[i])
-plot(EOarr$parameter$underlying, EOarr$vega[,1],type='n',
+  lines(EOarr$parameters.underlying, EOarr$gamma[,i], col=topocol[i])
+plot(EOarr$parameters.underlying, EOarr$vega[,1],type='n',
      main="option vega", xlab="", ylab="")
 for (i in 1:length(vol.seq))
-  lines(EOarr$parameter$underlying, EOarr$vega[,i], col=topocol[i])
+  lines(EOarr$parameters.underlying, EOarr$vega[,i], col=topocol[i])
 mtext(text=paste("Strike is 100, maturity 1 year, riskless rate 0.03",
         "\nUnderlying price from", und.seq[1],"to", und.seq[length(und.seq)],
         "\nVolatility  from",vol.seq[1], "to",vol.seq[length(vol.seq)]),

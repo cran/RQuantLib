@@ -4,7 +4,7 @@
 //
 // Copyright (C) 2002 - 2009 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: implieds.cpp 262 2010-06-20 14:18:47Z edd $
+// $Id: implieds.cpp 297 2010-08-09 17:54:40Z edd $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -22,12 +22,10 @@
 // Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 // MA 02111-1307, USA
 
-// NB can be build standalone as   PKG_LIBS=-lQuantLib R CMD SHLIB implieds.cc
+#include "rquantlib.h"
 
-#include "rquantlib.hpp"
-
-RcppExport  SEXP QL_EuropeanOptionImpliedVolatility(SEXP optionParameters) {
-    const Size maxEvaluations = 100;
+RcppExport  SEXP EuropeanOptionImpliedVolatility(SEXP optionParameters) {
+    const QuantLib::Size maxEvaluations = 100;
     const double tolerance = 1.0e-6;
   
     try {
@@ -38,38 +36,38 @@ RcppExport  SEXP QL_EuropeanOptionImpliedVolatility(SEXP optionParameters) {
         double value = Rcpp::as<double>(rparam["value"]);
         double underlying = Rcpp::as<double>(rparam["underlying"]);
         double strike = Rcpp::as<double>(rparam["strike"]);
-        Spread dividendYield = Rcpp::as<double>(rparam["dividendYield"]);
-        Rate riskFreeRate = Rcpp::as<double>(rparam["riskFreeRate"]);
-        Time maturity = Rcpp::as<double>(rparam["maturity"]);
+        QuantLib::Spread dividendYield = Rcpp::as<double>(rparam["dividendYield"]);
+        QuantLib::Rate riskFreeRate = Rcpp::as<double>(rparam["riskFreeRate"]);
+        QuantLib::Time maturity = Rcpp::as<double>(rparam["maturity"]);
         int length = int(maturity*360 + 0.5); // FIXME: this could be better
         double volatility = Rcpp::as<double>(rparam["volatility"]);
 
-        Option::Type optionType = getOptionType(type);
+        QuantLib::Option::Type optionType = getOptionType(type);
 
-        Date today = Date::todaysDate();
-        Settings::instance().evaluationDate() = today;
+        QuantLib::Date today = QuantLib::Date::todaysDate();
+        QuantLib::Settings::instance().evaluationDate() = today;
 
         // new framework as per QuantLib 0.3.5
         // updated for 0.3.7
-        DayCounter dc = Actual360();
+        QuantLib::DayCounter dc = QuantLib::Actual360();
 
-        boost::shared_ptr<SimpleQuote> spot(new SimpleQuote(underlying));
-        boost::shared_ptr<SimpleQuote> vol(new SimpleQuote(volatility));
-        boost::shared_ptr<BlackVolTermStructure> volTS = flatVol(today, vol, dc);
-        boost::shared_ptr<SimpleQuote> qRate(new SimpleQuote(dividendYield));
-        boost::shared_ptr<YieldTermStructure> qTS = flatRate(today,qRate,dc);
-        boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(riskFreeRate));
-        boost::shared_ptr<YieldTermStructure> rTS = flatRate(today,rRate,dc);
-        Date exDate = today + length;
-        boost::shared_ptr<Exercise> exercise(new EuropeanExercise(exDate));
-        boost::shared_ptr<StrikedTypePayoff> payoff(new PlainVanillaPayoff(optionType, strike));
+        boost::shared_ptr<QuantLib::SimpleQuote> spot(new QuantLib::SimpleQuote(underlying));
+        boost::shared_ptr<QuantLib::SimpleQuote> vol(new QuantLib::SimpleQuote(volatility));
+        boost::shared_ptr<QuantLib::BlackVolTermStructure> volTS = flatVol(today, vol, dc);
+        boost::shared_ptr<QuantLib::SimpleQuote> qRate(new QuantLib::SimpleQuote(dividendYield));
+        boost::shared_ptr<QuantLib::YieldTermStructure> qTS = flatRate(today,qRate,dc);
+        boost::shared_ptr<QuantLib::SimpleQuote> rRate(new QuantLib::SimpleQuote(riskFreeRate));
+        boost::shared_ptr<QuantLib::YieldTermStructure> rTS = flatRate(today,rRate,dc);
+        QuantLib::Date exDate = today + length;
+        boost::shared_ptr<QuantLib::Exercise> exercise(new QuantLib::EuropeanExercise(exDate));
+        boost::shared_ptr<QuantLib::StrikedTypePayoff> payoff(new QuantLib::PlainVanillaPayoff(optionType, strike));
         double implVol = 0.0; // just to remove a warning...
-        boost::shared_ptr<VanillaOption> option = 
+        boost::shared_ptr<QuantLib::VanillaOption> option = 
             makeOption(payoff, exercise, spot, qTS, rTS, volTS, 
-                       Analytic, Null<Size>(), Null<Size>());
+                       Analytic, QuantLib::Null<QuantLib::Size>(), 
+                       QuantLib::Null<QuantLib::Size>());
 
-        boost::shared_ptr<GeneralizedBlackScholesProcess> process =
-              makeProcess(spot, qTS, rTS,volTS);
+        boost::shared_ptr<QuantLib::GeneralizedBlackScholesProcess> process = makeProcess(spot, qTS, rTS,volTS);
 
         double volguess = volatility;
         vol->setValue(volguess);
@@ -88,8 +86,8 @@ RcppExport  SEXP QL_EuropeanOptionImpliedVolatility(SEXP optionParameters) {
     return R_NilValue;
 }
 
-RcppExport  SEXP QL_AmericanOptionImpliedVolatility(SEXP optionParameters) {
-    const Size maxEvaluations = 100;
+RcppExport  SEXP AmericanOptionImpliedVolatility(SEXP optionParameters) {
+    const QuantLib::Size maxEvaluations = 100;
     const double tolerance = 1.0e-6;
   
     try {
@@ -100,36 +98,36 @@ RcppExport  SEXP QL_AmericanOptionImpliedVolatility(SEXP optionParameters) {
         double value = Rcpp::as<double>(rparam["value"]);
         double underlying = Rcpp::as<double>(rparam["underlying"]);
         double strike = Rcpp::as<double>(rparam["strike"]);
-        Spread dividendYield = Rcpp::as<double>(rparam["dividendYield"]);
-        Rate riskFreeRate = Rcpp::as<double>(rparam["riskFreeRate"]);
-        Time maturity = Rcpp::as<double>(rparam["maturity"]);
+        QuantLib::Spread dividendYield = Rcpp::as<double>(rparam["dividendYield"]);
+        QuantLib::Rate riskFreeRate = Rcpp::as<double>(rparam["riskFreeRate"]);
+        QuantLib::Time maturity = Rcpp::as<double>(rparam["maturity"]);
         int length = int(maturity*360 + 0.5); // FIXME: this could be better
         double volguess = Rcpp::as<double>(rparam["volatility"]);
 
-        Option::Type optionType = getOptionType(type);
+        QuantLib::Option::Type optionType = getOptionType(type);
 
-        Date today = Date::todaysDate();
-        Settings::instance().evaluationDate() = today;
+        QuantLib::Date today = QuantLib::Date::todaysDate();
+        QuantLib::Settings::instance().evaluationDate() = today;
 
         // new framework as per QuantLib 0.3.5
-        DayCounter dc = Actual360();
-        boost::shared_ptr<SimpleQuote> spot(new SimpleQuote(underlying));
-        boost::shared_ptr<SimpleQuote> vol(new SimpleQuote(volguess));
-        boost::shared_ptr<BlackVolTermStructure> volTS = flatVol(today, vol,dc);
-        boost::shared_ptr<SimpleQuote> qRate(new SimpleQuote(dividendYield));
-        boost::shared_ptr<YieldTermStructure> qTS = flatRate(today,qRate,dc);
-        boost::shared_ptr<SimpleQuote> rRate(new SimpleQuote(riskFreeRate));
-        boost::shared_ptr<YieldTermStructure> rTS = flatRate(today,rRate,dc);
+        QuantLib::DayCounter dc = QuantLib::Actual360();
+        boost::shared_ptr<QuantLib::SimpleQuote> spot(new QuantLib::SimpleQuote(underlying));
+        boost::shared_ptr<QuantLib::SimpleQuote> vol(new QuantLib::SimpleQuote(volguess));
+        boost::shared_ptr<QuantLib::BlackVolTermStructure> volTS = flatVol(today, vol,dc);
+        boost::shared_ptr<QuantLib::SimpleQuote> qRate(new QuantLib::SimpleQuote(dividendYield));
+        boost::shared_ptr<QuantLib::YieldTermStructure> qTS = flatRate(today,qRate,dc);
+        boost::shared_ptr<QuantLib::SimpleQuote> rRate(new QuantLib::SimpleQuote(riskFreeRate));
+        boost::shared_ptr<QuantLib::YieldTermStructure> rTS = flatRate(today,rRate,dc);
 
-        Date exDate = today + length;
-        Settings::instance().evaluationDate() = today;
+        QuantLib::Date exDate = today + length;
+        QuantLib::Settings::instance().evaluationDate() = today;
 
         //boost::shared_ptr<Exercise> exercise(new EuropeanExercise(exDate));
-        boost::shared_ptr<Exercise> exercise(new AmericanExercise(today, exDate));
-        boost::shared_ptr<StrikedTypePayoff> payoff(new PlainVanillaPayoff(optionType, strike));
-        boost::shared_ptr<VanillaOption> option = makeOption(payoff, exercise, spot, qTS, rTS, volTS, JR);
+        boost::shared_ptr<QuantLib::Exercise> exercise(new QuantLib::AmericanExercise(today, exDate));
+        boost::shared_ptr<QuantLib::StrikedTypePayoff> payoff(new QuantLib::PlainVanillaPayoff(optionType, strike));
+        boost::shared_ptr<QuantLib::VanillaOption> option = makeOption(payoff, exercise, spot, qTS, rTS, volTS, JR);
 
-        boost::shared_ptr<GeneralizedBlackScholesProcess> process = makeProcess(spot, qTS, rTS,volTS);
+        boost::shared_ptr<QuantLib::GeneralizedBlackScholesProcess> process = makeProcess(spot, qTS, rTS,volTS);
 
         double implVol = 0.0; // just to remove a warning...
         implVol = option->impliedVolatility(value, process, tolerance, maxEvaluations);

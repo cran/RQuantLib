@@ -1,3 +1,43 @@
+2010-08-09  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Release 0.3.4
+
+	* src/rquantlib.h: No longer use 'using namespace QuantLib'
+	* src/asian.cpp: Switch to explicitly reference all QuantLib objects
+	* src/barrier_binary.cpp: Idem
+	* src/bermudan.cpp: Idem
+	* src/bonds.cpp: Idem
+	* src/calendars.cpp: Idem
+	* src/curves.cpp: Idem
+	* src/daycounter.cpp: Idem
+	* src/discount.cpp: Idem
+	* src/hullwhite.cpp: Idem
+	* src/implieds.cpp: Idem
+	* src/utils.cpp: Idem
+	* src/vanilla.cpp: Idem
+	* src/zero.cpp: Idem
+
+2010-08-07  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/arrays.R: Rewrote EuropeanOptionArrays() to have vectorisation on
+	the C++ side rather than in R; external interface unchanged and the
+	old implementation is still available as a fallback if needed
+	* src/vanilla.cpp: New function EuropeanOptionArrays() looping over a
+	grid defined by vectors of any two of the six possible numeric inputs
+	* man/EuropeanOptionArrays.Rd: Updated accordingly
+
+	* R/arrays.R: New function plotOptionSurface() (from existing demo)
+	* man/EuropeanOptionArrays.Rd: Added documentation
+
+	* src/*cpp: Drop QL_ prefix from functions called from R
+	* R/*: Drop QL_ prefix in functions called by .Call()
+
+2010-08-06  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/rquantlib.hpp: Renamed to rquantlib.h to suppress a warning
+	in the upcoming R release (as requested by Kurt Hornik)
+	* src/*.cpp: Adjust to '#include <rquantlib.h>' instead
+
 2010-08-03  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: Release 0.3.3

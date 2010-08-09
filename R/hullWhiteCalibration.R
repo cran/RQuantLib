@@ -2,7 +2,7 @@
 ##
 ## Copyright (C) 2010        Dirk Eddelbuettel and Khanh Nguyen
 ##
-## $Id: hullWhiteCalibration.R 259 2010-06-18 01:00:08Z edd $
+## $Id: hullWhiteCalibration.R 293 2010-08-07 15:56:13Z edd $
 ##
 ## This file is part of the RQuantLib library for GNU R.
 ## It is made available under the terms of the GNU General Public
@@ -27,7 +27,7 @@ hullWhiteCalibrateUsingCap <- function(termStrc, capHelpers,
   indexparams <- list(type=index$type);
   ibor <- index$term
 
-  val <- .Call("QL_HullWhiteCalibrationUsingCap",
+  val <- .Call("HullWhiteCalibrationUsingCap",
                termStrc$table$date,
                termStrc$table$zeroRates,
                capData,
@@ -44,7 +44,7 @@ hullWhiteCalibrateUsingSwap <- function(termStrc, swapHelpers,
   indexparams <- list(type=index$type);
   ibor <- index$term
 
-  val <- .Call("QL_HullWhiteCalibrationUsingSwap",
+  val <- .Call("HullWhiteCalibrationUsingSwap",
                termStrc$table$date,
                termStrc$table$zeroRates,
                swapData,

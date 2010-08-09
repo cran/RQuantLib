@@ -4,7 +4,7 @@
 //
 // Copyright (C) 2009 - 2010  Dirk Eddelbuettel and Khanh Nguyen
 //
-// $Id: daycounter.cpp 264 2010-06-23 20:27:13Z edd $
+// $Id: daycounter.cpp 297 2010-08-09 17:54:40Z edd $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -22,9 +22,7 @@
 // Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 // MA 02111-1307, USA
 
-#include "rquantlib.hpp"
-
-using namespace boost;
+#include "rquantlib.h"
 
 RcppExport SEXP dayCount(SEXP startDates, SEXP endDates, SEXP dayCounter){
 
@@ -40,7 +38,7 @@ RcppExport SEXP dayCount(SEXP startDates, SEXP endDates, SEXP dayCounter){
         for (int i=0; i< n; i++){
             QuantLib::Date d1( dateFromR(s[i]) );
             QuantLib::Date d2( dateFromR(e[i]) );
-            DayCounter counter = getDayCounter(dc[i]);
+            QuantLib::DayCounter counter = getDayCounter(dc[i]);
             result[i] = static_cast<double>(counter.dayCount(d1, d2));            
         }
         return Rcpp::wrap(result);
@@ -68,7 +66,7 @@ RcppExport SEXP yearFraction(SEXP startDates, SEXP endDates, SEXP dayCounter){
         for (int i=0; i< n; i++){
             QuantLib::Date d1( dateFromR(s[i]) );
             QuantLib::Date d2( dateFromR(e[i]) );            
-            DayCounter counter = getDayCounter(dc[i]);
+            QuantLib::DayCounter counter = getDayCounter(dc[i]);
             result[i] = (double)counter.yearFraction(d1, d2);            
         }        
         return Rcpp::wrap(result);
