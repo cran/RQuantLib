@@ -5,7 +5,7 @@
 // Copyright (C) 2002 - 2009 Dirk Eddelbuettel 
 // Copyright (C) 2009 - 2010 Khanh Nguyen and Dirk Eddelbuettel
 //
-// $Id: bonds.cpp 297 2010-08-09 17:54:40Z edd $
+// $Id: bonds.cpp 302 2010-11-13 15:49:32Z edd $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -1192,7 +1192,7 @@ RcppExport SEXP FittedBondCurve(SEXP curveparams, SEXP lengthVec,
             quote.push_back(cp);
         }
 
-        QuantLib::RelinkableHandle<QuantLib::Quote> quoteHandle[numberOfBonds];
+        std::vector< QuantLib::RelinkableHandle<QuantLib::Quote> > quoteHandle(numberOfBonds);
         for (QuantLib::Size i=0; i<numberOfBonds; i++) {
             quoteHandle[i].linkTo(quote[i]);
         }
