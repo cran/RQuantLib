@@ -1,7 +1,7 @@
 Package: RQuantLib
 Title: R interface to the QuantLib library
-Version: 0.3.6
-Date: $Date: 2011-02-21 17:16:16 -0600 (Mon, 21 Feb 2011) $
+Version: 0.3.7
+Date: $Date: 2011-04-03 16:49:11 -0500 (Sun, 03 Apr 2011) $
 Maintainer: Dirk Eddelbuettel <edd@debian.org>
 Author: Dirk Eddelbuettel <edd@debian.org> and Khanh Nguyen
         <knguyen@cs.umb.edu>
@@ -34,6 +34,6 @@ SystemRequirements: QuantLib library (>= 0.9.9) from
 License: GPL (>= 2)
 URL: http://quantlib.org
         http://dirk.eddelbuettel.com/code/rquantlib.html
-Packaged: 2011-02-21 23:16:29.28227 UTC; edd
+Packaged: 2011-04-03 22:03:32.06459 UTC; edd
 Repository: CRAN
-Date/Publication: 2011-02-23 17:09:29
+Date/Publication: 2011-04-04 07:37:59
