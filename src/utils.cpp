@@ -4,9 +4,9 @@
 //
 // Copyright (C) 2002 - 2011  Dirk Eddelbuettel 
 // Copyright (C) 2005 - 2006  Dominick Samperi
-// Copyright (C) 2009 - 2010  Dirk Eddelbuettel and Khanh Nguyen
+// Copyright (C) 2009 - 2011  Dirk Eddelbuettel and Khanh Nguyen
 //
-// $Id: utils.cpp 308 2011-02-21 23:16:16Z edd $
+// $Id: utils.cpp 322 2011-09-10 15:09:06Z edd $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public

@@ -4,9 +4,9 @@
 //
 // Copyright (C) 2005 - 2007  Dominick Samperi
 // Copyright (C) 2007 - 2009  Dirk Eddelbuettel 
-// Copyright (C) 2009 - 2010  Dirk Eddelbuettel and Khanh Nguyen
+// Copyright (C) 2009 - 2011  Dirk Eddelbuettel and Khanh Nguyen
 //
-// $Id: discount.cpp 297 2010-08-09 17:54:40Z edd $
+// $Id: discount.cpp 322 2011-09-10 15:09:06Z edd $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -35,6 +35,7 @@ RcppExport SEXP DiscountCurve(SEXP params, SEXP tsQuotes, SEXP times) {
         //std::cout << "TradeDate: " << todaysDate << std::endl << "Settle: " << settlementDate << std::endl;
 
         RQLContext::instance().settleDate = settlementDate;
+        QuantLib::Date evalDate = QuantLib::Settings::instance().evaluationDate();
         QuantLib::Settings::instance().evaluationDate() = todaysDate;
         std::string firstQuoteName = tsNames[0];
 
@@ -115,6 +116,8 @@ RcppExport SEXP DiscountCurve(SEXP params, SEXP tsQuotes, SEXP times) {
         //std::cout << "MaxDate " << curve->maxDate() << std::endl;
         //std::cout << "Settle " << settlementDate << std::endl;
         //n = std::min(300, n);
+
+        QuantLib::Settings::instance().evaluationDate() = evalDate;
 
         Rcpp::DateVector dates(n);
         Rcpp::NumericVector zeroRates(n);

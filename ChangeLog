@@ -1,7 +1,34 @@
+2011-09-11  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Release 0.3.8
+
+2011-09-10  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/dayCounter.R: Added new function 'setEvaluationDate' as a simple
+	pass-through function to set a date as the QuantLib evaluation date
+	* src/daycounter.cpp: C++ part of setEvaluationDate()
+	* man/Calendars.Rd: Documentation for setEvaluationDate()
+
+2011-09-09  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/discount.cpp (DiscountCurve): Cache the (global) value of
+	  QuantLib::Settings::instance().evaluationDate() and reset it at end,
+	  with thanks to Helmut Heiming for the bug report.
+
+2011-05-02  Dirk Eddelbuettel  <edd@debian.org>
+
+	* configure.in: If g++ version 4.6 or newer is detected, add the
+	-fpermissive option (which was also required in a Debian-only fix
+	release of 0.3.7 which was made today)
+
+2011-04-04  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/Makevars.win: Simplified using lib${R_ARCH}
+
 2011-04-03  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: Release 0.3.7
-	
+
 	* man/ConvertibleBond.Rd: Commented-out URLs with 70+ character
 	length as they trigger a bug when the corresponding latex manual is
 	typeset with the a4 style file. Thanks to Uwe Ligges for spotting this.

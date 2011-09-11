@@ -2,9 +2,9 @@
 //
 // RQuantLib -- R interface to the QuantLib libraries
 //
-// Copyright (C) 2009 - 2010  Dirk Eddelbuettel and Khanh Nguyen
+// Copyright (C) 2009 - 2011  Dirk Eddelbuettel and Khanh Nguyen
 //
-// $Id: daycounter.cpp 297 2010-08-09 17:54:40Z edd $
+// $Id: daycounter.cpp 322 2011-09-10 15:09:06Z edd $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -77,5 +77,21 @@ RcppExport SEXP yearFraction(SEXP startDates, SEXP endDates, SEXP dayCounter){
         ::Rf_error("c++ exception (unknown reason)"); 
     }
 
+    return R_NilValue;
+}
+
+// this could go into another file too... maybe regroup all calendar / date functions?
+RcppExport SEXP setEvaluationDate(SEXP evalDateSEXP) {
+
+    try {
+
+        // set the date
+        QuantLib::Settings::instance().evaluationDate() = QuantLib::Date(dateFromR(Rcpp::as<Rcpp::Date>(evalDateSEXP)));
+
+    } catch(std::exception &ex) { 
+        forward_exception_to_r(ex); 
+    } catch(...) { 
+        ::Rf_error("c++ exception (unknown reason)"); 
+    }
     return R_NilValue;
 }

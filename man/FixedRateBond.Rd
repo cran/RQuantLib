@@ -1,4 +1,4 @@
-% $Id: FixedRateBond.Rd 303 2010-11-14 19:53:36Z edd $
+% $Id: FixedRateBond.Rd 320 2011-09-10 14:36:23Z edd $
 \name{FixedRateBond}
 \alias{FixedRateBond}
 \alias{FixedRateBond.default}
@@ -166,6 +166,7 @@ params <- list(tradeDate=as.Date('2002-2-15'),
                dt=.25,
                interpWhat="discount",
                interpHow="loglinear")
+setEvaluationDate(as.Date("2004-11-22"))
 
 discountCurve.flat <- DiscountCurve(params, list(flat=0.05))
 FixedRateBond(bond, coupon.rate, discountCurve.flat, dateparams)
