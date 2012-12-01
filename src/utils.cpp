@@ -2,11 +2,11 @@
 //
 // RQuantLib -- R interface to the QuantLib libraries
 //
-// Copyright (C) 2002 - 2011  Dirk Eddelbuettel 
+// Copyright (C) 2002 - 2012  Dirk Eddelbuettel 
 // Copyright (C) 2005 - 2006  Dominick Samperi
-// Copyright (C) 2009 - 2011  Dirk Eddelbuettel and Khanh Nguyen
+// Copyright (C) 2009 - 2012  Dirk Eddelbuettel and Khanh Nguyen
 //
-// $Id: utils.cpp 322 2011-09-10 15:09:06Z edd $
+// $Id: utils.cpp 325 2012-12-01 19:45:22Z edd $
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -126,11 +126,9 @@ boost::shared_ptr<QuantLib::YieldTermStructure> buildTermStructure(SEXP params, 
         //double dt = rparam.getDoubleValue("dt");
         
         std::string interpWhat, interpHow;
-        bool flatQuotes = true;
         if (firstQuoteName.compare("flat") != 0) { // Get interpolation method (not needed for "flat" case)
             interpWhat = Rcpp::as<std::string>(rparam["interpWhat"]);
             interpHow  = Rcpp::as<std::string>(rparam["interpHow"]);
-            flatQuotes = false;
         }
         
         // initialise from the singleton instance

@@ -6,7 +6,7 @@
 // Copyright (C) 2007 - 2009  Dirk Eddelbuettel 
 // Copyright (C) 2009 - 2011  Dirk Eddelbuettel and Khanh Nguyen
 //
-// $Id: discount.cpp 322 2011-09-10 15:09:06Z edd $
+// $Id: discount.cpp 326 2012-12-02 17:10:25Z edd $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -127,8 +127,10 @@ RcppExport SEXP DiscountCurve(SEXP params, SEXP tsQuotes, SEXP times) {
             zeroRates[i] = curve->zeroRate(current, QuantLib::ActualActual(), QuantLib::Continuous);
             d++;
         }
-        Rcpp::DataFrame frame = Rcpp::DataFrame::create(Rcpp::Named("date") = dates,
-                                                        Rcpp::Named("zeroRates") = zeroRates);
+        //Rcpp::DataFrame frame = Rcpp::DataFrame::create(Rcpp::Named("date") = dates,
+        //                                                Rcpp::Named("zeroRates") = zeroRates);
+        Rcpp::List frame = Rcpp::List::create(Rcpp::Named("date") = dates,
+                                              Rcpp::Named("zeroRates") = zeroRates);
 
         Rcpp::List rl = Rcpp::List::create(Rcpp::Named("times") = tvec,
                                            Rcpp::Named("discounts") = disc,
