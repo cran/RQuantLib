@@ -1,4 +1,4 @@
-% $Id: Bond.Rd 320 2011-09-10 14:36:23Z edd $
+% $Id: Bond.Rd 327 2013-02-17 21:10:52Z edd $
 \name{Bond}
 \alias{Bond}
 \alias{plot.Bond}
@@ -62,7 +62,7 @@ tsQuotes <- list(d1w = 0.0382,
                  s5y = 0.0443,
                  s10y = 0.05165,
                  s15y = 0.055175)
-
+tsQuotes <- list("flat" = 0.02)		## While discount curve code is buggy
 times <- seq(0,10,.1)
 
 discountCurve <- DiscountCurve(params, tsQuotes, times)

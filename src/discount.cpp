@@ -5,8 +5,9 @@
 // Copyright (C) 2005 - 2007  Dominick Samperi
 // Copyright (C) 2007 - 2009  Dirk Eddelbuettel 
 // Copyright (C) 2009 - 2011  Dirk Eddelbuettel and Khanh Nguyen
+// Copyright (C) 2012 - 2013  Dirk Eddelbuettel
 //
-// $Id: discount.cpp 326 2012-12-02 17:10:25Z edd $
+// $Id: discount.cpp 327 2013-02-17 21:10:52Z edd $
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public
@@ -99,7 +100,7 @@ RcppExport SEXP DiscountCurve(SEXP params, SEXP tsQuotes, SEXP times) {
         //SEXP fwds  = PROTECT(Rf_allocVector(REALSXP, ntimes));
         //SEXP zero  = PROTECT(Rf_allocVector(REALSXP, ntimes));
         Rcpp::NumericVector disc(ntimes), fwds(ntimes), zero(ntimes);
-        
+
         QuantLib::Date current = settlementDate;
         for (i = 0; i < ntimes; i++) {          
             //t = REAL(times)[i];                                                    

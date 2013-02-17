@@ -1,4 +1,4 @@
-% $Id: ZeroCouponBond.Rd 303 2010-11-14 19:53:36Z edd $
+% $Id: ZeroCouponBond.Rd 327 2013-02-17 21:10:52Z edd $
 \name{ZeroCouponBond}
 \alias{ZeroCouponBond}
 \alias{ZeroCouponBond.default}
@@ -155,6 +155,8 @@ tsQuotes <- list(d1w  =0.0382,
                  s5y  =0.0443,
                  s10y =0.05165,
                  s15y =0.055175)
+tsQuotes <- list("flat" = 0.02)		## While discount curve code is buggy
+
 discountCurve <- DiscountCurve(discountCurve.param, tsQuotes)
 ZeroCouponBond(bond, discountCurve, dateparams)
 
