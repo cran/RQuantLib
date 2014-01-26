@@ -5,7 +5,7 @@
 // Copyright (C) 2005 - 2007 Dominick Samperi
 // Copyright (C) 2007 - 2011 Dirk Eddelbuettel
 //
-// $Id: bermudan.cpp 308 2011-02-21 23:16:16Z edd $
+// $Id$
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public

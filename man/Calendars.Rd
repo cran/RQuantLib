@@ -1,4 +1,4 @@
-% $Id: Calendars.Rd 321 2011-09-10 14:40:19Z edd $
+% $Id$
 \name{Calendars}
 \alias{isBusinessDay}
 \alias{businessDay}
@@ -78,7 +78,8 @@ isWeekend(calendar="TARGET", dates=Sys.Date())
 isEndOfMonth(calendar="TARGET", dates=Sys.Date())
 getEndOfMonth(calendar="TARGET", dates=Sys.Date())
 endOfMonth(calendar="TARGET", dates=Sys.Date())
-getHolidayList(calendar="TARGET", from=Sys.Date(), to = Sys.Date() + 5, includeWeekends = 0) 
+getHolidayList(calendar="TARGET", from=Sys.Date(), to = Sys.Date() + 5,
+               includeWeekends = 0) 
 holidayList(calendar="TARGET", from=Sys.Date(), to = Sys.Date() + 5,
 includeWeekends = 0)
 adjust(calendar="TARGET", dates=Sys.Date(), bdc = 0)

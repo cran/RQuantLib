@@ -4,7 +4,7 @@
 # Greatly simplified thanks to quantlib-config
 # Another contribution by Kurt Hornik gratefully acknowledged
 #
-# $Id: configure.in 317 2011-05-03 02:05:48Z edd $
+# $Id$
 
 # require at least autoconf 2.50
 AC_PREREQ(2.50)

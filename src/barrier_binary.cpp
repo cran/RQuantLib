@@ -4,7 +4,7 @@
 //
 // Copyright (C) 2002 - 2010  Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: barrier_binary.cpp 297 2010-08-09 17:54:40Z edd $
+// $Id$
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public

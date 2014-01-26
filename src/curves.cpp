@@ -5,7 +5,7 @@
 // Copyright (C) 2005 - 2007  Dominick Samperi
 // Copyright (C) 2007 - 2012  Dirk Eddelbuettel
 //
-// $Id: curves.cpp 325 2012-12-01 19:45:22Z edd $
+// $Id$
 //
 // This program is part of the RQuantLib library for R (GNU S).
 // It is made available under the terms of the GNU General Public

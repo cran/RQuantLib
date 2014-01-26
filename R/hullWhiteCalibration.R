@@ -2,7 +2,7 @@
 ##
 ## Copyright (C) 2010        Dirk Eddelbuettel and Khanh Nguyen
 ##
-## $Id: hullWhiteCalibration.R 293 2010-08-07 15:56:13Z edd $
+## $Id$
 ##
 ## This file is part of the RQuantLib library for GNU R.
 ## It is made available under the terms of the GNU General Public

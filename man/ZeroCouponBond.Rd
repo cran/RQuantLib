@@ -1,4 +1,4 @@
-% $Id: ZeroCouponBond.Rd 327 2013-02-17 21:10:52Z edd $
+% $Id$
 \name{ZeroCouponBond}
 \alias{ZeroCouponBond}
 \alias{ZeroCouponBond.default}

@@ -4,7 +4,7 @@
 //
 // Copyright (C) 2009 - 2012  Dirk Eddelbuettel and Khanh Nguyen
 //
-// $Id: zero.cpp 325 2012-12-01 19:45:22Z edd $
+// $Id$
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public

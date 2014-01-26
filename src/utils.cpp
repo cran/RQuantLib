@@ -6,7 +6,7 @@
 // Copyright (C) 2005 - 2006  Dominick Samperi
 // Copyright (C) 2009 - 2012  Dirk Eddelbuettel and Khanh Nguyen
 //
-// $Id: utils.cpp 325 2012-12-01 19:45:22Z edd $
+// $Id$
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
@@ -295,9 +295,11 @@ makeProcess(const boost::shared_ptr<QuantLib::Quote>& u,
 //     return(d.getJDN() - RcppDate::Jan1970Offset + RcppDate::QLtoJan1970Offset);
 // }
 
+static const unsigned int QLtoJan1970Offset = 25569;  	// Offset between R / Unix epoch 
+
 // R and Rcpp::Date use the same 'days since epoch' representation; QL uses Excel style
 int dateFromR(const Rcpp::Date &d) {
-    return(d.getDate() + Rcpp::Date::QLtoJan1970Offset);
+    return(d.getDate() + QLtoJan1970Offset);
 }
 
 QuantLib::DayCounter getDayCounter(const double n){

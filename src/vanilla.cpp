@@ -4,7 +4,7 @@
 //
 // Copyright (C) 2002 - 2010 Dirk Eddelbuettel <edd@debian.org>
 //
-// $Id: vanilla.cpp 325 2012-12-01 19:45:22Z edd $
+// $Id$
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public

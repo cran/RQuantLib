@@ -4,7 +4,7 @@
 //
 // Copyright (C) 2009 - 2011  Dirk Eddelbuettel and Khanh Nguyen
 //
-// $Id: daycounter.cpp 322 2011-09-10 15:09:06Z edd $
+// $Id$
 //
 // This file is part of the RQuantLib library for GNU R.
 // It is made available under the terms of the GNU General Public
