@@ -60,15 +60,12 @@ CFlags <- function(print = TRUE) {
 }
 
 inlineCxxPlugin <- function(...) {
-    plugin <- Rcpp.plugin.maker(include.before = "#include <rquantlib.h>",
+    plugin <- Rcpp.plugin.maker(include.before = "#include <RQuantLib.h>",
                                 libs = sprintf("%s $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)", LdFlags(FALSE)),
                                 package = "RQuantLib",
                                 Makevars = NULL,
                                 Makevars.win = NULL)
     settings <- plugin()
-    settings$env$PKG_CPPFLAGS <- CFlags(FALSE)
+    settings$env$PKG_CPPFLAGS <- paste("-DRQuantLib_Plugin", CFlags(FALSE))
     settings
 }
-
-
-

@@ -1,8 +1,7 @@
 
-R version 2.12.0 (2010-10-15)
-Copyright (C) 2010 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
-Platform: x86_64-pc-linux-gnu (64-bit)
+R version 3.1.0 (2014-04-10) -- "Spring Dance"
+Copyright (C) 2014 The R Foundation for Statistical Computing
+Platform: i686-pc-linux-gnu (32-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -19,7 +18,6 @@ Type 'q()' to quit R.
 > 
 > stopifnot(require(RQuantLib))
 Loading required package: RQuantLib
-Loading required package: Rcpp
 > 
 > ## values from Quantlib's test-suite
 > ## Reference: Haug, Option Pricing Formulas, McGraw-Hill, 1998
@@ -100,14 +98,14 @@ Concise summary of valuation for AmericanOption
 +                     mat=0.5, vol=0.25), digits=4)
 Concise summary of valuation for BarrierOption 
  value  delta  gamma   vega  theta    rho divRho 
-9.0246    NaN    NaN    NaN    NaN    NaN    NaN 
+9.0246     NA     NA     NA     NA     NA     NA 
 > ## barrier: down and in call == 7.7627
 > print(BarrierOption("downin", barrier=95, rebate=3, type="call",
 +                     strike=90, underlying=100, div=0.04, riskF=0.08,
 +                     mat=0.5, vol=0.25), digits=4)
 Concise summary of valuation for BarrierOption 
  value  delta  gamma   vega  theta    rho divRho 
-7.7627    NaN    NaN    NaN    NaN    NaN    NaN 
+7.7627     NA     NA     NA     NA     NA     NA 
 > 
 > 
 > ## binary aka digital: put == 2.6710
@@ -129,7 +127,7 @@ Concise summary of valuation for AsianOption
 > bond <- list(faceAmount=100,issueDate=as.Date("2004-11-30"),
 +              maturityDate=as.Date("2008-11-30"), redemption=100 )
 > 
-> dateparams <-list(settlementDays=1, calendar="us", businessDayConvention='Unadjusted')
+> dateparams <-list(settlementDays=1, calendar="UnitedStates/GovernmentBond", businessDayConvention='Unadjusted')
 > 
 > 
 > discountCurve.param <- list(tradeDate=as.Date('2002-2-15'),
@@ -177,31 +175,43 @@ attr(,"class")
 > ## bond.cpp
 > 
 > #Simple call with a flat curve
-> bond <- list(faceAmount=100,
+> bond <- list(settlementDays=1,
 +              issueDate=as.Date("2004-11-30"),
-+              maturityDate=as.Date("2008-11-30"),
-+              redemption=100, 
-+              effectiveDate=as.Date("2004-11-30"))
-> dateparams <- list(settlementDays=1,
-+                    calendar="us", dayCounter = 'Thirty360', period=2, 
-+                    businessDayConvention = 4, terminationDateConvention=4,
-+                    dateGeneration=1, endOfMonth=1)
++              faceAmount=100,
++              accrualDayCounter='Thirty360',
++              paymentConvention='Unadjusted')
+> schedule <- list(effectiveDate=as.Date("2004-11-30"),
++                  maturityDate=as.Date("2008-11-30"),
++                  period='Semiannual',
++                  calendar='UnitedStates/GovernmentBond',
++                  businessDayConvention='Unadjusted',
++                  terminationDateConvention='Unadjusted',
++                  dateGeneration='Forward',
++                  endOfMonth=1)
+> calc=list(dayCounter='Actual360',
++           compounding='Compounded',
++           freq='Annual',
++           durationType='Modified')
 > coupon.rate <- c(0.02875)
->                        
 > params <- list(tradeDate=as.Date('2002-2-15'),
 +                settleDate=as.Date('2002-2-19'),
 +                dt=.25,
 +                interpWhat="discount",
 +                interpHow="loglinear")
-> 
 > discountCurve.flat <- DiscountCurve(params, list(flat=0.05))
-> FixedRateBond(bond, coupon.rate, discountCurve.flat, dateparams)
+> FixedRateBond(bond,
++               coupon.rate,
++               schedule,
++               calc,
++               discountCurve=discountCurve.flat)
 Concise summary of valuation for FixedRateBond 
  Net present value :  80.21276 
        clean price :  92.167 
        dirty price :  92.167 
     accrued coupon :  0 
              yield :  0.050517 
+          duration :  3.6672 
+   settlement date :  2004-11-30 
         cash flows : 
        Date   Amount
  2005-05-31   1.4375
@@ -213,20 +223,73 @@ Concise summary of valuation for FixedRateBond
  2008-05-31   1.4375
  2008-11-30   1.4375
  2008-11-30 100.0000
+> 
+> #Same bond calculated from yield rather than from the discount curve
+> yield <- 0.02
+> FixedRateBond(bond,
++               coupon.rate,
++               schedule,
++               calc,
++               yield=yield)
+Concise summary of valuation for FixedRateBond 
+ Net present value :  NaN 
+       clean price :  103.27 
+       dirty price :  103.27 
+    accrued coupon :  0 
+             yield :  0.02 
+          duration :  3.7905 
+   settlement date :  2004-11-30 
+        cash flows : 
+       Date   Amount
+ 2005-05-31   1.4375
+ 2005-11-30   1.4375
+ 2006-05-31   1.4375
+ 2006-11-30   1.4375
+ 2007-05-31   1.4375
+ 2007-11-30   1.4375
+ 2008-05-31   1.4375
+ 2008-11-30   1.4375
+ 2008-11-30 100.0000
+> 
+> 
+> #same example with clean price
+> price <- 103.31
+> FixedRateBond(bond,
++               coupon.rate,
++               schedule,
++               calc,
++               price = price)
+Concise summary of valuation for FixedRateBond 
+ Net present value :  NaN 
+       clean price :  103.31 
+       dirty price :  103.31 
+    accrued coupon :  0 
+             yield :  0.019905 
+          duration :  3.7909 
+   settlement date :  2004-11-30 
+        cash flows : 
+       Date   Amount
+ 2005-05-31   1.4375
+ 2005-11-30   1.4375
+ 2006-05-31   1.4375
+ 2006-11-30   1.4375
+ 2007-05-31   1.4375
+ 2007-11-30   1.4375
+ 2008-05-31   1.4375
+ 2008-11-30   1.4375
+ 2008-11-30 100.0000
+> 
 > ## bond.cpp FloatingRateBond, following test-suite/bonds.cpp
 > 
 > bond <- list(faceAmount=100, issueDate=as.Date("2004-11-30"),
 +              maturityDate=as.Date("2008-11-30"), redemption=100, 
 +              effectiveDate=as.Date("2004-11-30"))
-> dateparams <- list(settlementDays=1, calendar="us",
+> dateparams <- list(settlementDays=1, calendar="UnitedStates/GovernmentBond",
 +                    dayCounter = 'ActualActual', period=2, 
 +                    businessDayConvention = 1, terminationDateConvention=1,
 +                    dateGeneration=0, endOfMonth=0, fixingDays = 1)
 > 
-> gearings <- c()
-> spreads <- c()
-> caps <- c()
-> floors <- c()
+> gearings <- spreads <- caps <- floors <- vector()
 > 
 > params <- list(tradeDate=as.Date('2002-2-15'),
 +                settleDate=as.Date('2002-2-19'),
@@ -261,7 +324,7 @@ Concise summary of valuation for FixedRateBond
 Concise summary of valuation for FloatingRateBond 
  Net present value :  80.54557 
        clean price :  92.549 
-       dirty price :  92.549
+       dirty price :  92.549 
     accrued coupon :  0 
              yield :  0.050517 
         cash flows : 
@@ -277,3 +340,6 @@ Concise summary of valuation for FloatingRateBond
  2008-11-28 100.0000
 > 
 > 
+> proc.time()
+   user  system elapsed 
+  1.252   0.472   1.302 

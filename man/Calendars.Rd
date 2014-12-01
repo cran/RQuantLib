@@ -1,4 +1,3 @@
-% $Id$
 \name{Calendars}
 \alias{isBusinessDay}
 \alias{businessDay}
@@ -16,6 +15,7 @@
 \alias{dayCount}
 \alias{yearFraction}
 \alias{setEvaluationDate}
+\alias{advanceDate}
 \title{Calendar functions from QuantLib}
 \description{
 The \code{isBusinessDay} function evaluates the given dates in the context
@@ -69,24 +69,25 @@ instance at the C++ layer.
 The \code{setEvaluationDate} function sets the evaluation date used by
 the QuantLib pricing engines.
 
+The \code{advanceDate} function advances the given date by the given
+number of days in the current calendar instance.
+
 }
 \usage{
-isBusinessDay(calendar="TARGET", dates=Sys.Date())
+isBusinessDay(calendar, dates)
 businessDay(calendar="TARGET", dates=Sys.Date())  # deprecated form
-isHoliday(calendar="TARGET", dates=Sys.Date())
-isWeekend(calendar="TARGET", dates=Sys.Date())
-isEndOfMonth(calendar="TARGET", dates=Sys.Date())
-getEndOfMonth(calendar="TARGET", dates=Sys.Date())
+isHoliday(calendar, dates)
+isWeekend(calendar, dates)
+isEndOfMonth(calendar, dates)
+getEndOfMonth(calendar, dates)
 endOfMonth(calendar="TARGET", dates=Sys.Date())
-getHolidayList(calendar="TARGET", from=Sys.Date(), to = Sys.Date() + 5,
-               includeWeekends = 0) 
+getHolidayList(calendar, from, to, includeWeekends=FALSE) 
 holidayList(calendar="TARGET", from=Sys.Date(), to = Sys.Date() + 5,
-includeWeekends = 0)
-adjust(calendar="TARGET", dates=Sys.Date(), bdc = 0)
+includeWeekends = FALSE)
+adjust(calendar, dates, bdc = 0L)
 advance(calendar="TARGET", dates=Sys.Date(), n, timeUnit, period, bdc = 0, emr =0)
 %advance(calendar="TARGET", dates=Sys.Date(), period, bdc = 0, emr =0)
-businessDaysBetween(calendar="TARGET", from=Sys.Date(),
-to = Sys.Date() + 5, includeFirst = 1, includeLast = 0) 
+businessDaysBetween(calendar, from, to, includeFirst = TRUE, includeLast = FALSE) 
 dayCount(startDates, endDates, dayCounters)
 yearFraction(startDates, endDates, dayCounters)
 setCalendarContext(calendar, fixingDays, settleDate)
@@ -131,12 +132,17 @@ setEvaluationDate(evalDate)
   should be consulted for details.
 
   Currently, the following strings are recognised: TARGET (a default
-  calendar), Canada and Canada/Settlement, Canada/TSX, Germany and
+  calendar), Argentina, Australia, Brazil, Canada and Canada/Settlement,
+  Canada/TSX, China, CzechRepublic, Denmark, Finland, Germany and
   Germany/FrankfurtStockExchange, Germany/Settlement, Germany/Xetra,
-  Germany/Eurex, Italy and Italy/Settlement, Italy/Exchange, Japan,
-  UnitedKingdom and UnitedKingdom/Settlement, UnitedKingdom/Exchange,
-  UnitedKingdom/Metals, UnitedStates and UnitedStates/Settlement,
-  UnitedStates/NYSE, UnitedStates/GovernmentBond, UnitedStates/NERC.
+  Germany/Eurex, HongKong, Hungary, Iceland, India, Indonesia, Italy and
+  Italy/Settlement, Italy/Exchange, Japan, Mexico, NewZealand, Norway,
+  Poland, Russia, SaudiArabia, Singapore, Slovakia, SouthAfrica,
+  SouthKorea, SouthKorea/KRX, Sweden, Switzerland, Taiwan, Turkey,
+  Ukraine, UnitedKingdom and UnitedKingdom/Settlement,
+  UnitedKingdom/Exchange, UnitedKingdom/Metals, UnitedStates and
+  UnitedStates/Settlement, UnitedStates/NYSE,
+  UnitedStates/GovernmentBond, UnitedStates/NERC and WeekendsOnly.
 
   (In case of multiples entries per country, the country default is listed
   right after the country itself. Using the shorter form is equivalent.)

@@ -1,27 +1,22 @@
-// -*- mode: c++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- 
+// -*- mode: C++; c-indent-level: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 //
-// RQuantLib -- R interface to the QuantLib libraries
+//  RQuantLib -- R interface to the QuantLib libraries
 //
-// Copyright (C) 2002 - 2009 Dirk Eddelbuettel 
-// Copyright (C) 2010        Dirk Eddelbuettel and Khanh Nguyen
+//  Copyright (C) 2002 - 2014  Dirk Eddelbuettel 
+//  Copyright (C) 2010         Dirk Eddelbuettel and Khanh Nguyen
 //
-// $Id$
+//  RQuantLib is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 2 of the License, or
+//  (at your option) any later version.
 //
-// This file is part of the RQuantLib library for GNU R.
-// It is made available under the terms of the GNU General Public
-// License, version 2, or at your option, any later version,
-// incorporated herein by reference.
+//  RQuantLib is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
 //
-// This program is distributed in the hope that it will be
-// useful, but WITHOUT ANY WARRANTY; without even the implied
-// warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-// PURPOSE.  See the GNU General Public License for more
-// details.
-//
-// You should have received a copy of the GNU General Public
-// License along with this program; if not, write to the Free
-// Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
-// MA 02111-1307, USA
+//  You should have received a copy of the GNU General Public License
+//  along with RQuantLib.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <rquantlib.h>
 
@@ -32,6 +27,12 @@ boost::shared_ptr<QuantLib::Calendar> getCalendar(const std::string &calstr) {
     if (calstr == "TARGET") { 		// generic calendar 
         pcal.reset(new QuantLib::TARGET());
         
+    } else if (calstr == "Argentina") {
+        pcal.reset(new QuantLib::Argentina());
+
+    } else if (calstr == "Australia") {
+        pcal.reset(new QuantLib::Australia());
+        
     } else if (calstr == "Brazil") {
         pcal.reset(new QuantLib::Brazil());
 
@@ -39,6 +40,18 @@ boost::shared_ptr<QuantLib::Calendar> getCalendar(const std::string &calstr) {
         pcal.reset(new QuantLib::Canada(QuantLib::Canada::Settlement));
     } else if (calstr == "Canada/TSX") {
         pcal.reset(new QuantLib::Canada(QuantLib::Canada::TSX));
+
+    } else if (calstr == "China") {
+        pcal.reset(new QuantLib::China());
+      
+    } else if (calstr == "CzechRepublic") {
+        pcal.reset(new QuantLib::CzechRepublic());
+
+    } else if (calstr == "Denmark") {
+        pcal.reset(new QuantLib::Denmark());
+
+    } else if (calstr == "Finland") {
+        pcal.reset(new QuantLib::Finland());
         
     } else if (calstr == "Germany" || calstr == "Germany/FrankfurtStockExchange") {
         pcal.reset(new QuantLib::Germany(QuantLib::Germany::FrankfurtStockExchange));
@@ -49,6 +62,21 @@ boost::shared_ptr<QuantLib::Calendar> getCalendar(const std::string &calstr) {
     } else if (calstr == "Germany/Eurex") {
         pcal.reset(new QuantLib::Germany(QuantLib::Germany::Eurex));
         
+    } else if (calstr == "HongKong") {
+        pcal.reset(new QuantLib::HongKong());
+
+    } else if (calstr == "Hungary") {
+        pcal.reset(new QuantLib::Hungary());
+
+    } else if (calstr == "Iceland") {
+        pcal.reset(new QuantLib::Iceland());
+
+    } else if (calstr == "India") {
+        pcal.reset(new QuantLib::India());
+
+    } else if (calstr == "Indonesia") {
+        pcal.reset(new QuantLib::Indonesia());
+        
     } else if (calstr == "Italy" || calstr == "Italy/Settlement") {
         pcal.reset(new QuantLib::Italy(QuantLib::Italy::Settlement));
     } else if (calstr == "Italy/Exchange") {
@@ -56,11 +84,53 @@ boost::shared_ptr<QuantLib::Calendar> getCalendar(const std::string &calstr) {
         
     } else if (calstr == "Japan" || calstr == "Japan/Settlement") {
         pcal.reset(new QuantLib::Japan());
+
+    } else if (calstr == "Mexico") {
+        pcal.reset(new QuantLib::Mexico());
+        
+    } else if (calstr == "NewZealand") {
+        pcal.reset(new QuantLib::NewZealand());
+
+    } else if (calstr == "Norway") {
+        pcal.reset(new QuantLib::Norway());
+
+    } else if (calstr == "Poland") {
+        pcal.reset(new QuantLib::Poland());
+
+    } else if (calstr == "Russia") {
+        pcal.reset(new QuantLib::Russia());
+
+    } else if (calstr == "SaudiArabia") {
+        pcal.reset(new QuantLib::SaudiArabia());
+
+    } else if (calstr == "Singapore") {
+        pcal.reset(new QuantLib::Singapore());
+
+    } else if (calstr == "Slovakia") {
+        pcal.reset(new QuantLib::Slovakia());
+
+    } else if (calstr == "SouthAfrica") {
+        pcal.reset(new QuantLib::SouthAfrica());
         
     } else if (calstr == "SouthKorea" || calstr == "SouthKorea/Settlement") {
         pcal.reset(new QuantLib::SouthKorea(QuantLib::SouthKorea::Settlement));
     } else if (calstr == "SouthKorea/KRX") {
         pcal.reset(new QuantLib::SouthKorea(QuantLib::SouthKorea::KRX));
+
+    } else if (calstr == "Sweden") {
+        pcal.reset(new QuantLib::Sweden());
+
+    } else if (calstr == "Switzerland") {
+        pcal.reset(new QuantLib::Switzerland());
+
+    } else if (calstr == "Taiwan") {
+        pcal.reset(new QuantLib::Taiwan());
+
+    } else if (calstr == "Turkey") {
+        pcal.reset(new QuantLib::Turkey());
+
+    } else if (calstr == "Ukraine") {
+        pcal.reset(new QuantLib::Ukraine());
 
     } else if (calstr == "UnitedKingdom" || calstr == "UnitedKingdom/Settlement") {
         pcal.reset(new QuantLib::UnitedKingdom(QuantLib::UnitedKingdom::Settlement));
@@ -78,6 +148,9 @@ boost::shared_ptr<QuantLib::Calendar> getCalendar(const std::string &calstr) {
     } else if (calstr == "UnitedStates/NERC") {
         pcal.reset(new QuantLib::UnitedStates(QuantLib::UnitedStates::NERC));
 
+    } else if (calstr == "WeekendsOnly") {
+        pcal.reset(new QuantLib::WeekendsOnly());
+
     } else {
         throw std::invalid_argument("Calendar " + calstr + " not recognised ");
     }
@@ -85,306 +158,149 @@ boost::shared_ptr<QuantLib::Calendar> getCalendar(const std::string &calstr) {
     return pcal;
 }
 
-RcppExport SEXP setContext(SEXP parSEXP) {
+//setCalendarContext <- function(calendar="TARGET",
+//                               fixingDays = 2,
+//                               settleDate = Sys.Date() + 2) {
 
-    try {
-        Rcpp::List par(parSEXP);        
+// [[Rcpp::export]]
+bool setCalendarContext(std::string calendar, int fixingDays, QuantLib::Date settleDate) {
 
-        // set fixingDays and settleDate
-        RQLContext::instance().fixingDays = Rcpp::as<int>(par["fixingDays"]);
-        RQLContext::instance().settleDate = QuantLib::Date(dateFromR(Rcpp::as<Rcpp::Date>(par["settleDate"])));
-
-        boost::shared_ptr<QuantLib::Calendar> pcal( getCalendar(Rcpp::as<std::string>(par["calendar"])) );
-        RQLContext::instance().calendar = *pcal; // set calendar in global singleton
-
-    } catch(std::exception &ex) { 
-        forward_exception_to_r(ex); 
-    } catch(...) { 
-        ::Rf_error("c++ exception (unknown reason)"); 
+    // Rcpp Attribute cannot reflect complicated default arguments
+    if (settleDate.serialNumber() == 0) {
+        calendar = "TARGET";
+        fixingDays = 2;
+        settleDate = QuantLib::Date::todaysDate() + 2; 
     }
-    return R_NilValue;
+    // set fixingDays and settleDate
+    RQLContext::instance().fixingDays = fixingDays;
+    RQLContext::instance().settleDate = settleDate;
+
+    boost::shared_ptr<QuantLib::Calendar> pcal(getCalendar(calendar));
+    RQLContext::instance().calendar = *pcal; // set calendar in global singleton
+    
+    return true;
 }
 
-RcppExport SEXP isBusinessDay(SEXP calSexp, SEXP dateSexp){
-
-    try {
-        boost::shared_ptr<QuantLib::Calendar> pcal( getCalendar(Rcpp::as<std::string>(calSexp)) );
-
-        Rcpp::DateVector dates  = Rcpp::DateVector(dateSexp);
-
-        int n = dates.size();
-        std::vector<int> bizdays(n);
-
-        for (int i=0; i<n; i++) {
-            QuantLib::Date day( dateFromR(dates[i]) );
-            bizdays[i] = pcal->isBusinessDay(day);
-        }
-
-        return Rcpp::wrap(bizdays);
-
-    } catch(std::exception &ex) { 
-        forward_exception_to_r(ex); 
-    } catch(...) { 
-        ::Rf_error("c++ exception (unknown reason)"); 
+// [[Rcpp::export]]
+std::vector<bool> isBusinessDay(std::string calendar, std::vector<QuantLib::Date> dates) {
+    boost::shared_ptr<QuantLib::Calendar> pcal(getCalendar(calendar));
+    int n = dates.size();
+    std::vector<bool> bizdays(n);
+    for (int i=0; i<n; i++) {
+        bizdays[i] = pcal->isBusinessDay(dates[i]);
     }
-    return R_NilValue;
+    return bizdays;
 }
 
-RcppExport SEXP isHoliday(SEXP calSexp, SEXP dateSexp){
-
-    try {
-        boost::shared_ptr<QuantLib::Calendar> pcal( getCalendar(Rcpp::as<std::string>(calSexp)) );
-
-        Rcpp::DateVector dates  = Rcpp::DateVector(dateSexp);
-        int n = dates.size();
-        std::vector<int> hdays(n);
-
-        for (int i=0; i<n; i++) {
-            QuantLib::Date day( dateFromR(dates[i]) );
-            hdays[i] = pcal->isHoliday(day);
-        }
-
-        return Rcpp::wrap(hdays);
-
-    } catch(std::exception &ex) { 
-        forward_exception_to_r(ex); 
-    } catch(...) { 
-        ::Rf_error("c++ exception (unknown reason)"); 
+// [[Rcpp::export]]
+std::vector<bool> isHoliday(std::string calendar, std::vector<QuantLib::Date> dates) {
+    boost::shared_ptr<QuantLib::Calendar> pcal(getCalendar(calendar));
+    int n = dates.size();
+    std::vector<bool> hdays(n);
+    for (int i=0; i<n; i++) {
+        hdays[i] = pcal->isHoliday(dates[i]);
     }
-    return R_NilValue;
+    return hdays;
 }
 
-RcppExport SEXP isWeekend(SEXP calSexp, SEXP dateSexp){
-
-    try {
-        boost::shared_ptr<QuantLib::Calendar> pcal( getCalendar(Rcpp::as<std::string>(calSexp)) );
-
-        Rcpp::DateVector dates  = Rcpp::DateVector(dateSexp);
-        int n = dates.size();
-        std::vector<int> weekends(n);
-
-        for (int i=0; i<n; i++) {
-            QuantLib::Date day( dateFromR(dates[i]) );
-            weekends[i] = pcal->isWeekend(day.weekday());
-        }
-
-        return Rcpp::wrap(weekends);
-
-    } catch(std::exception &ex) { 
-        forward_exception_to_r(ex); 
-    } catch(...) { 
-        ::Rf_error("c++ exception (unknown reason)"); 
+// [[Rcpp::export]]
+std::vector<bool> isWeekend(std::string calendar, std::vector<QuantLib::Date> dates) {
+    boost::shared_ptr<QuantLib::Calendar> pcal(getCalendar(calendar));
+    int n = dates.size();
+    std::vector<bool> weekends(n);
+    for (int i=0; i<n; i++) {
+        weekends[i] = pcal->isWeekend(dates[i].weekday());
     }
-
-    return R_NilValue;
+    return weekends;
 }
 
-RcppExport SEXP isEndOfMonth(SEXP calSexp, SEXP dateSexp){
-
-    try {
-        boost::shared_ptr<QuantLib::Calendar> pcal( getCalendar(Rcpp::as<std::string>(calSexp)) );
-
-        Rcpp::DateVector dates  = Rcpp::DateVector(dateSexp);
-        int n = dates.size();
-        std::vector<int> eom(n);
-
-        for (int i=0; i<n; i++) {
-            QuantLib::Date day( dateFromR(dates[i]) );
-            eom[i] = pcal->isEndOfMonth(day);
-        }
-
-        return Rcpp::wrap(eom);
-
-    } catch(std::exception &ex) { 
-        forward_exception_to_r(ex); 
-    } catch(...) { 
-        ::Rf_error("c++ exception (unknown reason)"); 
+// [[Rcpp::export]]
+std::vector<bool> isEndOfMonth(std::string calendar, std::vector<QuantLib::Date> dates) {
+    boost::shared_ptr<QuantLib::Calendar> pcal(getCalendar(calendar));
+    int n = dates.size();
+    std::vector<bool> eom(n);
+    for (int i=0; i<n; i++) {
+        eom[i] = pcal->isEndOfMonth(dates[i]);
     }
-
-    return R_NilValue;
+    return eom;
 }
 
-RcppExport SEXP endOfMonth(SEXP calSexp, SEXP dateSexp){
-
-    try {
-        boost::shared_ptr<QuantLib::Calendar> pcal( getCalendar(Rcpp::as<std::string>(calSexp)) );
-
-        Rcpp::DateVector dates  = Rcpp::DateVector(dateSexp);
-        int n = dates.size();
-        std::vector<QuantLib::Date> eom(n);
-
-        for (int i=0; i<n; i++) {
-            QuantLib::Date day( dateFromR(dates[i]) );
-            eom[i] = pcal->endOfMonth(day);
-            dates[i] = Rcpp::Date(eom[i].month(), eom[i].dayOfMonth(), eom[i].year());
-        }
-       
-        return Rcpp::wrap(dates);
-
-    } catch(std::exception &ex) { 
-        forward_exception_to_r(ex); 
-    } catch(...) { 
-        ::Rf_error("c++ exception (unknown reason)"); 
+// [[Rcpp::export]]
+std::vector<QuantLib::Date> getEndOfMonth(std::string calendar, std::vector<QuantLib::Date> dates) {
+    boost::shared_ptr<QuantLib::Calendar> pcal(getCalendar(calendar));
+    int n = dates.size();
+    std::vector<QuantLib::Date> ndates(n);
+    for (int i=0; i<n; i++) {
+        ndates[i] = pcal->endOfMonth(dates[i]);
     }
-
-    return R_NilValue;
+    return ndates;
 }
 
-RcppExport SEXP adjust(SEXP calSexp, SEXP bdcSEXP, SEXP dateSexp){
-
-    try {
-        boost::shared_ptr<QuantLib::Calendar> pcal( getCalendar(Rcpp::as<std::string>(calSexp)) );
-        QuantLib::BusinessDayConvention bdc = getBusinessDayConvention( Rcpp::as<double>(bdcSEXP) );
-        Rcpp::DateVector dates  = Rcpp::DateVector(dateSexp);
-        int n = dates.size();
-        std::vector<QuantLib::Date> adjusted(n);
-
-        for (int i=0; i<n; i++) {
-            QuantLib::Date day( dateFromR(dates[i]) );
-            adjusted[i] = pcal->adjust(day, bdc);
-            dates[i] =  Rcpp::Date(adjusted[i].month(), 
-                                   adjusted[i].dayOfMonth(), 
-                                   adjusted[i].year());
-        }
-
-        return Rcpp::wrap(dates);
-
-    } catch(std::exception &ex) { 
-        forward_exception_to_r(ex); 
-    } catch(...) { 
-        ::Rf_error("c++ exception (unknown reason)"); 
+// [[Rcpp::export]]
+std::vector<QuantLib::Date> adjust(std::string calendar, std::vector<QuantLib::Date> dates, int bdc=0) {
+    boost::shared_ptr<QuantLib::Calendar> pcal(getCalendar(calendar));
+    QuantLib::BusinessDayConvention bdcval = getBusinessDayConvention(bdc);
+    int n = dates.size();
+    std::vector<QuantLib::Date> adjusted(n);
+    for (int i=0; i<n; i++) {
+        adjusted[i] = pcal->adjust(dates[i], bdcval);
     }
-
-    return R_NilValue;
+    return adjusted;
 }
 
-RcppExport SEXP advance1(SEXP calSexp, SEXP params, SEXP dateSexp){
+// [[Rcpp::export]]
+std::vector<QuantLib::Date> advance1(std::string calendar, 
+         double amount, double unit, int bdcVal, double emr, 
+         std::vector<QuantLib::Date> dates) {
 
-    try {
-        boost::shared_ptr<QuantLib::Calendar> pcal( getCalendar(Rcpp::as<std::string>(calSexp)) );
-        Rcpp::List rparam(params);        
-        QuantLib::BusinessDayConvention bdc = getBusinessDayConvention( Rcpp::as<double>(rparam["bdc"]) );
-        double emr = Rcpp::as<double>(rparam["emr"]);
-        double amount = Rcpp::as<double>(rparam["amount"]);
-        double unit = Rcpp::as<double>(rparam["unit"]);
-
-        Rcpp::DateVector dates  = Rcpp::DateVector(dateSexp);
-        int n = dates.size();
-        std::vector<QuantLib::Date> advance(n);
-
-        for (int i=0; i<n; i++) {
-            QuantLib::Date day( dateFromR(dates[i]) );
-            advance[i] = pcal->advance(day, amount,getTimeUnit(unit), bdc, (emr == 1)?true:false );
-            dates[i] =  Rcpp::Date(advance[i].month(), 
-                                   advance[i].dayOfMonth(), 
-                                   advance[i].year());
-        }
-        
-        return Rcpp::wrap(dates);
-
-    } catch(std::exception &ex) { 
-        forward_exception_to_r(ex); 
-    } catch(...) { 
-        ::Rf_error("c++ exception (unknown reason)"); 
+    boost::shared_ptr<QuantLib::Calendar> pcal(getCalendar(calendar));
+    QuantLib::BusinessDayConvention bdc = getBusinessDayConvention(bdcVal);
+    int n = dates.size();
+    std::vector<QuantLib::Date> advance(n);
+    
+    for (int i=0; i<n; i++) {
+        advance[i] = pcal->advance(dates[i], amount, getTimeUnit(unit), bdc, (emr == 1) ? true : false);
     }
-
-    return R_NilValue;
+    return advance;
 }
 
-RcppExport SEXP advance2(SEXP calSexp, SEXP param, SEXP dateSexp){
+// [[Rcpp::export]]
+std::vector<QuantLib::Date> advance2(std::string calendar, 
+                                     double period, int bdcVal, double emr, 
+                                     std::vector<QuantLib::Date> dates) {
 
-    try {
-        boost::shared_ptr<QuantLib::Calendar> pcal( getCalendar(Rcpp::as<std::string>(calSexp)) );
-        Rcpp::List rparam(param);        
-        QuantLib::BusinessDayConvention bdc = getBusinessDayConvention( Rcpp::as<double>(rparam["bdc"]) );
-        double emr = Rcpp::as<double>(rparam["emr"]);
-        double period = Rcpp::as<double>(rparam["period"]);
+    boost::shared_ptr<QuantLib::Calendar> pcal(getCalendar(calendar));
+    QuantLib::BusinessDayConvention bdc = getBusinessDayConvention(bdcVal);
+    int n = dates.size();
+    std::vector<QuantLib::Date> advance(n);
 
-        Rcpp::DateVector dates  = Rcpp::DateVector(dateSexp);
-        int n = dates.size();
-        std::vector<QuantLib::Date> advance(n);
-
-        for (int i=0; i<n; i++) {
-            QuantLib::Date day( dateFromR(dates[i]) );
-            advance[i] = pcal->advance(day, QuantLib::Period(getFrequency(period)), 
-                                       bdc, (emr == 1)?true:false );
-            dates[i] =  Rcpp::Date(advance[i].month(), 
-                                   advance[i].dayOfMonth(), 
-                                   advance[i].year());
-        }
-
-        return Rcpp::wrap(dates);
-
-    } catch(std::exception &ex) { 
-        forward_exception_to_r(ex); 
-    } catch(...) { 
-        ::Rf_error("c++ exception (unknown reason)"); 
+    for (int i=0; i<n; i++) {
+        advance[i] = pcal->advance(dates[i], QuantLib::Period(getFrequency(period)), 
+                                   bdc, (emr == 1) ? true : false);
     }
-
-    return R_NilValue;
+    return advance;
 }
 
-RcppExport SEXP businessDaysBetween(SEXP calSexp, SEXP params,
-                                       SEXP from, SEXP to){
-
-    try {
-        boost::shared_ptr<QuantLib::Calendar> pcal( getCalendar(Rcpp::as<std::string>(calSexp)) );
-        Rcpp::List rparam(params);
-        double ifirst = Rcpp::as<double>(rparam["includeFirst"]);
-        double ilast = Rcpp::as<double>(rparam["includeLast"]);
-
-        Rcpp::DateVector dates1  = Rcpp::DateVector(from);
-        Rcpp::DateVector dates2  = Rcpp::DateVector(to);
-
-        int n = dates1.size();
-        std::vector<double> between(n);
-
-        for (int i=0; i<n; i++) {
-            QuantLib::Date day1( dateFromR(dates1[i]) );
-            QuantLib::Date day2( dateFromR(dates2[i]) );
-            between[i] = pcal->businessDaysBetween(day1, day2,
-                                                   (ifirst == 1) ? true: false,
-                                                   (ilast == 1) ? true: false);
-        }
-        
-        return Rcpp::wrap(between);
-
-    } catch(std::exception &ex) { 
-        forward_exception_to_r(ex); 
-    } catch(...) { 
-        ::Rf_error("c++ exception (unknown reason)"); 
+// [[Rcpp::export]]
+std::vector<double> businessDaysBetween(std::string calendar, 
+                                        std::vector<QuantLib::Date> from, 
+                                        std::vector<QuantLib::Date> to,
+                                        bool includeFirst=true, bool includeLast=false) {
+    boost::shared_ptr<QuantLib::Calendar> pcal(getCalendar(calendar));
+    int n = from.size();
+    std::vector<double> between(n);
+    for (int i=0; i<n; i++) {
+        between[i] = pcal->businessDaysBetween(from[i], to[i], includeFirst, includeLast);
     }
-
-    return R_NilValue;
+    return between;
 }
 
-RcppExport SEXP holidayList(SEXP calSexp, SEXP params) {
+// [[Rcpp::export]]
+std::vector<QuantLib::Date> getHolidayList(std::string calendar, 
+                                           QuantLib::Date from, QuantLib::Date to,
+                                           bool includeWeekends=false) {
 
-    try {
-        boost::shared_ptr<QuantLib::Calendar> pcal( getCalendar(Rcpp::as<std::string>(calSexp)) );
-        Rcpp::List rparam(params);
-        int iw = Rcpp::as<int>(rparam["includeWeekends"]);
-        std::vector<QuantLib::Date> 
-            holidays = QuantLib::Calendar::holidayList(*pcal,
-                                                       QuantLib::Date(dateFromR(Rcpp::as<Rcpp::Date>( rparam["from"]))), 
-                                                       QuantLib::Date(dateFromR(Rcpp::as<Rcpp::Date>( rparam["to"] ))), 
-                                                       iw == 1 ? true : false);                
-
-        if (holidays.size() > 0) {
-            Rcpp::DateVector dv( holidays.size() );
-            for (unsigned int i = 0; i< holidays.size(); i++){
-                dv[i] = Rcpp::Date(holidays[i].month(), holidays[i].dayOfMonth(), holidays[i].year());
-            }
-            return Rcpp::wrap(dv);
-        } else {
-            return R_NilValue;
-        }
-
-    } catch(std::exception &ex) { 
-        forward_exception_to_r(ex); 
-    } catch(...) { 
-        ::Rf_error("c++ exception (unknown reason)"); 
-    }
-
-    return R_NilValue;
+    boost::shared_ptr<QuantLib::Calendar> pcal(getCalendar(calendar));
+    std::vector<QuantLib::Date> holidays = QuantLib::Calendar::holidayList(*pcal, from, to, includeWeekends);
+    return holidays;
 }

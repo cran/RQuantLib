@@ -1,6 +1,6 @@
 // -*- mode: C++; c-indent-level: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 //
-// RQuantLib function prototypes and macros
+// RQuantLib wrapper definitions
 //
 // Copyright 2014  Dirk Eddelbuettel <edd@debian.org>
 //
@@ -17,14 +17,21 @@
 // You should have received a copy of the GNU General Public License
 // along with RcppArmadillo.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef __RQuantLib_h__
-#define __RQuantLib_h__
+#ifndef _rquantlib_wrappers_h_
+#define _rquantlib_wrappers_h_
 
-#include "rquantlib_internal.h"        	// old rquantlib.h
-#include "rquantlib_wrappers.h"         // as<> and wrap
-#if defined(RQuantLib_Plugin)
-#include "rquantlib_impl.h"         	// as<> and wrap implementation
+#include "rquantlib_internal.h"
+
+// define template specialisations for as and wrap
+namespace Rcpp {
+
+    //template <> QuantLib::Date as(SEXP dtsexp);
+    template <typename T> T as(SEXP dtsexp);
+    template <typename T> SEXP wrap(const T& d);
+
+    template <> std::vector<QuantLib::Date> as(SEXP dtvecsexp);
+    template <> SEXP wrap(const std::vector<QuantLib::Date> &dvec);
+        
+}
+
 #endif
-#include "RQuantLib_RcppExports.h"
-
-#endif // __RQuantLib_h__

@@ -121,15 +121,12 @@
 bond <- list(faceAmount=100, issueDate=as.Date("2004-11-30"),
              maturityDate=as.Date("2008-11-30"), redemption=100, 
              effectiveDate=as.Date("2004-11-30"))
-dateparams <- list(settlementDays=1, calendar="us",
+dateparams <- list(settlementDays=1, calendar="UnitedStates/GovernmentBond",
                    dayCounter = 'ActualActual', period=2, 
                    businessDayConvention = 1, terminationDateConvention=1,
                    dateGeneration=0, endOfMonth=0, fixingDays = 1)
 
-gearings <- c()
-spreads <- c()
-caps <- c()
-floors <- c()
+gearings <- spreads <- caps <- floors <- vector()
 
 params <- list(tradeDate=as.Date('2002-2-15'),
                settleDate=as.Date('2002-2-19'),

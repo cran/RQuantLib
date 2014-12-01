@@ -1,30 +1,28 @@
-// -*- mode: c++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- 
+// -*- mode: C++; c-indent-level: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 //
-// RQuantLib -- R interface to the QuantLib libraries
+//  RQuantLib -- R interface to the QuantLib libraries
 //
-// Copyright (C) 2002 - 2012  Dirk Eddelbuettel 
-// Copyright (C) 2005 - 2006  Dominick Samperi
-// Copyright (C) 2009 - 2012  Dirk Eddelbuettel and Khanh Nguyen
+//  Copyright (C) 2002 - 2014  Dirk Eddelbuettel 
+//  Copyright (C) 2005 - 2006  Dominick Samperi
+//  Copyright (C) 2009 - 2012  Dirk Eddelbuettel and Khanh Nguyen
 //
-// $Id$
 //
-// This file is part of the RQuantLib library for GNU R.
-// It is made available under the terms of the GNU General Public
-// License, version 2, or at your option, any later version,
-// incorporated herein by reference.
+//  RQuantLib is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 2 of the License, or
+//  (at your option) any later version.
 //
-// This program is distributed in the hope that it will be
-// useful, but WITHOUT ANY WARRANTY; without even the implied
-// warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-// PURPOSE.  See the GNU General Public License for more
-// details.
+//  RQuantLib is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public
-// License along with this program; if not, write to the Free
-// Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
-// MA 02111-1307, USA
+//  You should have received a copy of the GNU General Public License
+//  along with RQuantLib.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <rquantlib.h>
+
+// [[Rcpp::interfaces(r, cpp)]]
 
 QuantLib::Option::Type getOptionType(const std::string &type) {
     QuantLib::Option::Type optionType;
@@ -105,18 +103,14 @@ makeOption(const boost::shared_ptr<QuantLib::StrikedTypePayoff>& payoff,
 }
 
 // QuantLib option setup utils, copied from the test-suite sources
-
-boost::shared_ptr<QuantLib::YieldTermStructure> buildTermStructure(SEXP params, SEXP tsQuotes, SEXP times){
+boost::shared_ptr<QuantLib::YieldTermStructure> buildTermStructure(Rcpp::List rparam, Rcpp::List tslist) { 
 
     boost::shared_ptr<QuantLib::YieldTermStructure> curve;
     try {
-      
-        Rcpp::List rparam(params);
-        Rcpp::List tslist(tsQuotes);
-        Rcpp::CharacterVector tsnames = tslist.names();
 
-        QuantLib::Date todaysDate( dateFromR( Rcpp::as<Rcpp::Date>(rparam["tradeDate"]))); 
-        QuantLib::Date settlementDate( dateFromR( Rcpp::as<Rcpp::Date>(rparam["settleDate"]))); 
+        Rcpp::CharacterVector tsnames = tslist.names();
+        QuantLib::Date todaysDate(Rcpp::as<QuantLib::Date>(rparam["tradeDate"])); 
+        QuantLib::Date settlementDate(Rcpp::as<QuantLib::Date>(rparam["settleDate"])); 
         // cout << "TradeDate: " << todaysDate << endl << "Settle: " << settlementDate << endl;
         
         RQLContext::instance().settleDate = settlementDate;
@@ -173,56 +167,123 @@ boost::shared_ptr<QuantLib::YieldTermStructure> buildTermStructure(SEXP params, 
     return curve;
 }
 
-QuantLib::Schedule getSchedule(SEXP sch) {
-   
-    Rcpp::List rparam(sch);
-    QuantLib::Date effectiveDate(dateFromR( Rcpp::as<Rcpp::Date>(rparam["effectiveDate"]) ));
-    QuantLib::Date maturityDate(dateFromR( Rcpp::as<Rcpp::Date>(rparam["maturityDate"]) ));      
-    double frequency = Rcpp::as<double>(rparam["period"]);
+QuantLib::Schedule getSchedule(Rcpp::List rparam) {
+    
+    QuantLib::Date effectiveDate(Rcpp::as<QuantLib::Date>(rparam["effectiveDate"]));
+    QuantLib::Date maturityDate(Rcpp::as<QuantLib::Date>(rparam["maturityDate"]));      
+    QuantLib::Period period = QuantLib::Period(getFrequency(Rcpp::as<double>(rparam["period"])));
     std::string cal = Rcpp::as<std::string>(rparam["calendar"]);
-    double businessDayConvention = Rcpp::as<double>(rparam["businessDayConvention"]);
-    double terminationDateConvention = Rcpp::as<double>(rparam["terminationDateConvention"]);
-    QuantLib::Calendar calendar = QuantLib::UnitedStates(QuantLib::UnitedStates::GovernmentBond);
-    if (cal == "us"){
-        calendar = QuantLib::UnitedStates(QuantLib::UnitedStates::GovernmentBond);
-    } else if (cal == "uk"){
-        calendar = QuantLib::UnitedKingdom(QuantLib::UnitedKingdom::Exchange);
+    QuantLib::Calendar calendar;
+    if(!cal.empty()) {
+        boost::shared_ptr<QuantLib::Calendar> p = getCalendar(cal);
+        calendar = *p;
     }
-    QuantLib::BusinessDayConvention bdc = getBusinessDayConvention(businessDayConvention);   
-    QuantLib::BusinessDayConvention t_bdc = getBusinessDayConvention(terminationDateConvention);
-    QuantLib::Schedule schedule(effectiveDate, maturityDate,
-                                QuantLib::Period(getFrequency(frequency)),
-                                calendar, bdc, t_bdc, 
-                                QuantLib::DateGeneration::Backward, false);
+    QuantLib::BusinessDayConvention businessDayConvention =
+        getBusinessDayConvention(Rcpp::as<double>(rparam["businessDayConvention"]));
+    QuantLib::BusinessDayConvention terminationDateConvention =
+        getBusinessDayConvention(Rcpp::as<double>(rparam["terminationDateConvention"]));
+    // keep these default values for the last two parameters for backward compatibility
+    // (although in QuantLib::schedule they have no default values)
+    QuantLib::DateGeneration::Rule dateGeneration = QuantLib::DateGeneration::Backward;
+    if(rparam.containsElementNamed("dateGeneration") ) {
+        dateGeneration = getDateGenerationRule(Rcpp::as<double>(rparam["dateGeneration"]));
+    }
+    bool endOfMonth = false;
+    if(rparam.containsElementNamed("endOfMonth") ) {
+        endOfMonth = (Rcpp::as<double>(rparam["endOfMonth"]) == 1) ? true : false;
+    }
+    
+    QuantLib::Schedule schedule(effectiveDate,
+                                maturityDate,
+                                period,
+                                calendar,
+                                businessDayConvention,
+                                terminationDateConvention,
+                                dateGeneration,
+                                endOfMonth);
     return schedule;
 }
 
-boost::shared_ptr<QuantLib::YieldTermStructure> rebuildCurveFromZeroRates(SEXP dateSexp, SEXP zeroSexp) {
-    Rcpp::DateVector rcppdates  = Rcpp::DateVector(dateSexp);
-    int n = rcppdates.size();
-    std::vector<QuantLib::Date> dates(n);
-    for (int i = 0;i<n; i++) {
-        dates[i] = QuantLib::Date(dateFromR(rcppdates[i]));
+boost::shared_ptr<QuantLib::FixedRateBond> getFixedRateBond(
+    Rcpp::List bondparam, std::vector<double> ratesVec, Rcpp::List scheduleparam) {
+    
+    // get bond parameters
+    double settlementDays = Rcpp::as<double>(bondparam["settlementDays"]);
+    double faceAmount = Rcpp::as<double>(bondparam["faceAmount"]);
+    QuantLib::DayCounter accrualDayCounter =
+        getDayCounter(Rcpp::as<double>(bondparam["dayCounter"]));
+    QuantLib::BusinessDayConvention paymentConvention = QuantLib::Following;
+    if(bondparam.containsElementNamed("paymentConvention") ) {
+        paymentConvention = getBusinessDayConvention(Rcpp::as<double>(bondparam["paymentConvention"]));
     }
-    Rcpp::NumericVector zeros(zeroSexp);    //extract coupon rates vector
+    double redemption = 100.0;
+    if(bondparam.containsElementNamed("redemption") ) {
+        redemption = Rcpp::as<double>(bondparam["redemption"]);
+    }
+    QuantLib::Date issueDate;
+    if(bondparam.containsElementNamed("issueDate") ) {
+        issueDate = Rcpp::as<QuantLib::Date>(bondparam["issueDate"]);
+    }
+    QuantLib::Calendar paymentCalendar;
+    if(bondparam.containsElementNamed("paymentCalendar") ) {
+        boost::shared_ptr<QuantLib::Calendar> p = getCalendar(Rcpp::as<std::string>(bondparam["paymentCalendar"]));
+        paymentCalendar = *p;
+    }
+    QuantLib::Period exCouponPeriod;
+    if(bondparam.containsElementNamed("exCouponPeriod") ) {
+        exCouponPeriod = QuantLib::Period(Rcpp::as<double>(bondparam["exCouponPeriod"]), QuantLib::Days);
+    }
+    QuantLib::Calendar exCouponCalendar;
+    if(bondparam.containsElementNamed("exCouponCalendar") ) {
+        boost::shared_ptr<QuantLib::Calendar> p = getCalendar(Rcpp::as<std::string>(bondparam["exCouponCalendar"]));
+        exCouponCalendar = *p;
+    }
+    QuantLib::BusinessDayConvention exCouponConvention = QuantLib::Unadjusted;
+    if(bondparam.containsElementNamed("exCouponConvention") ) {
+        exCouponConvention = getBusinessDayConvention(Rcpp::as<double>(bondparam["exCouponConvention"]));
+    }
+    bool exCouponEndOfMonth = false;
+    if(bondparam.containsElementNamed("exCouponEndOfMonth") ) {
+        exCouponEndOfMonth = (Rcpp::as<double>(bondparam["exCouponEndOfMonth"]) == 1) ? true : false;
+    }
+    
+    QuantLib::Schedule schedule = getSchedule(scheduleparam);
+    boost::shared_ptr<QuantLib::FixedRateBond> result(
+        new QuantLib::FixedRateBond(settlementDays,
+                                    faceAmount,
+                                    schedule,
+                                    ratesVec,
+                                    accrualDayCounter,
+                                    paymentConvention,
+                                    redemption,
+                                    issueDate,
+                                    paymentCalendar,
+                                    exCouponPeriod,
+                                    exCouponCalendar,
+                                    exCouponConvention,
+                                    exCouponEndOfMonth));
+    return result;
+}
+
+boost::shared_ptr<QuantLib::YieldTermStructure> 
+rebuildCurveFromZeroRates(std::vector<QuantLib::Date> dates,
+                          std::vector<double> zeros) {
     boost::shared_ptr<QuantLib::YieldTermStructure>  
         rebuilt_curve(new QuantLib::InterpolatedZeroCurve<QuantLib::LogLinear>(dates, 
-                                                                               Rcpp::as< std::vector<double> >(zeros), 
+                                                                               zeros, 
                                                                                QuantLib::ActualActual()));
     return rebuilt_curve;
 }
 
-boost::shared_ptr<QuantLib::YieldTermStructure> getFlatCurve(SEXP flatcurve){
-    Rcpp::List curve(flatcurve);
+boost::shared_ptr<QuantLib::YieldTermStructure> getFlatCurve(Rcpp::List curve) {
     QuantLib::Rate riskFreeRate = Rcpp::as<double>(curve["riskFreeRate"]);
-    QuantLib::Date today(dateFromR( Rcpp::as<Rcpp::Date>(curve["todayDate"])));       
+    QuantLib::Date today(Rcpp::as<QuantLib::Date>(curve["todayDate"]));       
     boost::shared_ptr<QuantLib::SimpleQuote> rRate(new QuantLib::SimpleQuote(riskFreeRate));
     QuantLib::Settings::instance().evaluationDate() = today;
     return flatRate(today, rRate, QuantLib::Actual360());
 }
 
-boost::shared_ptr<QuantLib::IborIndex> getIborIndex(SEXP index, const QuantLib::Date today){
-    Rcpp::List rparam(index);
+boost::shared_ptr<QuantLib::IborIndex> getIborIndex(Rcpp::List rparam, const QuantLib::Date today) {
     std::string type = Rcpp::as<std::string>(rparam["type"]);
     if (type == "USDLibor"){
         double riskFreeRate = Rcpp::as<double>(rparam["riskFreeRate"]);
@@ -236,13 +297,13 @@ boost::shared_ptr<QuantLib::IborIndex> getIborIndex(SEXP index, const QuantLib::
     else return boost::shared_ptr<QuantLib::IborIndex>();
 }
 
-std::vector<double> getDoubleVector(SEXP vecSexp) {
-    if (::Rf_length(vecSexp) == 0) {
-        return(std::vector<double>());
-    } else {
-        return std::vector<double>( Rcpp::as<std::vector< double> >( Rcpp::NumericVector(vecSexp) ) );
-    }
-}
+// std::vector<double> getDoubleVector(SEXP vecSexp) {
+//     if (::Rf_length(vecSexp) == 0) {
+//         return(std::vector<double>());
+//     } else {
+//         return std::vector<double>( Rcpp::as<std::vector< double> >( Rcpp::NumericVector(vecSexp) ) );
+//     }
+// }
 
 boost::shared_ptr<QuantLib::YieldTermStructure>
 makeFlatCurve(const QuantLib::Date& today,
@@ -295,28 +356,43 @@ makeProcess(const boost::shared_ptr<QuantLib::Quote>& u,
 //     return(d.getJDN() - RcppDate::Jan1970Offset + RcppDate::QLtoJan1970Offset);
 // }
 
-static const unsigned int QLtoJan1970Offset = 25569;  	// Offset between R / Unix epoch 
+//static const unsigned int QLtoJan1970Offset = 25569;  	// Offset between R / Unix epoch 
 
-// R and Rcpp::Date use the same 'days since epoch' representation; QL uses Excel style
-int dateFromR(const Rcpp::Date &d) {
-    return(d.getDate() + QLtoJan1970Offset);
-}
+// // R and Rcpp::Date use the same 'days since epoch' representation; QL uses Excel style
+// int dateFromR(const Rcpp::Date &d) {
+//     static const unsigned int QLtoJan1970Offset = 25569;  	// Offset to R / Unix epoch 
+//     return(d.getDate() + QLtoJan1970Offset);
+// }
 
 QuantLib::DayCounter getDayCounter(const double n){
-    if (n==0) 
+    if (n==0)
         return QuantLib::Actual360();
-    else if (n==1) 
+    else if (n==1)
         return QuantLib::Actual365Fixed();
-    else if (n==2) 
+    else if (n==2)
         return QuantLib::ActualActual();
-    else if (n==3) 
+    else if (n==3)
         return QuantLib::Business252();
-    else if (n==4) 
+    else if (n==4)
         return QuantLib::OneDayCounter();
-    else if (n==5) 
+    else if (n==5)
         return QuantLib::SimpleDayCounter();
-    else  
+    else if (n==6)
         return QuantLib::Thirty360();
+    else if (n==7)
+        return QuantLib::Actual365NoLeap();
+    else if (n==8)
+        return QuantLib::ActualActual(QuantLib::ActualActual::ISMA);
+    else if (n==9)
+        return QuantLib::ActualActual(QuantLib::ActualActual::Bond);
+    else if (n==10)
+        return QuantLib::ActualActual(QuantLib::ActualActual::ISDA);
+    else if (n==11)
+        return QuantLib::ActualActual(QuantLib::ActualActual::Historical);
+    else if (n==12)
+        return QuantLib::ActualActual(QuantLib::ActualActual::AFB);
+    else // if (n==13)
+        return QuantLib::ActualActual(QuantLib::ActualActual::Euro);
 }
 
 QuantLib::BusinessDayConvention getBusinessDayConvention(const double n){
@@ -459,11 +535,10 @@ Rcpp::DataFrame getCashFlowDataFrame(const QuantLib::Leg &bondCashFlow) {
 }
 
 
-QuantLib::DividendSchedule getDividendSchedule(SEXP dividendScheduleFrame) {
+QuantLib::DividendSchedule getDividendSchedule(Rcpp::DataFrame divScheDF) {
 
     QuantLib::DividendSchedule dividendSchedule;
     try {
-        Rcpp::DataFrame divScheDF(dividendScheduleFrame);
         Rcpp::CharacterVector s0v = divScheDF[0];
         Rcpp::NumericVector n1v = divScheDF[1];
         Rcpp::NumericVector n2v = divScheDF[2];
@@ -474,7 +549,8 @@ QuantLib::DividendSchedule getDividendSchedule(SEXP dividendScheduleFrame) {
             int type = (s0v[row] == "Fixed") ? 1 : 0; //  (table[row][0].getStringValue()=="Fixed") ? 1 : 0;
             double amount = n1v[row]; // table[row][1].getDoubleValue();
             double rate = n2v[row]; // table[row][2].getDoubleValue();
-            QuantLib::Date d(dateFromR(Rcpp::Date(n3v[row]))); //table[row][3].getDateValue()));            
+            Rcpp::Date rd = Rcpp::Date(n3v[row]);
+            QuantLib::Date d(Rcpp::as<QuantLib::Date>(Rcpp::wrap(rd))); //table[row][3].getDateValue()));            
             if (type==1) {
                 dividendSchedule.push_back(boost::shared_ptr<QuantLib::Dividend>(new QuantLib::FixedDividend(amount, d)));
             } else {
@@ -487,7 +563,7 @@ QuantLib::DividendSchedule getDividendSchedule(SEXP dividendScheduleFrame) {
     return dividendSchedule;
 }
 
-QuantLib::CallabilitySchedule getCallabilitySchedule(SEXP callabilityScheduleFrame) {
+QuantLib::CallabilitySchedule getCallabilitySchedule(Rcpp::DataFrame callScheDF) {
 
     QuantLib::CallabilitySchedule callabilitySchedule;
 
@@ -495,7 +571,6 @@ QuantLib::CallabilitySchedule getCallabilitySchedule(SEXP callabilityScheduleFra
         // RcppFrame rcppCallabilitySchedule(callabilityScheduleFrame);
         // std::vector<std::vector<ColDatum> > table = rcppCallabilitySchedule.getTableData();
         // int nrow = table.size();
-        Rcpp::DataFrame callScheDF(callabilityScheduleFrame);
         Rcpp::NumericVector n0v = callScheDF[0];
         Rcpp::CharacterVector s1v = callScheDF[1];
         Rcpp::NumericVector n2v = callScheDF[2];
@@ -503,7 +578,8 @@ QuantLib::CallabilitySchedule getCallabilitySchedule(SEXP callabilityScheduleFra
         for (int row=0; row<nrow; row++) {
             double price = n0v[row]; //table[row][0].getDoubleValue();
             int type = (s1v[row]=="P") ? 1 : 0;
-            QuantLib::Date d(dateFromR(Rcpp::Date(n2v[row])));
+            Rcpp::Date rd = Rcpp::Date(n2v[row]);
+            QuantLib::Date d(Rcpp::as<QuantLib::Date>(Rcpp::wrap(rd)));
             if (type==1){
                 callabilitySchedule.push_back(boost::shared_ptr<QuantLib::Callability>
                                               (new QuantLib::Callability(QuantLib::Callability::Price(price, 
@@ -520,4 +596,16 @@ QuantLib::CallabilitySchedule getCallabilitySchedule(SEXP callabilityScheduleFra
         forward_exception_to_r(ex); 
     }
     return callabilitySchedule;
+}
+
+QuantLib::Duration::Type getDurationType(const double n) {
+    if (n==0) 
+        return QuantLib::Duration::Simple;
+    else if (n==1) 
+        return QuantLib::Duration::Macaulay;
+    else if (n==2) 
+        return QuantLib::Duration::Modified;
+    else {
+        throw std::range_error("Invalid duration type " + boost::lexical_cast<std::string>(n));
+    }
 }

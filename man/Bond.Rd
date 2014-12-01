@@ -3,6 +3,7 @@
 \alias{Bond}
 \alias{plot.Bond}
 \alias{print.Bond}
+\alias{print.FixedRateBond}
 \alias{summary.Bond}
 \title{Base class for Bond price evalution}
 \description{
@@ -10,6 +11,7 @@
   derived. }
 \usage{
 \method{print}{Bond}(x, digits=5, ...)
+\method{print}{FixedRateBond}(x, digits=5, ...)
 \method{plot}{Bond}(x, ...)
 \method{summary}{Bond}(object, digits=5, ...)
 }
@@ -42,11 +44,12 @@ params <- list(tradeDate=as.Date('2004-09-20'),
                dt=.25,
                interpWhat="discount",
                interpHow="loglinear")
-setEvaluationDate(as.Date("2004-11-22"))
+setEvaluationDate(as.Date("2004-09-20"))
 
 ## We got numerical issues for the spline interpolation if we add
 ## any on of these three extra futures, at least with QuantLib 0.9.7
 ## The curve data comes from QuantLib's Examples/Swap/swapvaluation.cpp
+## Removing s2y helps, as kindly pointed out by Luigi Ballabio
 tsQuotes <- list(d1w = 0.0382,
                  d1m = 0.0372,
                  fut1=96.2875,
@@ -57,46 +60,63 @@ tsQuotes <- list(d1w = 0.0382,
                  fut6=96.3875,
                  fut7=96.2875,
                  fut8=96.0875,
-                 s2y = 0.037125,
+                 # s2y = 0.037125,  ## s2y perturbs
                  s3y = 0.0398,
                  s5y = 0.0443,
                  s10y = 0.05165,
                  s15y = 0.055175)
-tsQuotes <- list("flat" = 0.02)		## While discount curve code is buggy
 times <- seq(0,10,.1)
 
+setEvaluationDate(params$tradeDate)
 discountCurve <- DiscountCurve(params, tsQuotes, times)
 
 # price a zero coupon bond
 bondparams <- list(faceAmount=100, issueDate=as.Date("2004-11-30"),
-             maturityDate=as.Date("2008-11-30"), redemption=100 )
-dateparams <-list(settlementDays=1, calendar="us", businessDayConvention=4)
+                   maturityDate=as.Date("2008-11-30"), redemption=100 )
+dateparams <-list(settlementDays=1,
+                  calendar="UnitedStates/GovernmentBond",
+                  businessDayConvention=4)
 ZeroCouponBond(bondparams, discountCurve, dateparams)
 
 # price a fixed rate coupon bond
 
-bondparams <- list(faceAmount=100, issueDate=as.Date("2004-11-30"),
-             maturityDate=as.Date("2008-11-30"), redemption=100, 
-             effectiveDate=as.Date("2004-11-30"))
-dateparams <- list(settlementDays=1, calendar="us", dayCounter = 1, period=3, 
-                   businessDayConvention = 4, terminationDateConvention=4,
-                   dateGeneration=1, endOfMonth=1)
+bond <- list(settlementDays=1, issueDate=as.Date("2004-11-30"),
+             faceAmount=100, accrualDayCounter='Thirty360',
+             paymentConvention='Unadjusted')
+schedule <- list(effectiveDate=as.Date("2004-11-30"),
+                 maturityDate=as.Date("2008-11-30"),
+                 period='Semiannual',
+                 calendar='UnitedStates/GovernmentBond',
+                 businessDayConvention='Unadjusted',
+                 terminationDateConvention='Unadjusted',
+                 dateGeneration='Forward',
+                 endOfMonth=1)
+calc=list(dayCounter='Actual360', compounding='Compounded',
+          freq='Annual', durationType='Modified')
 rates <- c(0.02875)
-FixedRateBond(bondparams, rates, discountCurve, dateparams)
+FixedRateBond(bond, rates, schedule, calc, discountCurve=discountCurve)
+
+# price a fixed rate coupon bond from yield
+
+yield <- 0.050517
+FixedRateBond(bond, rates, schedule, calc, yield=yield)
+
+# calculate the same bond from the clean price
+
+price <- 92.167
+FixedRateBond(bond, rates, schedule, calc, price=price)
 
 # price a floating rate bond
 bondparams <- list(faceAmount=100, issueDate=as.Date("2004-11-30"),
-             maturityDate=as.Date("2008-11-30"), redemption=100, 
-             effectiveDate=as.Date("2004-12-01"))
+                   maturityDate=as.Date("2008-11-30"), redemption=100, 
+                   effectiveDate=as.Date("2004-12-01"))
 
-dateparams <- list(settlementDays=1, calendar="us", dayCounter = 1, period=3, 
-                   businessDayConvention = 1, terminationDateConvention=1,
-                   dateGeneration=0, endOfMonth=0, fixingDays = 1)
+dateparams <- list(settlementDays=1, calendar="UnitedStates/GovernmentBond",
+                   dayCounter = 1, period=3, businessDayConvention = 1,
+                   terminationDateConvention=1, dateGeneration=0, endOfMonth=0,
+                   fixingDays = 1)
 
-gearings <- c()
-spreads <- c()
-caps <- c()
-floors <- c()
+gearings <- spreads <- caps <- floors <- vector()
 
 iborCurve <- DiscountCurve(params,list(flat=0.05), times)
 ibor <- list(type="USDLibor", length=6, inTermOf="Month", 

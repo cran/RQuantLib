@@ -1,6 +1,6 @@
 // -*- mode: C++; c-indent-level: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 //
-// RQuantLib function prototypes and macros
+// RQuantLib header
 //
 // Copyright 2014  Dirk Eddelbuettel <edd@debian.org>
 //
@@ -17,14 +17,19 @@
 // You should have received a copy of the GNU General Public License
 // along with RcppArmadillo.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef __RQuantLib_h__
-#define __RQuantLib_h__
+#ifndef rquantlib_src_h
+#define rquantlib_src_h
 
-#include "rquantlib_internal.h"        	// old rquantlib.h
-#include "rquantlib_wrappers.h"         // as<> and wrap
-#if defined(RQuantLib_Plugin)
-#include "rquantlib_impl.h"         	// as<> and wrap implementation
+// Rcpp Attributes requires a file with package name in inst/include,
+// in our case inst/include/RQuantLib.h -- but R does not want us to have
+// another header file with the same name, differing only by case
+//
+// So we place the existing 'rquantlib.h' in src/ instead so that the
+// issue of equal names (for everything but the case) no longer
+// matters.  This provides us with a backwards compatible
+// 'rquantlib.h' file, and its definitons are now in a file
+// inst/include/rquantlib_internal.h which we source here.
+
+#include "rquantlib_internal.h"
+
 #endif
-#include "RQuantLib_RcppExports.h"
-
-#endif // __RQuantLib_h__

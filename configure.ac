@@ -3,14 +3,12 @@
 # Using pieces borrowed from RPgSQL, GNU Gretl, GNU R and QuantLib
 # Greatly simplified thanks to quantlib-config
 # Another contribution by Kurt Hornik gratefully acknowledged
-#
-# $Id$
 
 # require at least autoconf 2.50
 AC_PREREQ(2.50)
 
 # Process this file with autoconf to produce a configure script.
-AC_INIT(RQuantlib, 0.3.12)
+AC_INIT(RQuantlib, 0.4.0)
 
 # We are using C++
 AC_LANG(C++)
@@ -25,7 +23,7 @@ if test "${GXX}" = yes; then
 	     AC_MSG_WARN([Only g++ version 3.0 or greater can be used with RQuantib.])
 	     AC_MSG_ERROR([Please use a different compiler.])   
         ;;
-	4.6.*|4.7.*|4.8.*)
+	4.6.*|4.7.*|4.8.*|4.9.*|5.*)
 	     gxx_newer_than_45="-fpermissive"
 	;;
     esac
@@ -79,9 +77,9 @@ if test x"${QUANTLIB}" == x"yes" ; then
 
     # also test for quantlib version using result from quantlib-config --version
     case ${pkg_version} in
-    0.1.*|0.2.*|0.3.*|0.4.*|0.8.*|0.9.0|0.9.5|0.9.6|0.9.7)
-	AC_MSG_WARN([RQuantLib requires QuantLib (>= 0.9.9).])
-	AC_MSG_ERROR([Please upgrade to a more recent version.])
+    0.1.*|0.2.*|0.3.*|0.4.*|0.8.*|0.9.*|1.0.*|1.1.*|1.2.*|1.3.*)
+	AC_MSG_WARN([RQuantLib requires QuantLib (>= 1.4.0).])
+	AC_MSG_ERROR([Please upgrade to a current version.])
 	;;
     esac
 

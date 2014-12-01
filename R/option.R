@@ -1,24 +1,21 @@
-## RQuantLib -- R interface to the QuantLib libraries
+##  RQuantLib -- R interface to the QuantLib libraries
 ##
-## Copyright (C) 2002 - 2009 Dirk Eddelbuettel <edd@debian.org>
+##  Copyright (C) 2002 - 2014  Dirk Eddelbuettel <edd@debian.org>
 ##
-## $Id: option.R,v 1.6 2007/12/31 01:53:06 edd Exp $
+##  This file is part of RQuantLib.
 ##
-## This file is part of the RQuantLib library for GNU R.
-## It is made available under the terms of the GNU General Public
-## License, version 2, or at your option, any later version,
-## incorporated herein by reference.
+##  RQuantLib is free software: you can redistribute it and/or modify
+##  it under the terms of the GNU General Public License as published by
+##  the Free Software Foundation, either version 2 of the License, or
+##  (at your option) any later version.
 ##
-## This program is distributed in the hope that it will be
-## useful, but WITHOUT ANY WARRANTY; without even the implied
-## warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-## PURPOSE.  See the GNU General Public License for more
-## details.
+##  RQuantLib is distributed in the hope that it will be useful,
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##  GNU General Public License for more details.
 ##
-## You should have received a copy of the GNU General Public
-## License along with this program; if not, write to the Free
-## Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
-## MA 02111-1307, USA
+##  You should have received a copy of the GNU General Public License
+##  along with RQuantLib.  If not, see <http://www.gnu.org/licenses/>.
 
 EuropeanOption <- function(type, underlying, strike, dividendYield,
                            riskFreeRate, maturity, volatility) {
@@ -27,17 +24,9 @@ EuropeanOption <- function(type, underlying, strike, dividendYield,
 
 EuropeanOption.default <- function(type, underlying, strike, dividendYield,
                                    riskFreeRate, maturity, volatility) {
-
     type <- match.arg(type, c("call", "put"))
-    val <- .Call("EuropeanOption",
-                 list(type=as.character(type),
-                      underlying=as.double(underlying),
-                      strike=as.double(strike),
-                      dividendYield=as.double(dividendYield),
-                      riskFreeRate=as.double(riskFreeRate),
-                      maturity=as.double(maturity),
-                      volatility=as.double(volatility)),
-                 PACKAGE="RQuantLib")
+    val <- europeanOptionEngine(type, underlying, strike, dividendYield,
+                                riskFreeRate, maturity, volatility)
     class(val) <- c("EuropeanOption", "Option")
     val
 }
@@ -55,18 +44,9 @@ AmericanOption.default <- function(type, underlying, strike, dividendYield,
                                    engine="BaroneAdesiWhaley") {
     type <- match.arg(type, c("call", "put"))
     engine <- match.arg(engine, c("BaroneAdesiWhaley", "CrankNicolson"))
-    val <- .Call("AmericanOption",
-                 list(type=as.character(type),
-                      underlying=as.double(underlying),
-                      strike=as.double(strike),
-                      dividendYield=as.double(dividendYield),
-                      riskFreeRate=as.double(riskFreeRate),
-                      maturity=as.double(maturity),
-                      volatility=as.double(volatility),
-                      timeSteps=as.integer(timeSteps),
-                      gridPoints=as.integer(gridPoints),
-                      engine=as.character(engine)),
-                 PACKAGE="RQuantLib")
+    val <- americanOptionEngine(type, underlying, strike, dividendYield,
+                                riskFreeRate, maturity, volatility,
+                                timeSteps, gridPoints, engine)
     class(val) <- c("AmericanOption","Option")
     val
 }
@@ -83,18 +63,9 @@ BinaryOption.default <- function(binType, type, excType, underlying, strike, div
     type <- match.arg(type, c("call", "put"))
     binType <- match.arg(binType, c("cash", "asset", "gap"))
     excType <- match.arg(excType, c("american", "european"))
-    val <- .Call("BinaryOption",
-                 list(binType=as.character(binType),
-                      type=as.character(type),
-                      excType=as.character(excType),
-                      underlying=as.double(underlying),
-                      strike=as.double(strike),
-                      dividendYield=as.double(dividendYield),
-                      riskFreeRate=as.double(riskFreeRate),
-                      maturity=as.double(maturity),
-                      volatility=as.double(volatility),
-                      cashPayoff=as.double(cashPayoff)),
-                 PACKAGE="RQuantLib")
+    val <- binaryOptionEngine(binType, type, excType, underlying,
+                              strike, dividendYield, riskFreeRate,
+                              maturity, volatility, cashPayoff) 
     class(val) <- c("BinaryOption", "Option")
     val
 }
@@ -110,18 +81,8 @@ BarrierOption.default <- function(barrType, type, underlying, strike,
                                   volatility, barrier, rebate=0.0) {
     type <- match.arg(type, c("call", "put"))
     barrType <- match.arg(barrType, c("downin", "upin", "downout", "upout"))
-    val <- .Call("BarrierOption",
-                 list(barrType=as.character(barrType),
-                      type=as.character(type),
-                      underlying=as.double(underlying),
-                      strike=as.double(strike),
-                      dividendYield=as.double(dividendYield),
-                      riskFreeRate=as.double(riskFreeRate),
-                      maturity=as.double(maturity),
-                      volatility=as.double(volatility),
-                      barrier=as.double(barrier),
-                      rebate=as.double(rebate)),
-                 PACKAGE="RQuantLib")
+    val <- barrierOptionEngine(barrType, type, underlying, strike, dividendYield,
+                               riskFreeRate, maturity, volatility, barrier, rebate)
     class(val) <- c("BarrierOption", "Option")
     val
 }

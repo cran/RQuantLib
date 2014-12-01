@@ -1,10 +1,10 @@
 
 import(methods)
-importFrom(Rcpp, Rcpp.plugin.maker)
+importFrom(Rcpp, Rcpp.plugin.maker, sourceCpp)
 
 useDynLib(RQuantLib)
 
-exportPattern("*.default")
+exportPattern("\\.default$")
 
 export(
        ##--arrays.R
@@ -47,6 +47,8 @@ export(
        "dayCount",
        "yearFraction",
        "setEvaluationDate",
+       ##--dates.cpp
+       "advanceDate",
        ##--discount.R
        "DiscountCurve",
        "plot.DiscountCurve",
@@ -59,7 +61,9 @@ export(
        "AmericanOption",
        "AmericanOption.default",
        "BinaryOption",
-       "BarrierOption"
+       "BarrierOption",
+       ##--schedule.R
+       "Schedule"
        )
 
 S3method("plot", "Option")
@@ -69,3 +73,5 @@ S3method("summary", "Option")
 S3method("plot", "Bond")
 S3method("print", "Bond")
 S3method("summary", "Bond")
+
+S3method("print", "FixedRateBond")
