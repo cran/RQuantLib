@@ -1,3 +1,43 @@
+2015-09-10  Dirk Eddelbuettel  <edd@debian.org>
+
+	* NAMESPACE: Added more new S3method declarations
+
+	* R/arrays.R (plotOptionSurface): Use requireNamespace to
+	condition on the optional rgl package
+
+	* README.md: Added badges
+
+2015-07-07  Dirk Eddelbuettel  <edd@debian.org>
+
+	* NAMESPACE: Added more explicit S3method() registrations
+
+2015-02-22  Dirk Eddelbuettel  <edd@debian.org>
+
+	* .travis.yml (install): Now use only r-cran-* binary packages
+
+2015-02-21  Dirk Eddelbuettel  <edd@debian.org>
+
+	* .travis.yml (install): Use more r-cran-* packages from ppa:edd/misc
+
+2015-02-12  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/Makevars.win: Tweak suggested by Jeroen (cf GitHub issue #12)
+
+2015-02-11  Dirk Eddelbuettel  <edd@debian.org>
+
+	* .travis.yml (install): Switch to using ppa:edd/misc for QuantLib debs
+
+2014-12-03  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Bump dev version, add Suggests: shiny
+
+	* .travis.yml: Add shiny as Suggests: are needed by R CMD check
+
+	* inst/shiny/DiscountCurve/ui.R: UI part of simple shiny app
+	* inst/shiny/DiscountCurve/server.R: Server part of shiny app
+
+	* demo/ShinyDiscountCurves.R: New demo() wrapper for shiny app
+
 2014-12-01  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: Release 0.4.0

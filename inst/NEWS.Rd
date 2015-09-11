@@ -2,6 +2,23 @@
 \title{News for Package 'RQuantLib'}
 \newcommand{\cpkg}{\href{http://CRAN.R-project.org/package=#1}{\pkg{#1}}}
 
+\section{Changes in RQuantLib version 0.4.1 (2015-09-11)}{
+  \itemize{
+    \item Changes in RQuantLib code:
+    \itemize{
+      \item A simple \cpkg{shiny} application is now included in the
+      directory \code{shiny/DiscountCurve/} and accessible via the new
+      demo function \code{ShinyDiscountCurve}.
+      \item The option surface plotting example in \code{arrays.R} now
+      checks for \cpkg{rgl} by using \code{requireNamespace}.
+      \item The files \code{NAMESPACE} and \code{DESCRIPTION} have been
+      updated to reflect all the suggestions of \code{R CMD check}.
+      \item The Travis CI tests now use binary Debian packages for all
+      package dependencies making the tests a little faster.
+    }
+  }
+}
+
 \section{Changes in RQuantLib version 0.4.0 (2014-12-01)}{
   \itemize{
     \item Changes in RQuantLib code:
@@ -29,6 +46,8 @@
       \item The \code{DiscountCurve} and \code{Bond} curve construction
       has been fixed via a corrected evaluation date and omitted the
       two-year swap rate, as suggested by Luigi Ballabio.
+      \item The \code{NAMESPACE} file has a tighter rule for export of
+      \code{*.default} functions, as suggested by Bill Dunlap
       \item Builds now use OpenMP where available.
       \item The package now depends on QuantLib 1.4.0 or later.
     }
@@ -45,8 +64,6 @@
     \itemize{
       \item This NEWS file has been added. Better late than never, as
       they say.
-      \item The \code{NAMESPACE} file has a tighter rule for export of
-      \code{*.default} functions, as suggested by Bill Dunlap
     }
   }
 }

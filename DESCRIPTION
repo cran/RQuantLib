@@ -1,16 +1,16 @@
 Package: RQuantLib
-Title: R Interface to the QuantLib Library
-Version: 0.4.0
-Date: 2014-12-01
+Title: R Interface to the 'QuantLib' Library
+Version: 0.4.1
+Date: 2015-09-11
 Maintainer: Dirk Eddelbuettel <edd@debian.org>
 Author: Dirk Eddelbuettel, Khanh Nguyen (during 2009-2010)
-Description: The RQuantLib package makes parts of QuantLib accessible from R
- The QuantLib project aims to provide a comprehensive software framework for
+Description: The 'RQuantLib' package makes parts of 'QuantLib' accessible from R
+ The 'QuantLib' project aims to provide a comprehensive software framework for
  quantitative finance. The goal is to provide a standard open source library
  for quantitative analysis, modeling, trading, and risk management of
  financial assets.
 Depends: R (>= 2.10.0)
-Suggests: rgl, zoo, RUnit
+Suggests: rgl, zoo, RUnit, shiny
 Imports: methods, Rcpp (>= 0.11.0)
 LinkingTo: Rcpp
 SystemRequirements: QuantLib library (>= 1.4.0) from
@@ -18,7 +18,7 @@ SystemRequirements: QuantLib library (>= 1.4.0) from
 License: GPL (>= 2)
 URL: http://quantlib.org
         http://dirk.eddelbuettel.com/code/rquantlib.html
-Packaged: 2014-12-01 12:10:25.68506 UTC; edd
 NeedsCompilation: yes
+Packaged: 2015-09-11 11:28:40.155233 UTC; edd
 Repository: CRAN
-Date/Publication: 2014-12-02 12:18:45
+Date/Publication: 2015-09-11 16:38:09
