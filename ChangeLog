@@ -1,3 +1,59 @@
+2015-12-03  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Release 0.4.2
+
+	* configure.ac: Mark as 0.4.2
+	* configure: Rebuilt
+
+2015-12-02  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/zzz.R (.onAttach): Add detection of QuantLib version and
+	intra-day capability and warn via startup message (if not interactive)
+
+2015-11-30  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/implieds.cpp: Use intra-day time calculation if available with
+	QuantLib (>= 1.7) has been compiled for it
+
+	* .travis.yml: Switch to using Ubuntu 14.04 aka 'trusty'; switch to
+	my copy of r-travis to use 'apt-get install -y'; run without travis_wait
+
+2015-11-29  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/utils.cpp: New helper functions getQuantLibVersion() and
+	getQuantLibCapabilties() which reports configuration options
+
+	* man/getQuantLibVersion.Rd: New manual page (via roxygen2)
+	* man/getQuantLibCapabilities.Rd: Idem
+
+2015-11-28  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/asian.cpp: Use intra-day time calculation if available with
+	QuantLib (>= 1.7) has been compiled for it
+	* src/barrier_binary.cpp: Idem
+
+2015-11-26  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (Version): Roll Date and Version
+
+	* src/vanilla.cpp: Use intra-day time calculation if available with
+	QuantLib (>= 1.7) has been compiled for it
+
+	* man/BondUtilities.Rd: Add 'Monthly' to documentation
+
+	* .travis.yml: Wrapped in 'travis_wait' to avoid timeout
+
+	* tests/doRUnit.R: Updated
+
+2015-10-29  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/bond.R: Add missing parameter 'Monthly' to freq arguments in
+	function matchFrequency() (issue ticket #19)
+
+2015-09-11  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Release 0.4.1
+
 2015-09-10  Dirk Eddelbuettel  <edd@debian.org>
 
 	* NAMESPACE: Added more new S3method declarations
@@ -8,6 +64,9 @@
 	* README.md: Added badges
 
 2015-07-07  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/arrays.R (plotOptionSurface): Change from require() to the
+	now-preferred requireNamespace()
 
 	* NAMESPACE: Added more explicit S3method() registrations
 
