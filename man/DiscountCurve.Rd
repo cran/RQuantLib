@@ -13,7 +13,7 @@
   as input.
 }
 \usage{
-DiscountCurve(params, tsQuotes, times)
+DiscountCurve(params, tsQuotes, times, legparams)
 }
 \arguments{
   \item{params}{A list specifying the \code{tradeDate} (month/day/year),
@@ -38,11 +38,25 @@ DiscountCurve(params, tsQuotes, times)
       \code{d1y}  \tab 1-year deposit rate\cr
       \code{s2y}  \tab 2-year swap rate\cr
       \code{s3y}  \tab 3-year swap rate\cr
+      \code{s4y}  \tab 4-year swap rate\cr
       \code{s5y}  \tab 5-year swap rate\cr
+      \code{s6y}  \tab 6-year swap rate\cr
+      \code{s7y}  \tab 7-year swap rate\cr
+      \code{s8y}  \tab 8-year swap rate\cr
+      \code{s9y}  \tab 9-year swap rate\cr
       \code{s10y} \tab 10-year swap rate\cr
+      \code{s12y} \tab 12-year swap rate\cr
       \code{s15y} \tab 15-year swap rate\cr
       \code{s20y} \tab 20-year swap rate\cr
+      \code{s25y}  \tab 25-year swap rate\cr
       \code{s30y} \tab 30-year swap rate\cr
+      \code{s40y} \tab 40-year swap rate\cr
+      \code{s50y} \tab 50-year swap rate\cr
+      \code{s60y} \tab 60-year swap rate\cr
+      \code{s70y} \tab 70-year swap rate\cr
+      \code{s80y} \tab 80-year swap rate\cr
+      \code{s90y} \tab 90-year swap rate\cr
+      \code{s100y} \tab 100-year swap rate\cr
       \code{fut1}--\code{fut8} \tab 3-month futures contracts\cr
       \code{fra3x6} \tab 3x6 FRA\cr
       \code{fra6x9} \tab 6x9 FRA\cr
@@ -59,6 +73,11 @@ DiscountCurve(params, tsQuotes, times)
     that the largest time plus \code{dt} does not exceed the longest
     maturity of the instruments used for calibration (no extrapolation).
     }
+  \item{legparams}{A list specifying the \code{dayCounter} the day count convention for the 
+   fixed leg (default is Thirty360), and  \code{fixFreq}, fixed coupon frequecny (defualt is Annual), \code{floatFreq}, 
+   floating leg reset frequency (default is Semiannual).
+  }
+
 }
 \value{
   \code{DiscountCurve} returns a list containing:

@@ -540,7 +540,7 @@ matchDayCounter <- function(daycounter = c("Actual360", "ActualFixed", "ActualAc
 
 matchBDC <- function(bdc = c("Following", "ModifiedFollowing",
                              "Preceding", "ModifiedPreceding",
-                             "Unadjusted")) {
+                             "Unadjusted", "HalfMonthModifiedFollowing", "Nearest")) {
      if (!is.numeric(bdc)){
          bdc <- match.arg(bdc)
          bdc <- switch(bdc,
@@ -548,7 +548,9 @@ matchBDC <- function(bdc = c("Following", "ModifiedFollowing",
                        ModifiedFollowing = 1,
                        Preceding = 2,
                        ModifiedPreceding = 3,
-                       Unadjusted = 4)
+                       Unadjusted = 4,
+                       HalfMonthModifiedFollowing = 5,
+                       Nearest = 6)
      }
      bdc
 }
@@ -571,25 +573,42 @@ matchFrequency <- function(freq = c("NoFrequency","Once", "Annual",
                                     "EveryFourthWeek", "Biweekly",
                                     "Weekly", "Daily")) {
     if (!is.numeric(freq)){
-       freq <- match.arg(freq)
-       freq <- switch(freq,
-                      NoFrequency = -1, Once = 0, Annual = 1,
-                      Semiannual = 2, EveryFourthMonth = 3,
-                      Quarterly = 4, Bimonthly = 6,
-                      Monthly = 12, EveryFourthWeek = 13,
-                      Biweekly = 26, Weekly = 52, Daily = 365)
+        freq <- match.arg(freq)
+        freq <- switch(freq,
+                       NoFrequency = -1, Once = 0, Annual = 1,
+                       Semiannual = 2, EveryFourthMonth = 3,
+                       Quarterly = 4, Bimonthly = 6,
+                       Monthly = 12, EveryFourthWeek = 13,
+                       Biweekly = 26, Weekly = 52, Daily = 365)
     }
     freq
 }
+
+
+
+matchFloatFrequency <- function(freq = c( "Annual",
+                                    "Semiannual", "EveryFourthMonth",
+                                    "Quarterly", "Bimonthly", "Monthly")) {
+    if (!is.numeric(freq)){
+       freq <- match.arg(freq)
+       freq <- switch(freq,
+                      Annual = 12,
+                      Semiannual = 6, EveryFourthMonth = 4,
+                      Quarterly = 3, Bimonthly = 2,
+                      Monthly = 1)
+    }
+    freq
+}
+
 matchDateGen <- function(dg = c("Backward", "Forward", "Zero",
                                 "ThirdWednesday", "Twentieth",
-                                "TwentiethIMM")){
+                                "TwentiethIMM", "OldCDS", "CDS")){
    if (!is.numeric(dg)){
       dg <- match.arg(dg)
       dg <- switch(dg,
                    Backward = 0, Forward = 1,
                    Zero = 2, ThirdWednesday = 3,
-                   Twentieth = 4, TwentiethIMM = 5)
+                   Twentieth = 4, TwentiethIMM = 5, OldCDS=6, CDS=7)
    }
    dg
 }
@@ -621,6 +640,13 @@ matchParams <- function(params) {
     if (!is.null(params$freq)) {
       params$freq <- matchFrequency(params$freq)
     }
+    if (!is.null(params$fixFreq)) {
+        params$fixFreq <- matchFrequency(params$fixFreq)
+    }
+    if (!is.null(params$floatFreq)) {
+        params$floatFreq <- matchFloatFrequency(params$floatFreq)
+    }
+    
     if (!is.null(params$businessDayConvention)) {
         params$businessDayConvention <- matchBDC(params$businessDayConvention)
     }

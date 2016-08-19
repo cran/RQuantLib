@@ -1,4 +1,4 @@
-## RQuantLib  [![Build Status](https://travis-ci.org/eddelbuettel/rquantlib.svg)](https://travis-ci.org/eddelbuettel/rquantlib) [![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html) [![CRAN](http://www.r-pkg.org/badges/version/RQuantLib)](http://cran.rstudio.com/package=RQuantLib) [![Downloads](http://cranlogs.r-pkg.org/badges/RQuantLib?color=brightgreen)](http://www.r-pkg.org/pkg/RQuantLib)
+## RQuantLib  [![Build Status](https://travis-ci.org/eddelbuettel/rquantlib.svg)](https://travis-ci.org/eddelbuettel/rquantlib) [![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html) [![CRAN](http://www.r-pkg.org/badges/version/RQuantLib)](http://cran.r-project.org/package=RQuantLib) [![Downloads](http://cranlogs.r-pkg.org/badges/RQuantLib?color=brightgreen)](http://www.r-pkg.org/pkg/RQuantLib)
 
 ### About
 
@@ -13,6 +13,12 @@ The QuantLib project aims to provide a comprehensive software framework for
 quantitative finance. The goal is to provide a standard open source library
 for quantitative analysis, modeling, trading, and risk management of
 financial assets.
+
+### Status
+
+The package is actively maintained, and is still being
+extended. Contributions are welcome, and initial discussions via
+[GitHub issue tickets](https://github.com/eddelbuettel/rquantlib/issues) are encouraged.
 
 ### Authors
 

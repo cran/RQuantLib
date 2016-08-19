@@ -1,3 +1,122 @@
+2016-08-19  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (Version): Release 0.4.3
+
+	* DESCRIPTION (OS_type): Set to 'OS_type: unix' as CRAN has not
+	installed an updated QuantLib library despite repeated emailed offers
+	offer several months.  A Windows binary will be provided.
+
+	* configure.ac: Mark as 0.4.3
+	* configure: Rebuilt
+
+2016-08-12  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/inline.R (.onLoad): Check for quantlib-config before using it
+
+2016-08-04  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION: Roll minor version
+
+	* data/tsQuotes.RData: More explicit name and loading
+	* data/vcube.Rdata: Idem
+
+	* R/datasets.R: Dataset documentation
+	* man/tsQuotes.Rd: Idem
+	* man/vcube.Rdata: Idem
+
+	* .travis.yml: Switch to using run.sh for Travis CI
+
+2016-07-20  Terry Leitch  <tleitch1@jhu.edu>
+
+	* R/sabr.R: New function for SABR swaption model
+	* src/sabr.cpp: C++ implementation for SABR model
+
+	* inst/shiny/SabrSwaption/*: Shiny application for SABR model
+
+	* data/rqlib.RData: Sample data
+
+2016-05-29  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (Version): Increased patch version and Date
+
+	* .travis.yml: Minor edits
+
+2016-05-27  Guillaume Horel  <guillaume.horel@serenitascapital.com>
+
+	* inst/unitTests/runit.businessdayconvention.R: New tests
+	* inst/unitTests/runit.schedule.R: Small cleanup
+
+2016-05-19  Guillaume Horel  <guillaume.horel@serenitascapital.com>
+
+	* src/curves.cpp: Added extra swap tenors
+	* man/DiscountCurve.Rd: Idem
+
+2016-05-19  Terry Leitch  <tleitch1@jhu.edu>
+
+	* src/curve.cpp: Added swap tenors from 40-100 years to curve build
+	* src/discount.cpp: Increased max date from 2099 to 2150
+	* man/DiscountCurve.Rd: Updated doc to reflect new tenor choices
+
+2016-05-12  Dirk Eddelbuettel  <edd@debian.org>
+
+	* .travis.yml (script): Turn travis_wait back on
+
+2016-05-09  Terry Leitch  <tleitch1@jhu.edu>
+
+	* NAMESPACE: Updated to refelct new methods for affine swaption
+
+	* R/affine.R: New generic swaption model based on bermudan affine
+	model
+	* src/affine.cpp: New engine for affine swaption model
+	* man/AffineSwaption.Rd: created
+
+	* R/bermudan.R: Swaption model modified to take more general
+	tenor & expiration dates and curve input
+	* src/bermudan.cpp: Swaptions for fit selection & yield curve fit
+	moved up into bermudan.R
+	* man/BermudanSwaption.Rd: Modified to reflect DiscountCurve
+	option and example updated
+
+2016-04-02  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/zzz.R: Correct version comparison check
+
+2016-03-26  Dirk Eddelbuettel  <edd@debian.org>
+
+	* Contributing.md: New files
+
+2016-03-25  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/discount.R: Minor edits and cleanups
+	* src/discount.cpp: Idem
+	* man/DiscountCurve.Rd: Minor correction
+
+2016-03-28  Terry Leitch  <tleitch1@jhu.edu>
+
+	* R/bond.R: Added converters for float frequencies
+	* R/discount.R: nUse float frequency textual descriptions, pass float
+	and fixed as one new combined parameter for swap legs
+	* src/bermudan.cpp: Use new parameter setting
+	* R/bermudan.R: Support old default values
+
+2016-03-19  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/discount.R: Restored standard indentation style, untabified
+	* inst/include/rquantlib_internal.h: Idem
+	* src/discount.cpp: Idem
+	* src/curves.cpp: Idem
+	* man/DiscountCurve.Rd: Idem, corrected parameter naming
+
+	* README.md: Use canonical CRAN URL to please R-devel CMD check
+
+2016-03-17  Terry Leitch  <tleitch1@jhu.edu>
+
+	* R/discount.R: Support arguments for day counter, frequency and
+	floating frequency to enable more flexible curve building
+	* inst/include/rquantlib_internal.h: Idem
+	* src/discount.cpp: Idem
+	* src/curves.cpp: Idem; new getRateHelper() function
+
 2015-12-03  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION: Release 0.4.2

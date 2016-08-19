@@ -1,7 +1,7 @@
 ##  RQuantLib function DiscountCurve
 ##
 ##  Copyright (C) 2005         Dominick Samperi
-##  Copyright (C) 2007 - 2014  Dirk Eddelbuettel
+##  Copyright (C) 2007 - 2016  Dirk Eddelbuettel
 ##  Copyright (C) 2009 - 2010  Dirk Eddelbuettel and Khanh Nguyen
 ##
 ##  This file is part of RQuantLib.
@@ -19,17 +19,22 @@
 ##  You should have received a copy of the GNU General Public License
 ##  along with RQuantLib.  If not, see <http://www.gnu.org/licenses/>.
 
-DiscountCurve <- function(params, tsQuotes, times=seq(0,10,.1)) {
+DiscountCurve <- function(params, tsQuotes, times=seq(0,10,.1),
+                          legparams=list(dayCounter="Thirty360",
+                                         fixFreq="Annual",
+                                         floatFreq="Semiannual")) {
     UseMethod("DiscountCurve")
 }
 
-DiscountCurve.default <- function(params, tsQuotes, times=seq(0,10,.1)) {
-
+DiscountCurve.default <- function(params, tsQuotes, times=seq(0,10,.1),
+                                  legparams=list(dayCounter="Thirty360",
+                                                 fixFreq="Annual",
+                                                 floatFreq="Semiannual")) {
     ## Check that params is properly formatted.
     if (!is.list(params) || length(params) == 0) {
         stop("The params parameter must be a non-empty list", call.=FALSE)
     }
-
+  
     ## Check that the term structure quotes are properly formatted.
     if (!is.list(tsQuotes) || length(tsQuotes) == 0) {
         stop("Term structure quotes must be a non-empty list", call.=FALSE)
@@ -40,16 +45,18 @@ DiscountCurve.default <- function(params, tsQuotes, times=seq(0,10,.1)) {
     if (!is.numeric(unlist(tsQuotes))) {
         stop("Term structure quotes must have numeric values", call.=FALSE)
     }
-
+  
     ## Check the times vector
     if (!is.numeric(times) || length(times) == 0) {
         stop("The times parameter must be a non-emptry numeric vector", call.=FALSE)
     }
-
+  
     ## Finally ready to make the call...
-    #val <- .Call("DiscountCurve", params, tsQuotes, times, PACKAGE="RQuantLib")
-    val <- discountCurveEngine(params, tsQuotes, times)
-
+    ##val <- .Call("DiscountCurve", params, tsQuotes, times, PACKAGE="RQuantLib")
+    matchlegs<-matchParams(legparams)
+    ##val <- discountCurveEngine(params, tsQuotes, times,matchCpnmonthFreq=as.integer(monthFreq))
+    val <- discountCurveEngine(params, tsQuotes, times,matchlegs)
+  
     val[["table"]] <- as.data.frame(val[["table"]])  ## Windows all of a sudden needs this
     class(val) <- c("DiscountCurve")
     val
