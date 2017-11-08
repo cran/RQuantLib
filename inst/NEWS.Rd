@@ -1,7 +1,26 @@
 \name{NEWS}
-\title{News for Package 'RQuantLib'}
+\title{News for Package \pkg{RQuantLib}}
 \newcommand{\ghpr}{\href{https://github.com/eddelbuettel/rquantlib/pull/#1}{##1}}
 \newcommand{\ghit}{\href{https://github.com/eddelbuettel/rquantlib/issues/#1}{##1}}
+
+\section{Changes in RQuantLib version 0.4.4 (2016-xx-xx)}{
+  \itemize{
+    \item Changes in RQuantLib code:
+    \itemize{
+      \item Equity options can now be analyzed via discrete dividends
+      through two vectors of dividend dates and values (Francois
+      Cocquemas in \ghpr{73} fixing \ghit{72})
+      \item Some package and dependency information was updated in files
+      \code{DESCRIPTION} and \code{NAMESPACE}.
+      \item The new \code{Date(time)Vector} classes introduced with Rcpp
+      0.12.8 are now used when available.
+      \item Minor corrections were applied to \code{BKTree}, to vanilla
+      options for the case of intraday time stamps, to the
+      \code{SabrSwaption} documentation, and to bond utilities for the
+      most recent QuantLib release.
+    }
+  }
+}
 
 \section{Changes in RQuantLib version 0.4.3 (2016-08-19)}{
   \itemize{
@@ -27,7 +46,7 @@
       swaption, but does not take rate market quotes to build a term
       structure and a DiscountCurve object is required (Terry Leitch in
       \ghpr{43}).
-g      \item Swap tenors can now be defined up to 100 years (Terry Leitch
+      \item Swap tenors can now be defined up to 100 years (Terry Leitch
       in \ghpr{48} fising issue \ghit{46}).
       \item Additional (shorter term) swap tenors are now defined
       (Guillaume Horel in \ghpr{49}, \ghpr{54}, \ghpr{55}).

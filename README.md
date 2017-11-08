@@ -1,4 +1,4 @@
-## RQuantLib  [![Build Status](https://travis-ci.org/eddelbuettel/rquantlib.svg)](https://travis-ci.org/eddelbuettel/rquantlib) [![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html) [![CRAN](http://www.r-pkg.org/badges/version/RQuantLib)](http://cran.r-project.org/package=RQuantLib) [![Downloads](http://cranlogs.r-pkg.org/badges/RQuantLib?color=brightgreen)](http://www.r-pkg.org/pkg/RQuantLib)
+## RQuantLib  [![Build Status](https://travis-ci.org/eddelbuettel/rquantlib.svg)](https://travis-ci.org/eddelbuettel/rquantlib) [![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html) [![CRAN](http://www.r-pkg.org/badges/version/RQuantLib)](https://cran.r-project.org/package=RQuantLib) [![Downloads](http://cranlogs.r-pkg.org/badges/RQuantLib?color=brightgreen)](http://www.r-pkg.org/pkg/RQuantLib)
 
 ### About
 
@@ -18,11 +18,33 @@ financial assets.
 
 The package is actively maintained, and is still being
 extended. Contributions are welcome, and initial discussions via
-[GitHub issue tickets](https://github.com/eddelbuettel/rquantlib/issues) are encouraged.
+[GitHub issue tickets](https://github.com/eddelbuettel/rquantlib/issues)
+are encouraged as suggested in the
+[Contributing guide](https://github.com/eddelbuettel/rquantlib/blob/master/Contributing.md).
+
+### Installation 
+
+#### From Source
+
+The package is on [CRAN](https://cran.r-project.org) and can be installed _from source_ as usual:
+
+```{r}
+install.packages("RQuantLib")
+```
+
+#### Windows Binaries
+
+Starting with release 0.4.3, binaries may be provided via the [ghrr drat repo](http://ghrr.github.io/drat)
+and can be installed as
+
+```{r}
+drat::addRepo("ghrr")       #  maybe use 'install.packages("drat")' first 
+install.packages("RQuantLib", type="binary")
+```
 
 ### Authors
 
-Dirk Eddelbuettel and Khanh Nguyen (during 2009-2010)
+Dirk Eddelbuettel, Khanh Nguyen (during 2009-2010) and Terry Leitch (since 2016)
 
 ### License
 
