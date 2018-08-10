@@ -17,7 +17,8 @@
  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  FOR A PARTICULAR PURPOSE.  See the license for more details.
  */
-#include "rquantlib.h"
+
+#include <rquantlib_internal.h>
 
 using namespace QuantLib;
 //using namespace boost::unit_test_framework;
@@ -176,7 +177,7 @@ Rcpp::List sabrengine(Rcpp::List rparam,
                       Rcpp::NumericVector strikes,
                       Rcpp::NumericMatrix smirkVols){
 
-    QuantLib::Date todaysDate(Rcpp::as<QuantLib::Date>(rparam["tradeDate"])); 
+    QuantLib::Date tradeDate(Rcpp::as<QuantLib::Date>(rparam["tradeDate"])); 
     QuantLib::Date settlementDate(Rcpp::as<QuantLib::Date>(rparam["settleDate"])); 
     QuantLib::Date startDate(Rcpp::as<QuantLib::Date>(rparam["startDate"])); 
     QuantLib::Date expiryDate(Rcpp::as<QuantLib::Date>(rparam["expiryDate"])); 
@@ -187,12 +188,9 @@ Rcpp::List sabrengine(Rcpp::List rparam,
     double fixFreq   = Rcpp::as<double>(legParams["fixFreq"]) ;
     int floatFreq = Rcpp::as<int>(legParams["floatFreq"]);   
   
-    const Real tol1 = 0.0001; // 1bp tolerance for model engine call put premia
-
     // BOOST_TEST_MESSAGE("Testing Markov functional vanilla engines...");
   
-    Date savedEvalDate = Settings::instance().evaluationDate();
-    Settings::instance().evaluationDate() = todaysDate;
+    Settings::instance().evaluationDate() = tradeDate;
   
     QuantLib::Handle<QuantLib::YieldTermStructure> yldCrv(rebuildCurveFromZeroRates(dateVec, zeroVec));
   

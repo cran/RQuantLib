@@ -2,9 +2,9 @@
 //
 //  RQuantLib function AffineSwaption
 //
-//  Copyright (C) 2005 - 2007 Dominick Samperi
-//  Copyright (C) 2007 - 2014 Dirk Eddelbuettel
-//  Copyright (C) 2016        Terry Leitch
+//  Copyright (C) 2005 - 2007  Dominick Samperi
+//  Copyright (C) 2007 - 2018  Dirk Eddelbuettel
+//  Copyright (C) 2016         Terry Leitch
 //
 //  This file is part of RQuantLib.
 //
@@ -21,7 +21,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with RQuantLib.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "rquantlib.h"
+#include <rquantlib_internal.h>
 
 // Calibrates underlying swaptions to the input volatility matrix.
 void calibrateModel2(const boost::shared_ptr<QuantLib::ShortRateModel>& model,
@@ -100,7 +100,6 @@ Rcpp::List affineWithRebuiltCurveEngine(Rcpp::List rparam,
     QuantLib::Frequency fixedLegFrequency = getFrequency(Rcpp::as<double>(legparams["fixFreq"]));
     QuantLib::BusinessDayConvention fixedLegConvention = QuantLib::Unadjusted;
     QuantLib::BusinessDayConvention floatingLegConvention = QuantLib::ModifiedFollowing;
-    double fixDayCount = Rcpp::as<double>(legparams["dayCounter"]);
     QuantLib::DayCounter swFixedLegDayCounter = getDayCounter(Rcpp::as<double>(legparams["dayCounter"]));
     boost::shared_ptr<QuantLib::IborIndex> swFloatingLegIndex(new QuantLib::Euribor(QuantLib::Period(Rcpp::as<int>(legparams["floatFreq"]),QuantLib::Months),rhTermStructure));
 

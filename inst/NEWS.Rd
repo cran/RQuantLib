@@ -3,7 +3,29 @@
 \newcommand{\ghpr}{\href{https://github.com/eddelbuettel/rquantlib/pull/#1}{##1}}
 \newcommand{\ghit}{\href{https://github.com/eddelbuettel/rquantlib/issues/#1}{##1}}
 
-\section{Changes in RQuantLib version 0.4.4 (2016-xx-xx)}{
+\section{Changes in RQuantLib version 0.4.5 (2018-08-10)}{
+  \itemize{
+    \item Changes in RQuantLib code:
+    \itemize{
+      \item The old \code{rquantlib.h} header is deprecated and moved to
+      a subdirectory. (Some OS confuse it with \code{RQuantLib.h} which
+      Rcpp Attributes like to be the same name as the package.)
+      (Dirk in \ghpr{100} addressing \ghit{99}).
+      \item The files in \code{src/} now include
+      \code{rquantlib_internal.h} directly.
+      \item Several \sQuote{unused variable} warnings have been taken
+      care of.
+      \item The Windows build has been updated, and now uses an external
+      QuantLib library from 'rwinlib' (Jeroen Ooms in \ghpr{105}).
+      \item Three curve-building example are no longer running by
+      default as win32 has seen some numerical issues.
+      \item Two \code{Rcpp::compileAttributes} generated files have been
+      updated. 
+    }
+  }
+}
+
+\section{Changes in RQuantLib version 0.4.4 (2017-11-07)}{
   \itemize{
     \item Changes in RQuantLib code:
     \itemize{
