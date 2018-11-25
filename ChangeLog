@@ -1,3 +1,85 @@
+2018-11-25  Dirk Eddelbuettel  <edd@debian.org>
+
+        * DESCRIPTION (Version, Date): New release 0.4.6
+
+2018-11-22  Dirk Eddelbuettel  <edd@debian.org>
+
+	* configure.ac: Test for QuantLib 1.14
+	* configure: Idem
+
+	* tools/winlibs.R: Updated for QL 1.14 build by Josh
+
+	* man/Bond.Rd: Do not run examples to avoid Windows issue
+	* man/FixedRateBond.Rd: Idem
+	* man/FloaringRateBond.Rd: Idem
+	* man/SabrSwaption.Rd: Idem
+	* man/ZeroCouponBond.Rd: Idem
+
+	* tests/RQuantLib.R: Test for Windows, only run a portion of tests
+	* tests/doRUnit.R: Test for Windows
+
+	* src/Makevars.win: Set -Wno-deprecated-declarations options to
+	make the build less noisy
+
+2018-11-20  Dirk Eddelbuettel  <edd@debian.org>
+
+	* man/Bond.Rd: Example now uses dayCounter not accrualDayCounter
+	* man/FixedRateBond.Rd: Idem
+	* tests/RQuantLib.R: Idem
+	* tests/RQuantLib.Rout.save: Idem
+
+2018-11-11  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/Makevars.in (PKG_CXXFLAGS): No longer need the opt-in for
+	-DRCPP_NEW_DATE_DATETIME_VECTORS which is now on by default
+
+2018-10-28  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (Version, Date): Roll minor version
+
+	* src/asian.cpp: Patch fron Debian #911957 to support Boost 1.67
+	* src/barrier_binary.cpp: Idem
+	* src/implieds.cpp: Idem
+	* src/vanilla.cpp: Idem
+
+	* src/affine.cpp: Use BlackCalibrationHelper not CalibrationHelper
+	* src/bermudan.cpp: Idem
+	* src/hullwhite.cpp: Idem
+
+	* docker/ci/Dockerfile: Moved from ../Dockerfile
+	* docker/run/Dockerfile: Added, providing run-time
+
+	* .travis.yml: Use rquantlib/ci for Travis CI
+
+2018-08-26  Dirk Eddelbuettel  <edd@debian.org>
+
+	* .travis.yml: Remove unneeded compiler and language tags
+
+2018-08-22  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (Version, Date): Roll minor version
+
+	* src/calendars.cpp (addHolidays, removeHolidays): New functions
+	* man/Calendars.Rd: Added documentation
+
+2018-08-16  Dirk Eddelbuettel  <edd@debian.org>
+
+	* .travis.yml: Prettification for Travis file
+
+2018-08-14  Dirk Eddelbuettel  <edd@debian.org>
+
+	* docker/Dockerfile: Add Dockerfile to create test container
+
+	* .travis.yml: Adapted to use Docker container
+
+2018-08-13  Dirk Eddelbuettel  <edd@debian.org>
+
+	* .travis.yml: Try 20 minute timeout parameter
+
+2018-08-11  Dirk Eddelbuettel  <edd@debian.org>
+
+	* README.md: Updated to mention renewed Windows support
+
 2018-08-10  Dirk Eddelbuettel  <edd@debian.org>
 
         * DESCRIPTION (Version, Date): New release 0.4.5
