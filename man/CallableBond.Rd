@@ -1,4 +1,3 @@
-% $Id: CallableBond.Rd 87 2009-06-09 16:48:13Z knguyen $
 \name{CallableBond}
 \alias{CallableBond}
 \alias{CallableBond.default}
@@ -86,8 +85,7 @@
   stabilises its own API.}
 \examples{
 #set-up a HullWhite according to example from QuantLib
-HullWhite <- list(term = 0.055, alpha = 0.03, sigma = 0.01,
-                  gridIntervals = 40)
+HullWhite <- list(term = 0.055, alpha = 0.03, sigma = 0.01, gridIntervals = 40)
 
 #callability schedule dataframe
 Price <- rep(as.double(100),24)
@@ -105,20 +103,18 @@ dateparams <- list(settlementDays=3, calendar="UnitedStates/GovernmentBond",
                    businessDayConvention = "Unadjusted", 
                    terminationDateConvention= "Unadjusted")
 coupon <- c(0.0465)
+setEvaluationDate(as.Date("2004-11-22"))
 
 CallableBond(bondparams, HullWhite, coupon, dateparams)
 #examples using default values
 CallableBond(bondparams, HullWhite, coupon)
-dateparams <- list(                   
-                   period="Quarterly", 
+dateparams <- list(period="Quarterly", 
                    businessDayConvention = "Unadjusted", 
                    terminationDateConvention= "Unadjusted")
 CallableBond(bondparams, HullWhite, coupon, dateparams)
 
-
 bondparams <- list(issueDate = as.Date("2004-09-16"),
-                   maturityDate=as.Date("2012-09-16")
-                   )
+                   maturityDate=as.Date("2012-09-16"))
 CallableBond(bondparams, HullWhite, coupon, dateparams)
 }
 \keyword{misc}
