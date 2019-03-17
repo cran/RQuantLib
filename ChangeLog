@@ -1,3 +1,55 @@
+2019-03-17  Dirk Eddelbuettel  <edd@debian.org>
+
+        * DESCRIPTION (Version, Date): New release 0.4.8
+
+        * configure.ac: Mark as 0.4.8
+        * configure: Rebuilt
+
+
+2019-03-16  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/calendars.cpp: Use QuantLib::ext for shared_ptr
+        * src/curves.cpp: Idem
+        * src/discount.cpp: Idem
+        * src/hullwhite.cpp: Idem
+        * src/implieds.cpp: Idem
+        * src/sabr.cpp: Idem
+        * src/schedule.cpp: Idem
+        * src/utils.cpp: Idem
+        * src/vanilla.cpp: Idem
+        * src/zero.cpp: Idem
+
+	* src/*: Removed Emacs formatting header line
+	* inst/include/*: Idem
+	* .editorconfig: Added to provide consistent settings
+
+	* .Rbuildignore: Exclude .editorconfig
+
+2019-03-15  Dirk Eddelbuettel  <edd@debian.org>
+
+	* inst/include/rquantlib_internal.h: Include ql/shared_ptr.hpp>
+
+	* src/affine.cpp: Use QuantLib::ext namespace for shared_ptr
+        * src/asian.cpp: Idem
+        * src/barrier_binary.cpp: Idem
+        * src/bermudan.cpp: Idem
+        * src/bonds.cpp: Idem
+
+2019-03-14  Dirk Eddelbuettel  <edd@debian.org>
+
+	* configure.ac: Correct use of AC_DEFUN (leaves configure unaffected)
+
+2019-01-12  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (Version, Date): New minor version
+
+	* R/arrays.R (plotOptionSurface): Call to utils::globalVariables()
+	now outside function where it triggered locked namespace error
+
+2018-12-24  Dirk Eddelbuettel  <edd@debian.org>
+
+	* README.md: Updates to README.me
+
 2018-12-10  Dirk Eddelbuettel  <edd@debian.org>
 
         * DESCRIPTION (Version, Date): New release 0.4.7
@@ -1329,7 +1381,7 @@
 	  - FDEuropeanEngine now needs a template argument for the scheme,
  	    current default is CrankNicholson
 	  - NULL_RateHelper construct no longer works, so we test the return
-	    from getRateHelper() via ptr.get() == NULL 
+	    from getRateHelper() via ptr.get() == NULL
 
 2009-10-16  Dirk Eddelbuettel  <edd@debian.org>
 
