@@ -1,5 +1,5 @@
-0a030bf9d3dbffb26c77ecbc9d85f5b6 *ChangeLog
-7a30510182e3a8687cd120e7356ea1e1 *DESCRIPTION
+253561e358af87fac0aeca4f2ef83837 *ChangeLog
+59f44e0026a9c84939a73be56f1a3493 *DESCRIPTION
 fd4e5b0b9cfeda5b3034514d07deb7b1 *NAMESPACE
 e20f180d3c8fa6c4b96362a509edfaab *R/RcppExports.R
 5d5efe9f5ae1dda7ab086f659ec05ddf *R/affine.R
@@ -22,15 +22,15 @@ e5e032ec328e9cf3fa3a5b870478b378 *R/unitTest.R
 288f6267f18f8b1f59cd0888fcadced7 *R/zzz.R
 b30ca2ffbd669766645818cd0b1b2b2b *README.md
 0b4e9a09b64bef80f5a626b72b29df56 *cleanup
-455e85cb35843e0ca8bfcfdfa48721b1 *configure
-b3496d991e6f6aa3a51b39636762ba6f *configure.ac
+345ec76748d81fa7fd19001c88e03ad9 *configure
+ba062b87d49cc94e62594714c1bdfcc7 *configure.ac
 7bdf2834a9e457bd649bc7863a381d07 *data/tsQuotes.RData
 9b30bab432ba9058b233ce09306a554d *data/vcube.RData
 fd060754d818864ca897476ff2b58f16 *demo/00Index
 62a5aa8589c12d27ae69ba05f8b84d60 *demo/OptionSurfaces.R
 8887075c0be0b9a5ed5368d8b7b5333e *demo/ShinyDiscountCurves.R
 2adf2228c562c11831db1d7ee0480cc6 *inst/Boost_LICENSE.TXT
-d9025c581f6e5233a00d0f2f2dd8d5c6 *inst/NEWS.Rd
+3d922bd539eb67a9c23a039c6c5926b2 *inst/NEWS.Rd
 6ce07e1e9679d2c63ff4fe0bece5ad05 *inst/QuantLib_LICENSE.TXT
 f4b079613d0dee5843973b30e0b6aa77 *inst/include/RQuantLib.h
 791e66a357ffc678d4be05d136ef6880 *inst/include/RQuantLib_RcppExports.h
@@ -82,7 +82,7 @@ b8b0df9181baa1211bd632dcb4990a33 *man/getQuantLibVersion.Rd
 0abdd3c24763fc0d991155276b2f7577 *man/tsQuotes.Rd
 b132afe2925ac2a027e19002d40ed388 *man/vcube.Rd
 f209270a4cd2342d9fbaded6b0a7e367 *src/Makevars.in
-a2e9ef3f5391d6ca9bdba48818152aed *src/Makevars.win
+a19f73fcb8ff523ff022495e85c3a764 *src/Makevars.win
 388e1a25300537b81e4d2031fb1c12c5 *src/RcppExports.cpp
 e96f635b189e057954f9caee4f963daf *src/affine.cpp
 708dbbf8e651b8828b2c3184099668d7 *src/asian.cpp
@@ -106,4 +106,4 @@ a61d2cb65d26a9be41dde42aa2475712 *src/zero.cpp
 109f1aa5994f65aec7f0a6ee5cfedfc3 *tests/RQuantlib.R
 c39cfd96c750ad6562a3ba0a54aba171 *tests/doRUnit.R
 0e2ae09ae946a03f6e132b9aff0442ad *tools/build_RQuantLib.sh
-fe5fb1dea6713fbaec0afbfdcdae1c9e *tools/winlibs.R
+2c7d9ecefcef479884a8f535560d46a7 *tools/winlibs.R
