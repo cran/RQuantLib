@@ -1,7 +1,7 @@
 Package: RQuantLib
 Title: R Interface to the 'QuantLib' Library
-Version: 0.4.10
-Date: 2019-08-07
+Version: 0.4.11
+Date: 2020-01-15
 Maintainer: Dirk Eddelbuettel <edd@debian.org>
 Author: Dirk Eddelbuettel, Khanh Nguyen (2009-2010), Terry Leitch (since 2016)
 Description: The 'RQuantLib' package makes parts of 'QuantLib' accessible from R
@@ -10,7 +10,7 @@ Description: The 'RQuantLib' package makes parts of 'QuantLib' accessible from R
  for quantitative analysis, modeling, trading, and risk management of financial
  assets.
 Depends: R (>= 2.10.0)
-Suggests: rgl, RUnit, shiny
+Suggests: tinytest, rgl, shiny
 LazyLoad: true
 Imports: methods, Rcpp (>= 0.11.0), stats, graphics, zoo
 LinkingTo: Rcpp
@@ -21,6 +21,6 @@ URL: http://dirk.eddelbuettel.com/code/rquantlib.html
 BugReports: https://github.com/eddelbuettel/rquantlib/issues
 RoxygenNote: 6.0.1
 NeedsCompilation: yes
-Packaged: 2019-08-07 11:56:19.118258 UTC; edd
+Packaged: 2020-01-15 01:54:39.253352 UTC; edd
 Repository: CRAN
-Date/Publication: 2019-08-07 13:00:02 UTC
+Date/Publication: 2020-01-15 06:00:02 UTC
