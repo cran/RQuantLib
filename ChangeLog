@@ -1,3 +1,59 @@
+2021-09-02  Dirk Eddelbuettel  <edd@debian.org>
+
+        * DESCRIPTION (Version, Date): New release 0.4.13
+
+	* configure.ac: Idem
+	* configure: Idem
+
+	* man/*.R: Update remaining http:// URLs to https://
+	* man/ConvertibleBond.Rd: Wrap \dontrun{} around example as it runs
+	twice as long as CRAN preference for five second examples
+	* man/FittedBondCurve.Rd: Idem
+
+2021-08-26  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (Version, Date): Roll minor release
+
+	* src/bonds.cpp (fittedBondCurveEngine): Use Actual365Fixed() instead
+	of deprecated ActualActual()
+	* src/discount.cpp (discountCurveEngine):  Idem
+	* src/utils.cpp (rebuildCurveFromZeroRates): Idem
+	* src/zero.cpp (zbtyield): Idem
+
+	* src/utils.cpp (buildTermStructure): Switch to
+	ActualActual::Convention::ISDA in ctor following
+	(getDayCounter): Condition away ActualActual() and Thirty360()
+
+	* man/BondUtilities.Rd: Document that ActualActual() and Thirty360()
+	can be enabled locally via #define
+
+2021-08-17  Dirk Eddelbuettel  <edd@debian.org>
+
+	* man/Enum.Rd: Correct eleven-year old typo
+
+2021-07-14  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (Version, Date): Roll minor release
+
+	* README.md: Add note about usability with new QuantLib versions
+
+2021-06-01  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (URL): Add repo to URL field
+
+2021-01-18  Dirk Eddelbuettel  <edd@debian.org>
+
+        * .github/workflows/ci.yaml: Add CI runner using r-ci
+	* README.md: Add new badge
+
+2020-06-16  Dirk Eddelbuettel  <edd@debian.org>
+
+	* .travis.yml: Switch to bionic, change to derive package and version
+
+2020-04-02  Dirk Eddelbuettel  <edd@debian.org>
+
+	* README.md: Correct one badge URL
+
 2020-04-01  Dirk Eddelbuettel  <edd@debian.org>
 
         * DESCRIPTION (Version, Date): New release 0.4.12
