@@ -1,5 +1,5 @@
-9503fd541fdca28735f9287d1f531aba *ChangeLog
-0cd180cdff17f49ad223eaefeddde835 *DESCRIPTION
+006c0582ed4c7e72495161be44e6a076 *ChangeLog
+40a983169b484f8f0a490d550e88144c *DESCRIPTION
 fd4e5b0b9cfeda5b3034514d07deb7b1 *NAMESPACE
 e20f180d3c8fa6c4b96362a509edfaab *R/RcppExports.R
 5d5efe9f5ae1dda7ab086f659ec05ddf *R/affine.R
@@ -21,15 +21,15 @@ bf6c8d734ef487f50126aa256faecf27 *R/sabr.R
 288f6267f18f8b1f59cd0888fcadced7 *R/zzz.R
 7f5057e78d50c0661e638f9a11123f07 *README.md
 0b4e9a09b64bef80f5a626b72b29df56 *cleanup
-3a0a1e662d90655535e76cdfeee42968 *configure
-3b83d65815e2f0178d4b9ca2deeef0a6 *configure.ac
+2adc6e5b216fcf12f7383009c719be0c *configure
+ef9527083e3d7f1452d6296a5fb7c58e *configure.ac
 73965c6cdc465b45b3e45a46f8335abd *data/tsQuotes.RData
 5b5589f3a9de11534abdba4aa63ba7cf *data/vcube.RData
 fd060754d818864ca897476ff2b58f16 *demo/00Index
 62a5aa8589c12d27ae69ba05f8b84d60 *demo/OptionSurfaces.R
 8887075c0be0b9a5ed5368d8b7b5333e *demo/ShinyDiscountCurves.R
 2adf2228c562c11831db1d7ee0480cc6 *inst/Boost_LICENSE.TXT
-d53f4846e5cd6b73a3c8c4d606adbfa0 *inst/NEWS.Rd
+dbc406810db331002df01a5ee6186016 *inst/NEWS.Rd
 6ce07e1e9679d2c63ff4fe0bece5ad05 *inst/QuantLib_LICENSE.TXT
 f4b079613d0dee5843973b30e0b6aa77 *inst/include/RQuantLib.h
 791e66a357ffc678d4be05d136ef6880 *inst/include/RQuantLib_RcppExports.h
@@ -87,7 +87,7 @@ a621962a0d5301d68ae05a4343c4b6ec *src/affine.cpp
 0cbd4e6d1943c5f1b2727fd0edb22217 *src/barrier_binary.cpp
 016fcdaf6700d53d3302a21439396645 *src/bermudan.cpp
 e77b0e439e15c8f9c49dcfb88f2562ff *src/bonds.cpp
-f984225101c443a565ab1a724e74054c *src/calendars.cpp
+2a894c384dafd32ede63a7aabec04dc8 *src/calendars.cpp
 0a9e2d427d5545a34d79befa152c073c *src/curves.cpp
 b467ede776a5f35074b1b13011686dbe *src/dates.cpp
 99eb924b6326ccef0f2d4e17b28e7790 *src/daycounter.cpp
