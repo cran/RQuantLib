@@ -1,6 +1,5 @@
 ## RQuantLib: R Interface to the [QuantLib](https://www.quantlib.org) Library
 
-[![Build Status](https://travis-ci.org/eddelbuettel/rquantlib.svg)](https://travis-ci.org/eddelbuettel/rquantlib)
 [![CI](https://github.com/eddelbuettel/rquantlib/workflows/ci/badge.svg)](https://github.com/eddelbuettel/rquantlib/actions?query=workflow%3Aci)
 [![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html)
 [![CRAN](http://www.r-pkg.org/badges/version/RQuantLib)](https://cran.r-project.org/package=RQuantLib)
@@ -56,6 +55,10 @@ For more OS-specific installation options, please see [the wiki](https://github.
 ### Support
 
 Come to the friendly and low-volume [rquantlib mailing list](http://rquantlib.groups.io) for help.
+
+### See Also
+
+The [RcppQuantuccia](https://github.com/eddelbuettel/rcppquantuccia) project is closely related---take a look!
 
 ### Authors
 

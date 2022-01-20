@@ -55,6 +55,11 @@ QuantLib::ext::shared_ptr<QuantLib::Calendar> getCalendar(const std::string &cal
     } else if (calstr == "Canada/TSX") {
         pcal.reset(new QuantLib::Canada(QuantLib::Canada::TSX));
 
+#if QL_HEX_VERSION >= 0x012400f0
+    } else if (calstr == "Chile") {
+        pcal.reset(new QuantLib::Chile());
+#endif
+
     } else if (calstr == "China") {
         pcal.reset(new QuantLib::China());
 
@@ -117,6 +122,11 @@ QuantLib::ext::shared_ptr<QuantLib::Calendar> getCalendar(const std::string &cal
 
     } else if (calstr == "Norway") {
         pcal.reset(new QuantLib::Norway());
+
+    } else if (calstr == "Null" ||
+               calstr == "null" ||
+               calstr == "NULL") {
+        pcal.reset(new QuantLib::NullCalendar());
 
     } else if (calstr == "Poland") {
         pcal.reset(new QuantLib::Poland());
@@ -350,6 +360,19 @@ std::vector<QuantLib::Date> getHolidayList(std::string calendar,
 #endif
     return holidays;
 }
+
+// [[Rcpp::export]]
+std::vector<QuantLib::Date> getBusinessDayList(std::string calendar,
+                                               QuantLib::Date from, QuantLib::Date to) {
+
+    QuantLib::ext::shared_ptr<QuantLib::Calendar> pcal(getCalendar(calendar));
+    std::vector<QuantLib::Date> bizdays;
+#if QL_HEX_VERSION >= 0x011800f0
+    bizdays = pcal->businessDayList(from, to);
+#endif
+    return bizdays;
+}
+
 
 // [[Rcpp::export]]
 void addHolidays(std::string calendar, std::vector<QuantLib::Date> dates) {

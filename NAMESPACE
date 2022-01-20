@@ -4,7 +4,7 @@ import("methods")
 importFrom("Rcpp", "Rcpp.plugin.maker", "sourceCpp")
 importFrom("stats", "sd")
 importFrom("graphics", "par", "plot", "lines", "legend")
-importFrom("utils", "compareVersion")
+importFrom("utils", "compareVersion", "packageVersion")
 importFrom("zoo","zoo","na.spline")
 
 useDynLib("RQuantLib", .registration=TRUE)
@@ -40,6 +40,7 @@ export(
     "CallableBond",
     "FittedBondCurve",
     ##--calendars.R
+    "calendars",
     "isBusinessDay", "businessDay",
     "isHoliday",
     "isWeekend",
@@ -49,6 +50,7 @@ export(
     "advance",
     "businessDaysBetween",
     "getHolidayList", "holidayList",
+    "getBusinessDayList", "businessDayList",
     "setCalendarContext",
     "addHolidays",
     "removeHolidays",
@@ -121,4 +123,3 @@ S3method("print", "Bond")
 S3method("summary", "Bond")
 
 S3method("print", "FixedRateBond")
-

@@ -367,20 +367,16 @@ QuantLib::DayCounter getDayCounter(const double n){
         return QuantLib::Actual360();
     else if (n==1)
         return QuantLib::Actual365Fixed();
-#ifdef RQUANTLIB_USE_ACTUALACTUAL
     else if (n==2)
-        return QuantLib::ActualActual();
-#endif
+        return QuantLib::ActualActual(QuantLib::ActualActual::ISDA); // reasonable default for back compatibility
     else if (n==3)
         return QuantLib::Business252();
     else if (n==4)
         return QuantLib::OneDayCounter();
     else if (n==5)
         return QuantLib::SimpleDayCounter();
-#ifdef RQUANTLIB_USE_THIRTY360
     else if (n==6)
-        return QuantLib::Thirty360();
-#endif
+        return QuantLib::Thirty360(QuantLib::Thirty360::BondBasis);  // reasonable default for back compatibility
 #ifdef RQUANTLIB_USE_ACTUAL365NOLEAP
      else if (n==7)
          return QuantLib::Actual365NoLeap();
@@ -395,8 +391,24 @@ QuantLib::DayCounter getDayCounter(const double n){
         return QuantLib::ActualActual(QuantLib::ActualActual::Historical);
     else if (n==12)
         return QuantLib::ActualActual(QuantLib::ActualActual::AFB);
-    else // if (n==13)
+    else if (n==13)
         return QuantLib::ActualActual(QuantLib::ActualActual::Euro);
+    else if (n==14)
+        return QuantLib::Thirty360(QuantLib::Thirty360::USA);
+    else if (n==15)
+        return QuantLib::Thirty360(QuantLib::Thirty360::BondBasis);
+    else if (n==16)
+        return QuantLib::Thirty360(QuantLib::Thirty360::European);
+    else if (n==17)
+        return QuantLib::Thirty360(QuantLib::Thirty360::EurobondBasis);
+    else if (n==18)
+        return QuantLib::Thirty360(QuantLib::Thirty360::Italian);
+    else if (n==19)
+        return QuantLib::Thirty360(QuantLib::Thirty360::German);
+    else
+        // Stop on verbose error -- Do not silently default to the arbitrarily
+        // last else statement because it can conceal bugs in user code.
+        Rcpp::stop("Unknown option '%d'", n);
 }
 
 QuantLib::BusinessDayConvention getBusinessDayConvention(const double n){
@@ -637,7 +649,7 @@ QuantLib::Duration::Type getDurationType(const double n) {
 //'
 //' @title Return the QuantLib version number
 //' @return A character variable
-//' @references \url{http://quantlib.org} for details on \code{QuantLib}.
+//' @references \url{https://www.quantlib.org} for details on \code{QuantLib}.
 //' @author Dirk Eddelbuettel
 //' @examples
 //'   getQuantLibVersion()
@@ -652,7 +664,7 @@ std::string getQuantLibVersion() {
 //' Not all of these features are used (yet) by RQuantLib.
 //' @title Return configuration options of the QuantLib library
 //' @return A named vector of logical variables
-//' @references \url{http://quantlib.org} for details on \code{QuantLib}.
+//' @references \url{https://www.quantlib.org} for details on \code{QuantLib}.
 //' @author Dirk Eddelbuettel
 //' @examples
 //'   getQuantLibCapabilities()
