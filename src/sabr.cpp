@@ -149,11 +149,15 @@ namespace {
 
 
         Handle<SwpVolStr>
+#if QL_HEX_VERSION < 0x013000f0
             res(QuantLib::ext::shared_ptr<SwpVolStr>(new SwaptionVolCube1(swaptionVolAtm, optionTenorsSmile,
-                                                                  swapTenorsSmile, strikeSpreads, qSwSmile,
-                                                                  swapIndex, shortSwapIndex, true,
-                                                                  parameterGuess, parameterFixed, true, ec,
-                                                                  .050)));
+#else
+            res(QuantLib::ext::shared_ptr<SwpVolStr>(new SabrSwaptionVolatilityCube(swaptionVolAtm, optionTenorsSmile,
+#endif
+                                                                                    swapTenorsSmile, strikeSpreads, qSwSmile,
+                                                                                    swapIndex, shortSwapIndex, true,
+                                                                                    parameterGuess, parameterFixed, true, ec,
+                                                                                    .050)));
         // put a big error tolerance here ... we just want a
         // smooth cube for testing
 
