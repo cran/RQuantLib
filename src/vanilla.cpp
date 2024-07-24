@@ -1,7 +1,7 @@
 
 //  RQuantLib -- R interface to the QuantLib libraries
 //
-//  Copyright (C) 2002 - 2023  Dirk Eddelbuettel <edd@debian.org>
+//  Copyright (C) 2002 - 2024  Dirk Eddelbuettel <edd@debian.org>
 //
 //  This file is part of RQuantLib.
 //
@@ -33,37 +33,23 @@ Rcpp::List europeanOptionEngine(std::string type,
                                 Rcpp::Nullable<Rcpp::NumericVector> discreteDividends,
                                 Rcpp::Nullable<Rcpp::NumericVector> discreteDividendsTimeUntil) {
 
-#ifdef QL_HIGH_RESOLUTION_DATE
-    // in minutes
-    boost::posix_time::time_duration length = boost::posix_time::minutes(boost::uint64_t(maturity * 360 * 24 * 60));
-#else
-    int length           = int(maturity*360 + 0.5); // FIXME: this could be better
-#endif
-
     QuantLib::Option::Type optionType = getOptionType(type);
     QuantLib::Date today = QuantLib::Date::todaysDate();
+    QuantLib::Date exDate = getFutureDate(today, maturity);
     QuantLib::Settings::instance().evaluationDate() = today;
-
-    // new framework as per QuantLib 0.3.5
     QuantLib::DayCounter dc = QuantLib::Actual360();
-    QuantLib::ext::shared_ptr<QuantLib::SimpleQuote> spot(new QuantLib::SimpleQuote( underlying ));
-    QuantLib::ext::shared_ptr<QuantLib::SimpleQuote> vol(new QuantLib::SimpleQuote( volatility ));
-    QuantLib::ext::shared_ptr<QuantLib::BlackVolTermStructure> volTS = flatVol(today, vol, dc);
-    QuantLib::ext::shared_ptr<QuantLib::SimpleQuote> qRate(new QuantLib::SimpleQuote( dividendYield ));
-    QuantLib::ext::shared_ptr<QuantLib::YieldTermStructure> qTS = flatRate(today, qRate, dc);
-    QuantLib::ext::shared_ptr<QuantLib::SimpleQuote> rRate(new QuantLib::SimpleQuote( riskFreeRate ));
-    QuantLib::ext::shared_ptr<QuantLib::YieldTermStructure> rTS = flatRate(today, rRate, dc);
+    auto spot  = qlext::make_shared<QuantLib::SimpleQuote>(underlying);
+    auto vol   = qlext::make_shared<QuantLib::SimpleQuote>(volatility);
+    auto volTS = flatVol(today, vol, dc); 		// cf src/utils.cpp
+    auto qRate = qlext::make_shared<QuantLib::SimpleQuote>(dividendYield);
+    auto qTS   = flatRate(today, qRate, dc); 	// cf src/utils.cpp
+    auto rRate = qlext::make_shared<QuantLib::SimpleQuote>(riskFreeRate);
+    auto rTS   = flatRate(today, rRate, dc); 	// cf src/utils.cpp
 
     bool withDividends = discreteDividends.isNotNull() && discreteDividendsTimeUntil.isNotNull();
 
-#ifdef QL_HIGH_RESOLUTION_DATE
-    QuantLib::Date exDate(today.dateTime() + length);
-#else
-    QuantLib::Date exDate = today + length;
-#endif
-
-    QuantLib::ext::shared_ptr<QuantLib::Exercise> exercise(new QuantLib::EuropeanExercise(exDate));
-    QuantLib::ext::shared_ptr<QuantLib::StrikedTypePayoff> payoff(new QuantLib::PlainVanillaPayoff(optionType, strike));
+    auto exercise = qlext::make_shared<QuantLib::EuropeanExercise>(exDate);
+    auto payoff   = qlext::make_shared<QuantLib::PlainVanillaPayoff>(optionType, strike);
 
     if (withDividends) {
         Rcpp::NumericVector divvalues(discreteDividends), divtimes(discreteDividendsTimeUntil);
@@ -71,27 +57,19 @@ Rcpp::List europeanOptionEngine(std::string type,
         std::vector<QuantLib::Date> discDivDates(n);
         std::vector<double> discDividends(n);
         for (int i = 0; i < n; i++) {
-#ifdef QL_HIGH_RESOLUTION_DATE
-            boost::posix_time::time_duration discreteDividendLength = boost::posix_time::minutes(boost::uint64_t(divtimes[i] * 360 * 24 * 60));
-            discDivDates[i] = QuantLib::Date(today.dateTime() + discreteDividendLength);
-#else
-            discDivDates[i] = today + int(divtimes[i] * 360 + 0.5);
-#endif
+            discDivDates[i] = getFutureDate(today, divtimes[i]);
             discDividends[i] = divvalues[i];
         }
 
-        QuantLib::ext::shared_ptr<QuantLib::BlackScholesMertonProcess>
-            stochProcess(new QuantLib::BlackScholesMertonProcess(QuantLib::Handle<QuantLib::Quote>(spot),
-                                                                 QuantLib::Handle<QuantLib::YieldTermStructure>(qTS),
-                                                                 QuantLib::Handle<QuantLib::YieldTermStructure>(rTS),
-                                                                 QuantLib::Handle<QuantLib::BlackVolTermStructure>(volTS)));
+        typedef QuantLib::BlackScholesMertonProcess qlBSMp;
+        auto stochProcess = qlext::make_shared<qlBSMp>(QuantLib::Handle<QuantLib::Quote>(spot),
+                                                       QuantLib::Handle<QuantLib::YieldTermStructure>(qTS),
+                                                       QuantLib::Handle<QuantLib::YieldTermStructure>(rTS),
+                                                       QuantLib::Handle<QuantLib::BlackVolTermStructure>(volTS));
 
-        QL_DEPRECATED_DISABLE_WARNING
-        QuantLib::ext::shared_ptr<QuantLib::PricingEngine> engine(new QuantLib::AnalyticDividendEuropeanEngine(stochProcess));
-        //QuantLib::ext::shared_ptr<QuantLib::PricingEngine> engine(new QuantLib::AnalyticEuropeanEngine(stochProcess));
+        auto engine = qlext::make_shared<QuantLib::AnalyticDividendEuropeanEngine>(stochProcess, QuantLib::DividendVector(discDivDates, discDividends));
 
-        QuantLib::DividendVanillaOption option(payoff, exercise, discDivDates, discDividends);
-        QL_DEPRECATED_ENABLE_WARNING
+        QuantLib::VanillaOption option(payoff, exercise);
         option.setPricingEngine(engine);
 
         return Rcpp::List::create(Rcpp::Named("value") = option.NPV(),
@@ -104,14 +82,13 @@ Rcpp::List europeanOptionEngine(std::string type,
     }
     else {
 
-        QuantLib::ext::shared_ptr<QuantLib::VanillaOption> option = makeOption(payoff, exercise, spot, qTS, rTS, volTS);
-
-        return Rcpp::List::create(Rcpp::Named("value") = option->NPV(),
-                                  Rcpp::Named("delta") = option->delta(),
-                                  Rcpp::Named("gamma") = option->gamma(),
-                                  Rcpp::Named("vega") = option->vega(),
-                                  Rcpp::Named("theta") = option->theta(),
-                                  Rcpp::Named("rho") = option->rho(),
+        auto option = makeOption(payoff, exercise, spot, qTS, rTS, volTS);
+        return Rcpp::List::create(Rcpp::Named("value")  = option->NPV(),
+                                  Rcpp::Named("delta")  = option->delta(),
+                                  Rcpp::Named("gamma")  = option->gamma(),
+                                  Rcpp::Named("vega")   = option->vega(),
+                                  Rcpp::Named("theta")  = option->theta(),
+                                  Rcpp::Named("rho")    = option->rho(),
                                   Rcpp::Named("divRho") = option->dividendRho());
     }
 
@@ -131,44 +108,30 @@ Rcpp::List americanOptionEngine(std::string type,
                                 Rcpp::Nullable<Rcpp::NumericVector> discreteDividends,
                                 Rcpp::Nullable<Rcpp::NumericVector> discreteDividendsTimeUntil) {
 
-#ifdef QL_HIGH_RESOLUTION_DATE
-    // in minutes
-    boost::posix_time::time_duration length = boost::posix_time::minutes(boost::uint64_t(maturity * 360 * 24 * 60));
-#else
-    int length = int(maturity * 360 + 0.5); // FIXME: this could be better
-
-#endif
     QuantLib::Option::Type optionType = getOptionType(type);
 
-    // new framework as per QuantLib 0.3.5, updated for 0.3.7
-    // updated again for 0.9.0, see eg test-suite/americanoption.cpp
     QuantLib::Date today = QuantLib::Date::todaysDate();
     QuantLib::Settings::instance().evaluationDate() = today;
+    QuantLib::Date exDate = getFutureDate(today, maturity);
     QuantLib::DayCounter dc = QuantLib::Actual360();
-    QuantLib::ext::shared_ptr<QuantLib::SimpleQuote> spot(new QuantLib::SimpleQuote(underlying));
-    QuantLib::ext::shared_ptr<QuantLib::SimpleQuote> qRate(new QuantLib::SimpleQuote(dividendYield));
-    QuantLib::ext::shared_ptr<QuantLib::YieldTermStructure> qTS = flatRate(today,qRate,dc);
-    QuantLib::ext::shared_ptr<QuantLib::SimpleQuote> rRate(new QuantLib::SimpleQuote(riskFreeRate));
-    QuantLib::ext::shared_ptr<QuantLib::YieldTermStructure> rTS = flatRate(today,rRate,dc);
-    QuantLib::ext::shared_ptr<QuantLib::SimpleQuote> vol(new QuantLib::SimpleQuote(volatility));
-    QuantLib::ext::shared_ptr<QuantLib::BlackVolTermStructure> volTS = flatVol(today, vol, dc);
+    auto spot  = qlext::make_shared<QuantLib::SimpleQuote>(underlying);
+    auto qRate = qlext::make_shared<QuantLib::SimpleQuote>(dividendYield);
+    auto qTS   = flatRate(today, qRate, dc); 	// cf src/utils.cpp
+    auto rRate = qlext::make_shared<QuantLib::SimpleQuote>(riskFreeRate);
+    auto rTS   = flatRate(today, rRate, dc); 	// cf src/utils.cpp
+    auto vol   = qlext::make_shared<QuantLib::SimpleQuote>(volatility);
+    auto volTS = flatVol(today, vol, dc); 		// cf src/utils.cpp
 
     bool withDividends = discreteDividends.isNotNull() && discreteDividendsTimeUntil.isNotNull();
 
-#ifdef QL_HIGH_RESOLUTION_DATE
-    QuantLib::Date exDate(today.dateTime() + length);
-#else
-    QuantLib::Date exDate = today + length;
-#endif
+    auto exercise = qlext::make_shared<QuantLib::AmericanExercise>(today, exDate);
+    auto payoff   = qlext::make_shared<QuantLib::PlainVanillaPayoff>(optionType, strike);
 
-    QuantLib::ext::shared_ptr<QuantLib::StrikedTypePayoff> payoff(new QuantLib::PlainVanillaPayoff(optionType, strike));
-    QuantLib::ext::shared_ptr<QuantLib::Exercise> exercise(new QuantLib::AmericanExercise(today, exDate));
-
-    QuantLib::ext::shared_ptr<QuantLib::BlackScholesMertonProcess>
-        stochProcess(new QuantLib::BlackScholesMertonProcess(QuantLib::Handle<QuantLib::Quote>(spot),
-                                                             QuantLib::Handle<QuantLib::YieldTermStructure>(qTS),
-                                                             QuantLib::Handle<QuantLib::YieldTermStructure>(rTS),
-                                                             QuantLib::Handle<QuantLib::BlackVolTermStructure>(volTS)));
+    typedef QuantLib::BlackScholesMertonProcess qlBSMp;
+    auto stochProcess = qlext::make_shared<qlBSMp>(QuantLib::Handle<QuantLib::Quote>(spot),
+                                                   QuantLib::Handle<QuantLib::YieldTermStructure>(qTS),
+                                                   QuantLib::Handle<QuantLib::YieldTermStructure>(rTS),
+                                                   QuantLib::Handle<QuantLib::BlackVolTermStructure>(volTS));
 
     if (withDividends) {
         Rcpp::NumericVector divvalues(discreteDividends), divtimes(discreteDividendsTimeUntil);
@@ -176,28 +139,20 @@ Rcpp::List americanOptionEngine(std::string type,
         std::vector<QuantLib::Date> discDivDates(n);
         std::vector<double> discDividends(n);
         for (int i = 0; i < n; i++) {
-#ifdef QL_HIGH_RESOLUTION_DATE
-            boost::posix_time::time_duration discreteDividendLength = boost::posix_time::minutes(boost::uint64_t(divtimes[i] * 360 * 24 * 60));
-            discDivDates[i] = QuantLib::Date(today.dateTime() + discreteDividendLength);
-#else
-            discDivDates[i] = today + int(divtimes[i] * 360 + 0.5);
-#endif
+            discDivDates[i] = getFutureDate(today, divtimes[i]);
             discDividends[i] = divvalues[i];
         }
 
-        QL_DEPRECATED_DISABLE_WARNING
-        QuantLib::DividendVanillaOption option(payoff, exercise, discDivDates, discDividends);
-        QL_DEPRECATED_ENABLE_WARNING
+        QuantLib::VanillaOption option(payoff, exercise);
+
         if (engine=="BaroneAdesiWhaley") {
             Rcpp::warning("Discrete dividends, engine switched to CrankNicolson");
             engine = "CrankNicolson";
         }
 
         if (engine=="CrankNicolson") { // FDDividendAmericanEngine only works with CrankNicolson
-            // suggestion by Bryan Lewis: use CrankNicolson for greeks
-            QuantLib::ext::shared_ptr<QuantLib::PricingEngine>
-            fdcnengine(new QuantLib::FdBlackScholesVanillaEngine(stochProcess, timeSteps, gridPoints));
-            option.setPricingEngine(fdcnengine);
+            // see eg test-suite/americanoption.cc
+            option.setPricingEngine(QuantLib::MakeFdBlackScholesVanillaEngine(stochProcess).withCashDividends(discDivDates, discDividends));
             return Rcpp::List::create(Rcpp::Named("value") = option.NPV(),
                                       Rcpp::Named("delta") = option.delta(),
                                       Rcpp::Named("gamma") = option.gamma(),
@@ -214,8 +169,7 @@ Rcpp::List americanOptionEngine(std::string type,
 
         if (engine=="BaroneAdesiWhaley") {
             // new from 0.3.7 BaroneAdesiWhaley
-
-            QuantLib::ext::shared_ptr<QuantLib::PricingEngine> engine(new QuantLib::BaroneAdesiWhaleyApproximationEngine(stochProcess));
+            auto engine = qlext::make_shared<QuantLib::BaroneAdesiWhaleyApproximationEngine>(stochProcess);
             option.setPricingEngine(engine);
             return Rcpp::List::create(Rcpp::Named("value") = option.NPV(),
                                       Rcpp::Named("delta") = R_NaReal,
@@ -225,10 +179,9 @@ Rcpp::List americanOptionEngine(std::string type,
                                       Rcpp::Named("rho") = R_NaReal,
                                       Rcpp::Named("divRho") = R_NaReal);
         } else if (engine=="CrankNicolson") {
-            // suggestion by Bryan Lewis: use CrankNicolson for greeks
-            QuantLib::ext::shared_ptr<QuantLib::PricingEngine>
-            fdcnengine(new QuantLib::FdBlackScholesVanillaEngine(stochProcess, timeSteps, gridPoints));
-            option.setPricingEngine(fdcnengine);
+            // suggestion by Bryan Lewis: use CrankNicolson for greeks (but now down to delta + gamma)
+            auto engine = qlext::make_shared<QuantLib::FdBlackScholesVanillaEngine>(stochProcess, timeSteps, gridPoints);
+            option.setPricingEngine(engine);
             return Rcpp::List::create(Rcpp::Named("value") = option.NPV(),
                                       Rcpp::Named("delta") = option.delta(),
                                       Rcpp::Named("gamma") = option.gamma(),
@@ -263,31 +216,20 @@ Rcpp::List europeanOptionArraysEngine(std::string type, Rcpp::NumericMatrix par)
         QuantLib::Spread dividendYield = par(i, 2);    // third column
         QuantLib::Rate riskFreeRate    = par(i, 3);    // fourth column
         QuantLib::Time maturity        = par(i, 4);    // fifth column
-#ifdef QL_HIGH_RESOLUTION_DATE
-        // in minutes
-        boost::posix_time::time_duration length = boost::posix_time::minutes(boost::uint64_t(maturity * 360 * 24 * 60));
-#else
-        int length           = int(maturity*360 + 0.5); // FIXME: this could be better
-#endif
         double volatility    = par(i, 5);    // sixth column
 
-        QuantLib::ext::shared_ptr<QuantLib::SimpleQuote> spot(new QuantLib::SimpleQuote( underlying ));
-        QuantLib::ext::shared_ptr<QuantLib::SimpleQuote> vol(new QuantLib::SimpleQuote( volatility ));
-        QuantLib::ext::shared_ptr<QuantLib::BlackVolTermStructure> volTS = flatVol(today, vol, dc);
-        QuantLib::ext::shared_ptr<QuantLib::SimpleQuote> qRate(new QuantLib::SimpleQuote( dividendYield ));
-        QuantLib::ext::shared_ptr<QuantLib::YieldTermStructure> qTS = flatRate(today, qRate, dc);
-        QuantLib::ext::shared_ptr<QuantLib::SimpleQuote> rRate(new QuantLib::SimpleQuote( riskFreeRate ));
-        QuantLib::ext::shared_ptr<QuantLib::YieldTermStructure> rTS = flatRate(today, rRate, dc);
+        auto spot  = qlext::make_shared<QuantLib::SimpleQuote>(underlying);
+        auto vol   = qlext::make_shared<QuantLib::SimpleQuote>(volatility);
+        auto volTS = flatVol(today, vol, dc); 		// cf src/utils.cpp
+        auto qRate = qlext::make_shared<QuantLib::SimpleQuote>(dividendYield);
+        auto qTS   = flatRate(today, qRate, dc); 	// cf src/utils.cpp
+        auto rRate = qlext::make_shared<QuantLib::SimpleQuote>(riskFreeRate);
+        auto rTS   = flatRate(today, rRate, dc); 	// cf src/utils.cpp
 
-#ifdef QL_HIGH_RESOLUTION_DATE
-    QuantLib::Date exDate(today.dateTime() + length);
-#else
-    QuantLib::Date exDate = today + length;
-#endif
-        QuantLib::ext::shared_ptr<QuantLib::Exercise> exercise(new QuantLib::EuropeanExercise(exDate));
-
-        QuantLib::ext::shared_ptr<QuantLib::StrikedTypePayoff> payoff(new QuantLib::PlainVanillaPayoff(optionType, strike));
-        QuantLib::ext::shared_ptr<QuantLib::VanillaOption> option = makeOption(payoff, exercise, spot, qTS, rTS, volTS);
+        QuantLib::Date exDate = getFutureDate(today, maturity);
+        auto exercise = qlext::make_shared<QuantLib::EuropeanExercise>(exDate);
+        auto payoff   = qlext::make_shared<QuantLib::PlainVanillaPayoff>(optionType, strike);
+        auto option = makeOption(payoff, exercise, spot, qTS, rTS, volTS);
 
         value[i]  = option->NPV();
         delta[i]  = option->delta();
