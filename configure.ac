@@ -10,7 +10,7 @@ AC_PREREQ([2.69])
 # Process this file with autoconf to produce a configure script.
 
 # Would like to extract R package version from R DESCRIPTION file
-AC_INIT([RQuantlib],[0.4.24],[edd@debian.org])
+AC_INIT([RQuantlib],[0.4.25],[edd@debian.org])
 
 # Set CXX and CXXFLAGS based on the R configuration (with thanks to KH)
 : ${R_HOME=`R RHOME`}
@@ -67,7 +67,7 @@ AC_PROG_R
 # borrowed from a check for gnome in GNU gretl: define a check for quantlib-config
 AC_DEFUN([AC_PROG_QUANTLIB], [AC_CHECK_PROG(QUANTLIB,quantlib-config,yes)])
 AC_PROG_QUANTLIB
-if test x"${QUANTLIB}" == x"yes" ; then
+if test x"${QUANTLIB}" = x"yes" ; then
     # use quantlib-config for QL settings
     pkg_cxxflags=`quantlib-config --cflags`
     pkg_libs=`quantlib-config --libs`
@@ -92,7 +92,8 @@ if test x"${QUANTLIB}" == x"yes" ; then
     AC_SUBST([PKG_CXXFLAGS],["${PKG_CXXFLAGS} ${pkg_cxxflags} ${gxx_newer_than_45}"])
     AC_SUBST([PKG_LIBS],["${PKG_LIBS} $pkg_libs"])
 
-elif test "`uname`" == "Darwin" ; then
+elif test "`uname`" = "Darwin" ; then
+    # this is a non-CRAN code patch as CRAN does have QuantLib locally installed
     quantlib="https://github.com/autobrew/bundler/releases/download/quantlib-1.31.1/quantlib-1.31.1-universal.tar.xz"
     quantlibdir="$PWD/.deps"
     mkdir -p $quantlibdir
@@ -100,7 +101,8 @@ elif test "`uname`" == "Darwin" ; then
     curl -sSL "$quantlib" -o quantlib.tar.xz
     tar xf quantlib.tar.xz --strip 1 -C "$quantlibdir"
     rm quantlib.tar.xz
-    pkg_cxxflags="-I${quantlibdir}/include"
+    # compiler flag needed on macOS 14, see PR #190
+    pkg_cxxflags="-I${quantlibdir}/include -Wno-enum-constexpr-conversion"
     pkg_libs="-L${quantlibdir}/lib -lQuantLib"
 
     # Same as above

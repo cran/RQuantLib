@@ -1,3 +1,30 @@
+2025-03-24  Dirk Eddelbuettel  <edd@debian.org>
+
+        * DESCRIPTION (Version, Date): New release 0.4.25
+
+	* configure.ac: Idem
+	* configure: Idem
+
+2025-01-10  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (Version, Date): Roll micro release and date
+
+	* configure.ac: Correct two possible bashisms
+	* configure: Regenerated
+
+2024-08-07  Dirk Eddelbuettel  <edd@debian.org>
+
+	* configure.ac: Add minor comment
+
+2024-08-06  Jeroen Ooms  <jeroenooms@gmail.com>
+
+	* configure.ac: Accomodate macOS 14 with new compiler flag
+	* configure: Idem
+
+2024-08-05  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (Authors@R): Added ORCID for Terry
+
 2024-07-31  Dirk Eddelbuettel  <edd@debian.org>
 
         * DESCRIPTION (Version, Date): New release 0.4.24

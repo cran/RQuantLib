@@ -4,6 +4,13 @@
 \newcommand{\ghit}{\href{https://github.com/eddelbuettel/rquantlib/issues/#1}{##1}}
 \newcommand{\ghrp}{\href{https://github.com/#1}{##1}}
 
+\section{Changes in \pkg{RQuantLib} version 0.4.25 (2025-03-24)}{
+  \itemize{
+    \item Support macOS 14 with a new compiler flag (Jeroen in \ghpr{190})
+    \item Correct two bashisms in \code{configure.ac}
+  }
+}
+
 \section{Changes in \pkg{RQuantLib} version 0.4.24 (2024-07-31)}{
   \itemize{
     \item Updated detection of QuantLib libraries in configure
@@ -41,7 +48,7 @@
     \item Generalize Windows build to arm64 (Jeroen in \ghpr{181})
     \item Generalize version string use to support \code{cmake} use (Jeroen
     in \ghpr{181} fixing \ghit{180})
-    \item Minor update to `ci.yaml` github action (Dirk)
+    \item Minor update to \code{ci.yaml} github action (Dirk)
   }
 }
 

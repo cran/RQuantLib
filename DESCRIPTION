@@ -1,11 +1,12 @@
 Package: RQuantLib
 Title: R Interface to the 'QuantLib' Library
-Version: 0.4.24
-Date: 2024-07-31
+Version: 0.4.25
+Date: 2025-03-24
 Authors@R: c(person("Dirk", "Eddelbuettel", role = c("aut", "cre"), email = "edd@debian.org",
                     comment = c(ORCID = "0000-0001-6419-907X")),
              person("Khanh", "Nguyen", role = "aut", comment = "2009-2010"),
-             person("Terry", "Leitch", role = "aut", comment = "since 2016"))
+             person("Terry", "Leitch", role = "aut",
+                    comment = c(ORCID = "0000-0003-1706-4070", "since 2016")))
 Description: The 'RQuantLib' package makes parts of 'QuantLib' accessible from R
  The 'QuantLib' project aims to provide a comprehensive software framework
  for quantitative finance. The goal is to provide a standard open source library
@@ -23,10 +24,11 @@ BugReports: https://github.com/eddelbuettel/rquantlib/issues
 RoxygenNote: 6.0.1
 LazyLoad: true
 NeedsCompilation: yes
-Packaged: 2024-07-31 15:15:16 UTC; edd
+Packaged: 2025-03-24 13:00:55 UTC; edd
 Author: Dirk Eddelbuettel [aut, cre] (<https://orcid.org/0000-0001-6419-907X>),
   Khanh Nguyen [aut] (2009-2010),
-  Terry Leitch [aut] (since 2016)
+  Terry Leitch [aut] (<https://orcid.org/0000-0003-1706-4070>, since
+    2016)
 Maintainer: Dirk Eddelbuettel <edd@debian.org>
 Repository: CRAN
-Date/Publication: 2024-07-31 15:50:01 UTC
+Date/Publication: 2025-03-25 11:30:04 UTC
