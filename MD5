@@ -1,5 +1,5 @@
-b59d0d87075e53907503efd226349969 *ChangeLog
-f71ff97177fc401523bc9eb4e9653620 *DESCRIPTION
+8ea2037270a75d0e9d8332d0bcdf0198 *ChangeLog
+375798fbb35f9ba46aa0c3b8437b1ab0 *DESCRIPTION
 6f2492e23ee67e4c94cd14c782335f58 *NAMESPACE
 74bdca37b6928f20029a88e4f3182d11 *R/RcppExports.R
 8bae9e10a0e0a48dd0b91bb6a0bde18d *R/affine.R
@@ -21,15 +21,15 @@ db5f0c220ccb7a54c72f7343a3279457 *R/implied.R
 cd95d1bdf925936fea0e4652d8d5b34a *R/zzz.R
 b550c98423ce37e2f03b3daae68997cb *README.md
 0b4e9a09b64bef80f5a626b72b29df56 *cleanup
-03aec7975c79e721ca95a3ab948fdbf3 *configure
-aeca5cf292e7500fd975a6f595af50cb *configure.ac
-d6427c3064aff52624452394e63fb330 *data/tsQuotes.RData
-98cb524de36e8c58f1d12b3506272f88 *data/vcube.RData
+af765ac9506a1e269bc661e4755afc2d *configure
+fe5ca601506be9ca76d85af8cf5f8a85 *configure.ac
+66fcf5a24cb0554f6468677d43181d51 *data/tsQuotes.RData
+1757fe8f5d548c702bff15e141ee4bd9 *data/vcube.RData
 fd060754d818864ca897476ff2b58f16 *demo/00Index
 158727f1e40f6b5ad10f228368dc47bb *demo/OptionSurfaces.R
 8887075c0be0b9a5ed5368d8b7b5333e *demo/ShinyDiscountCurves.R
 2adf2228c562c11831db1d7ee0480cc6 *inst/Boost_LICENSE.TXT
-cc8aa12f0f59b8175333ff4c389d1fba *inst/NEWS.Rd
+3d5348b122dc707bdc6f746bc1b0da15 *inst/NEWS.Rd
 6ce07e1e9679d2c63ff4fe0bece5ad05 *inst/QuantLib_LICENSE.TXT
 f4b079613d0dee5843973b30e0b6aa77 *inst/include/RQuantLib.h
 791e66a357ffc678d4be05d136ef6880 *inst/include/RQuantLib_RcppExports.h
@@ -48,7 +48,7 @@ ca4e6472c457a1e9ade2b7f87a3a475c *inst/tinytest/cpp/dates.cpp
 3438bf4439d2f76c5ebb691364406dae *inst/tinytest/test_calendar.R
 28ffb91bf505701b3fc021a34183cba5 *inst/tinytest/test_dates.R
 78c29ac033586e11d981894f04c36b29 *inst/tinytest/test_options.R
-d541dba51ae9fed4b41e7a44714922c1 *inst/tinytest/test_schedule.R
+b20c3e16585110e888e7d10a4fc017a8 *inst/tinytest/test_schedule.R
 ca0cc805bc7aeef8b5a22fb725432f8a *man/AffineSwaption.Rd
 b15996d00af44bb02ca192d6a4dfb9b1 *man/AmericanOption.Rd
 f3538238035a035afe0c5a010e8e74af *man/AmericanOptionImpliedVolatility.Rd
@@ -80,7 +80,7 @@ fb2fa47e192132df023291a911cc07c9 *man/Schedule.Rd
 0abdd3c24763fc0d991155276b2f7577 *man/tsQuotes.Rd
 b132afe2925ac2a027e19002d40ed388 *man/vcube.Rd
 8870eb3132e96dfcc3d3ed50f223dfd0 *src/Makevars.in
-5fe1d42627b6d6101d7bce6e137d2560 *src/Makevars.win
+39ccc28ce3677a73fe61956d4304e464 *src/Makevars.win
 2de8bde482f9d1b1ac169a546f200206 *src/RcppExports.cpp
 1daa62867cb7b201cbc5e17a697dd47a *src/affine.cpp
 3dc085eccadd5d1de2b50d0f6852ac45 *src/asian.cpp
