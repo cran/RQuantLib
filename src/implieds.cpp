@@ -1,7 +1,7 @@
 
 //  RQuantLib -- R interface to the QuantLib libraries
 //
-//  Copyright (C) 2002 - 2024  Dirk Eddelbuettel <edd@debian.org>
+//  Copyright (C) 2002-2026  Dirk Eddelbuettel <edd@debian.org>
 //
 //  This file is part of RQuantLib.
 //
@@ -29,31 +29,32 @@ double europeanOptionImpliedVolatilityEngine(std::string type,
                                              double strike,
                                              double dividendYield,
                                              double riskFreeRate,
-                                             double maturity,
-                                             double volatility) {
+                                             Rcpp::Nullable<double> maturity,
+                                             Rcpp::Nullable<QuantLib::Date> exDate,
+                                             double volatility,
+                                             int dayCounter) {
 
     const QuantLib::Size maxEvaluations = 100;
     const double tolerance = 1.0e-6;
 
     QuantLib::Option::Type optionType = getOptionType(type);
 
-    QuantLib::Date today = QuantLib::Date::todaysDate();
-    QuantLib::Settings::instance().evaluationDate() = today;
-    QuantLib::Date exDate = getFutureDate(today, maturity);
+    QuantLib::Date evalDate = QuantLib::Settings::instance().evaluationDate();
+    QuantLib::Date expiryDate = getFutureDate(evalDate, maturity, exDate);
 
     // new framework as per QuantLib 0.3.5
     // updated for 0.3.7
-    QuantLib::DayCounter dc = QuantLib::Actual360();
+    QuantLib::DayCounter dc = getDayCounter(dayCounter);
 
     auto spot = qlext::make_shared<QuantLib::SimpleQuote>(underlying);
     auto vol = qlext::make_shared<QuantLib::SimpleQuote>(volatility);
-    auto volTS = flatVol(today, vol, dc);
+    auto volTS = flatVol(evalDate, vol, dc);
     auto qRate = qlext::make_shared<QuantLib::SimpleQuote>(dividendYield);
-    auto qTS = flatRate(today,qRate,dc);
+    auto qTS = flatRate(evalDate,qRate,dc);
     auto rRate = qlext::make_shared<QuantLib::SimpleQuote>(riskFreeRate);
-    auto rTS = flatRate(today,rRate,dc);
+    auto rTS = flatRate(evalDate,rRate,dc);
 
-    auto exercise = qlext::make_shared<QuantLib::EuropeanExercise>(exDate);
+    auto exercise = qlext::make_shared<QuantLib::EuropeanExercise>(expiryDate);
     auto payoff = qlext::make_shared<QuantLib::PlainVanillaPayoff>(optionType, strike);
     auto option = makeOption(payoff, exercise, spot, qTS, rTS, volTS, Analytic,
                              QuantLib::Null<QuantLib::Size>(), QuantLib::Null<QuantLib::Size>());
@@ -72,37 +73,36 @@ double americanOptionImpliedVolatilityEngine(std::string type,
                                              double strike,
                                              double dividendYield,
                                              double riskFreeRate,
-                                             double maturity,
+                                             Rcpp::Nullable<double> maturity,
+                                             Rcpp::Nullable<QuantLib::Date> exDate,
                                              double volguess,
                                              int timesteps,
-                                             int gridpoints) {
+                                             int gridpoints,
+                                             int dayCounter) {
 
     const QuantLib::Size maxEvaluations = 100;
     const double tolerance = 1.0e-6;
 
     QuantLib::Option::Type optionType = getOptionType(type);
 
-    QuantLib::Date today = QuantLib::Date::todaysDate();
-    QuantLib::Settings::instance().evaluationDate() = today;
-    QuantLib::Date exDate = getFutureDate(today, maturity);
+    QuantLib::Date evalDate = QuantLib::Settings::instance().evaluationDate();
+    QuantLib::Date expiryDate = getFutureDate(evalDate, maturity, exDate);
 
     // new framework as per QuantLib 0.3.5
-    QuantLib::DayCounter dc = QuantLib::Actual360();
+    QuantLib::DayCounter dc = getDayCounter(dayCounter);
     auto spot = qlext::make_shared<QuantLib::SimpleQuote>(underlying);
     auto vol = qlext::make_shared<QuantLib::SimpleQuote>(volguess);
-    auto volTS = flatVol(today, vol,dc);
+    auto volTS = flatVol(evalDate, vol,dc);
     auto qRate = qlext::make_shared<QuantLib::SimpleQuote>(dividendYield);
-    auto qTS = flatRate(today,qRate,dc);
+    auto qTS = flatRate(evalDate,qRate,dc);
     auto rRate = qlext::make_shared<QuantLib::SimpleQuote>(riskFreeRate);
-    auto rTS = flatRate(today,rRate,dc);
+    auto rTS = flatRate(evalDate,rRate,dc);
 
-    QuantLib::Settings::instance().evaluationDate() = today;
-
-    auto exercise = qlext::make_shared<QuantLib::AmericanExercise>(today, exDate);
+    auto exercise = qlext::make_shared<QuantLib::AmericanExercise>(evalDate, expiryDate);
     auto payoff = qlext::make_shared<QuantLib::PlainVanillaPayoff>(optionType, strike);
     auto option = makeOption(payoff, exercise, spot, qTS, rTS, volTS, JR);
 
-    auto process = makeProcess(spot, qTS, rTS,volTS);
+    auto process = makeProcess(spot, qTS, rTS, volTS);
 
     return option->impliedVolatility(value, process, tolerance, maxEvaluations);
 }

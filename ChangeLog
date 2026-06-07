@@ -1,3 +1,122 @@
+2026-06-07  Dirk Eddelbuettel  <edd@debian.org>
+
+        * DESCRIPTION (Version, Date): New release 0.4.27
+
+	* configure.ac: Idem
+	* configure: Idem
+
+	* man/EuropeanOptionImpliedVolatility.Rd: Limit usage line length
+
+2026-06-06  Dirk Eddelbuettel  <edd@debian.org>
+
+	* man/BarrierOption.Rd: Updated as well
+
+2026-04-07  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/barrier_binary.cpp (barrierOptionEngine): For barrier option,
+	more careful about use of evaluation date, new parameter daycounter
+	* R/option.R (BarrierOption.default):  Allow fractional year to
+	expiry as well as date
+	* src/RcppExports.cpp: Regenerated
+	* R/RcppExports.R: Idem
+
+2026-03-28  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/utils.cpp (getDividendSchedule,getCallabilitySchedule): Remove
+	one old layer of try/catch and rely on the one provided by Rcpp
+
+2026-03-09  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/vanilla.cpp (europeanOptionEngine,americanOptionEngine): More
+	careful about use of evaluation date, new parameter daycounter
+	* R/option.R (EuropeanOption.default,AmericanOption.default): Allow
+	fractional year to expiry as well as date, support daycounter
+	* man/AmericanOption.Rd: Updated
+	* man/EuropeanOption.Rd: Idem
+	* inst/include/RQuantLib_RcppExports.h: Regenerated
+	* src/RcppExports.cpp: Idem
+	* R/RcppExports.R: Idem
+
+2026-03-04  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/implieds.cpp (europeanOptionImpliedVolatilityEngine): Use new
+	helper function with two Nullable<> args, remove alternate function
+	* src/utils.cpp (getFutureDate): Helper function for expiry date
+	given either maturity as fractional year or actual dates
+	* R/implied.R (EuropeanOptionImpliedVolatility.default): Use simpler
+	interface testing for either fractional time, or Date type
+	* inst/include/rquantlib_internal.h: Declare it
+	* inst/include/RQuantLib_RcppExports.h: Regenerated
+	* src/RcppExports.cpp: Idem
+	* R/RcppExports.R: Idem
+
+2026-03-03  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/implieds.cpp (americanOptionImpliedVolatilityEngine): Use
+	Nullable<> to supply either time or Date, remove alternate function
+	* R/implied.R (AmericanOptionImpliedVolatility.default): Use simpler
+	interface testing for either fractional time, or Date type
+	* inst/include/RQuantLib_RcppExports.h: Regenerated
+	* src/RcppExports.cpp: Idem
+	* R/RcppExports.R: Idem
+
+2026-03-01  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/barrier_binary.cpp: More careful about use of evaluation date,
+	new parameter daycounter for Barrier, Binary, BinaryImplied
+	* R/implied.R (BinaryOptionImpliedVolatility.default)
+	(BinaryOptionImpliedVolatility.default):  Idem (for BinaryImplied)
+	* R/option.R (BinaryOption,BinaryOption.default,BarrierOption)
+	(BarrierOption.default): Idem (for Binary and Barrier)
+	* inst/include/RQuantLib_RcppExports.h: Regenerated
+	* src/RcppExports.cpp: Idem
+	* R/RcppExports.R: Idem
+	* man/BarrierOption.Rd: Updated
+	* man/BinaryOption.Rd: Idem
+	* man/BinaryOptionImpliedVolatility.Rd: Idem
+
+2026-02-27  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (Version, Date): Roll micro release and date
+
+	* src/implieds.cpp (europeanOptionImpliedVolatilityEngine): More
+	careful about use of evaluation date, new parameter daycounter
+	(europeanOptionImpliedVolatilityEngineByDate): New (experimental)
+	variant taking explicit expiry date as argument, also daycounter
+	* R/implied.R (EuropeanOptionImpliedVolatility)
+	(EuropeanOptionImpliedVolatility.default):  Expose new interface
+	* man/EuropeanOptionImpliedVolatility.Rd: Updated
+	* inst/include/RQuantLib_RcppExports.h: Regenerated
+	* src/RcppExports.cpp: Idem
+	* R/RcppExports.R: Idem
+	* NAMESPACE: Added two omitted 'ImpliedVolatility' S3 exports
+
+2026-02-26  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/implieds.cpp (americanOptionImpliedVolatilityEngine): More
+	careful about use of evaluation date, new parameter daycounter
+	(americanOptionImpliedVolatilityEngineByDate): New (experimental)
+	variant taking explicit expiry date as argument, also daycounter
+	* R/implied.R (AmericanOptionImpliedVolatility)
+	(AmericanOptionImpliedVolatility.default):  Expose new interface
+	* man/AmericanOptionImpliedVolatility.Rd: Updated
+	* inst/include/RQuantLib_RcppExports.h: Regenerated
+	* src/RcppExports.cpp: Idem
+	* R/RcppExports.R: Idem
+	* NAMESPACE: Added two omitted 'ImpliedVolatility' S3 exports
+
+2026-02-04  Dirk Eddelbuettel  <edd@debian.org>
+
+	* .github/workflows/ci.yaml: Switch to actions/checkout@v6
+
+2026-01-13  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/RcppExports.cpp: Updated under current Rcpp
+
+2025-09-24  Dirk Eddelbuettel  <edd@debian.org>
+
+	* .github/workflows/ci.yaml: Use r-ci with embedded bootstrap
+
 2025-04-24  Dirk Eddelbuettel  <edd@debian.org>
 
         * DESCRIPTION (Version, Date): New release 0.4.26

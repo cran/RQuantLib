@@ -9,7 +9,7 @@
 \usage{
 \method{BinaryOptionImpliedVolatility}{default}(type, value, underlying,
 		strike, dividendYield, riskFreeRate, maturity, volatility,
-		cashPayoff=1)
+		cashPayoff=1, dayCounter=0)
 }
 \arguments{
   \item{type}{A string with one of the values \code{call}, \code{put} or
@@ -19,10 +19,13 @@
   \item{strike}{Strike price of the option}
   \item{dividendYield}{Continuous dividend yield (as a fraction) of the stock}
   \item{riskFreeRate}{Risk-free rate}
-  \item{maturity}{Time to maturity (in fractional years)}
+  \item{maturity}{Time to maturity in either fractional years or as a
+    \sQuote{Date} object specifying the expiry date)}
   \item{volatility}{Initial guess for the volatility of the underlying
     stock}
   \item{cashPayoff}{Binary payout if options is exercised, default is 1}
+  \item{dayCounter}{Integer denoting the selected QuantLib day counter
+    convention, default value is 0 for \sQuote{Actual360}}
 }
 \value{
 
@@ -36,7 +39,7 @@
 
   Please see any decent Finance textbook for background reading, and the
   \code{QuantLib} documentation for details on the \code{QuantLib}
-  implementation.  
+  implementation.
 }
 \references{\url{https://www.quantlib.org/} for details on \code{QuantLib}.}
 \author{Dirk Eddelbuettel \email{edd@debian.org} for the \R interface;
@@ -49,4 +52,3 @@
 BinaryOptionImpliedVolatility("call", value=4.50, strike=100, 100, 0.02, 0.03, 0.5, 0.4, 10)
 }
 \keyword{misc}
-

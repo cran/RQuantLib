@@ -1,7 +1,7 @@
 
 //  RQuantLib -- R interface to the QuantLib libraries
 //
-//  Copyright (C) 2002 - 2024  Dirk Eddelbuettel <edd@debian.org>
+//  Copyright (C) 2002-2026  Dirk Eddelbuettel <edd@debian.org>
 //
 //  This file is part of RQuantLib.
 //
@@ -28,27 +28,28 @@ Rcpp::List binaryOptionEngine(std::string binType,
                               double strike,
                               double dividendYield,
                               double riskFreeRate,
-                              double maturity,
+                              Rcpp::Nullable<double> maturity,
+                              Rcpp::Nullable<QuantLib::Date> exDate,
                               double volatility,
-                              double cashPayoff) {
+                              double cashPayoff,
+                              int dayCounter) {
 
     QuantLib::Option::Type optionType = getOptionType(type);
 
     // new QuantLib 0.3.5 framework: digitals, updated for 0.3.7
     // updated again for QuantLib 0.9.0,
     // cf QuantLib-0.9.0/test-suite/digitaloption.cpp
-    QuantLib::Date today = QuantLib::Date::todaysDate();
-    QuantLib::Settings::instance().evaluationDate() = today;
-    QuantLib::Date exDate = getFutureDate(today, maturity);
+    QuantLib::Date evalDate = QuantLib::Settings::instance().evaluationDate();
+    QuantLib::Date expiryDate = getFutureDate(evalDate, maturity, exDate);
 
-    QuantLib::DayCounter dc = QuantLib::Actual360();
+    QuantLib::DayCounter dc = getDayCounter(dayCounter);
     auto spot  = qlext::make_shared<QuantLib::SimpleQuote>(underlying);
     auto qRate = qlext::make_shared<QuantLib::SimpleQuote>(dividendYield);
-    auto qTS   = flatRate(today,qRate,dc);
+    auto qTS   = flatRate(evalDate,qRate,dc);
     auto rRate = qlext::make_shared<QuantLib::SimpleQuote>(riskFreeRate);
-    auto rTS   = flatRate(today,rRate,dc);
+    auto rTS   = flatRate(evalDate,rRate,dc);
     auto vol   = qlext::make_shared<QuantLib::SimpleQuote>(volatility);
-    auto volTS = flatVol(today, vol, dc);
+    auto volTS = flatVol(evalDate, vol, dc);
 
     QuantLib::ext::shared_ptr<QuantLib::StrikedTypePayoff> payoff;
     if (binType=="cash") {
@@ -63,9 +64,9 @@ Rcpp::List binaryOptionEngine(std::string binType,
 
     QuantLib::ext::shared_ptr<QuantLib::Exercise> exercise;
     if (excType=="american") {
-        exercise = qlext::make_shared<QuantLib::AmericanExercise>(today, exDate);
+        exercise = qlext::make_shared<QuantLib::AmericanExercise>(evalDate, expiryDate);
     } else if (excType=="european") {
-        exercise = qlext::make_shared<QuantLib::EuropeanExercise>(exDate);
+        exercise = qlext::make_shared<QuantLib::EuropeanExercise>(expiryDate);
     } else {
         throw std::range_error("Unknown binary exercise type " + excType);
     }
@@ -106,29 +107,30 @@ double binaryOptionImpliedVolatilityEngine(std::string type,
                                            double strike,
                                            double dividendYield,
                                            double riskFreeRate,
-                                           double maturity,
+                                           Rcpp::Nullable<double> maturity,
+                                           Rcpp::Nullable<QuantLib::Date> exDate,
                                            double volatility,
-                                           double cashPayoff) {
+                                           double cashPayoff,
+                                           int dayCounter) {
 
     QuantLib::Option::Type optionType = getOptionType(type);
 
     // updated again for QuantLib 0.9.0,
     // cf QuantLib-0.9.0/test-suite/digitaloption.cpp
-    QuantLib::Date today = QuantLib::Date::todaysDate();
-    QuantLib::Settings::instance().evaluationDate() = today;
-    QuantLib::DayCounter dc = QuantLib::Actual360();
-    QuantLib::Date exDate = getFutureDate(today, maturity);
+    QuantLib::Date evalDate = QuantLib::Settings::instance().evaluationDate();
+    QuantLib::DayCounter dc = getDayCounter(dayCounter);
+    QuantLib::Date expiryDate = getFutureDate(evalDate, maturity, exDate);
     auto spot  = qlext::make_shared<QuantLib::SimpleQuote>(underlying);
     auto qRate = qlext::make_shared<QuantLib::SimpleQuote>(dividendYield);
-    auto qTS   = flatRate(today, qRate, dc);
+    auto qTS   = flatRate(evalDate, qRate, dc);
     auto rRate = qlext::make_shared<QuantLib::SimpleQuote>(riskFreeRate);
-    auto rTS   = flatRate(today, rRate, dc);
+    auto rTS   = flatRate(evalDate, rRate, dc);
     auto vol   = qlext::make_shared<QuantLib::SimpleQuote>(volatility);
-    auto volTS = flatVol(today, vol, dc);
+    auto volTS = flatVol(evalDate, vol, dc);
 
     auto payoff = qlext::make_shared<QuantLib::CashOrNothingPayoff>(optionType, strike, cashPayoff);
 
-    auto exercise = qlext::make_shared<QuantLib::EuropeanExercise>(exDate);
+    auto exercise = qlext::make_shared<QuantLib::EuropeanExercise>(expiryDate);
 
     auto stochProcess = qlext::make_shared<QuantLib::BlackScholesMertonProcess>(QuantLib::Handle<QuantLib::Quote>(spot),
                                                                                 QuantLib::Handle<QuantLib::YieldTermStructure>(qTS),
@@ -149,10 +151,12 @@ Rcpp::List barrierOptionEngine(std::string barrType,
                                double strike,
                                double dividendYield,
                                double riskFreeRate,
-                               double maturity,
+                               Rcpp::Nullable<double> maturity,
+                               Rcpp::Nullable<QuantLib::Date> exDate,
                                double volatility,
                                double barrier,
-                               double rebate) {
+                               double rebate,
+                               int dayCounter) {
 
     QuantLib::Barrier::Type barrierType = QuantLib::Barrier::DownIn;
     if (barrType=="downin") {
@@ -172,19 +176,18 @@ Rcpp::List barrierOptionEngine(std::string barrType,
     // new QuantLib 0.3.5 framework, updated for 0.3.7
     // updated again for QuantLib 0.9.0,
     // cf QuantLib-0.9.0/test-suite/barrieroption.cpp
-    QuantLib::Date today = QuantLib::Date::todaysDate();
-    QuantLib::Settings::instance().evaluationDate() = today;
-    QuantLib::DayCounter dc = QuantLib::Actual360();
-    QuantLib::Date exDate = getFutureDate(today, maturity);
+    QuantLib::Date evalDate = QuantLib::Settings::instance().evaluationDate();
+    QuantLib::Date expiryDate = getFutureDate(evalDate, maturity, exDate);
+    QuantLib::DayCounter dc = getDayCounter(dayCounter);
     auto spot = qlext::make_shared<QuantLib::SimpleQuote>(underlying);
     auto qRate = qlext::make_shared<QuantLib::SimpleQuote>(dividendYield);
-    auto qTS = flatRate(today, qRate, dc);
+    auto qTS = flatRate(evalDate, qRate, dc);
     auto rRate = qlext::make_shared<QuantLib::SimpleQuote>(riskFreeRate);
-    auto rTS = flatRate(today,rRate,dc);
+    auto rTS = flatRate(evalDate,rRate,dc);
     auto vol = qlext::make_shared<QuantLib::SimpleQuote>(volatility);
-    auto volTS = flatVol(today, vol, dc);
+    auto volTS = flatVol(evalDate, vol, dc);
 
-    auto exercise = qlext::make_shared<QuantLib::EuropeanExercise>(exDate);
+    auto exercise = qlext::make_shared<QuantLib::EuropeanExercise>(expiryDate);
 
     auto payoff = qlext::make_shared<QuantLib::PlainVanillaPayoff>(optionType, strike);
 

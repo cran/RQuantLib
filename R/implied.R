@@ -1,6 +1,6 @@
 ##  RQuantLib -- R interface to the QuantLib libraries
 ##
-##  Copyright (C) 2002 - 2014  Dirk Eddelbuettel <edd@debian.org>
+##  Copyright (C) 2002-2026  Dirk Eddelbuettel <edd@debian.org>
 ##
 ##  This file is part of RQuantLib.
 ##
@@ -22,18 +22,20 @@
 EuropeanOptionImpliedVolatility <- function(type, value, underlying,
                                             strike, dividendYield,
                                             riskFreeRate, maturity,
-                                            volatility) {
+                                            volatility, dayCounter=0) {
         UseMethod("EuropeanOptionImpliedVolatility")
 }
 
 EuropeanOptionImpliedVolatility.default <- function(type, value, underlying,
                                                     strike, dividendYield,
                                                     riskFreeRate, maturity,
-                                                    volatility) {
-    
+                                                    volatility, dayCounter=0)  {
+
     val <- europeanOptionImpliedVolatilityEngine(type, value, underlying, strike,
                                                  dividendYield, riskFreeRate,
-                                                 maturity, volatility)
+                                                 if (inherits(maturity, "numeric")) maturity else NULL,
+                                                 if (inherits(maturity, "Date")) maturity else NULL,
+                                                 volatility, dayCounter)
     class(val) <- c("EuropeanOptionImpliedVolatility","ImpliedVolatility")
     val
 }
@@ -43,28 +45,35 @@ EuropeanOptionImpliedVolatility.default <- function(type, value, underlying,
 AmericanOptionImpliedVolatility <- function(type, value, underlying, strike,
                                             dividendYield, riskFreeRate,
                                             maturity, volatility,
-                                            timeSteps=150, gridPoints=151) {
+                                            timeSteps=150, gridPoints=151,
+                                            dayCounter=0) {
     UseMethod("AmericanOptionImpliedVolatility")
 }
 
 AmericanOptionImpliedVolatility.default <- function(type, value, underlying, strike,
                                                     dividendYield, riskFreeRate, maturity,
-                                                    volatility, timeSteps=150, gridPoints=151) {
-    val <- americanOptionImpliedVolatilityEngine(type, value, underlying, strike, dividendYield,
-                                                 riskFreeRate, maturity, volatility, timeSteps, gridPoints)
-    class(val) <- c("AmericanOptionImpliedVolatility","ImpliedVolatility")
+                                                    volatility, timeSteps=150, gridPoints=151,
+                                                    dayCounter=0) {
+    val <- americanOptionImpliedVolatilityEngine(type, value, underlying, strike,
+                                                 dividendYield, riskFreeRate,
+                                                 if (inherits(maturity, "numeric")) maturity else NULL,
+                                                 if (inherits(maturity, "Date")) maturity else NULL,
+                                                 volatility, timeSteps, gridPoints,
+                                                 dayCounter)
     val
 }
 
 BinaryOptionImpliedVolatility <- function(type, value, underlying, strike, dividendYield, riskFreeRate,
-                                          maturity, volatility, cashPayoff=1) {
+                                          maturity, volatility, cashPayoff=1, dayCounter=0) {
     UseMethod("BinaryOptionImpliedVolatility")
 }
 
 BinaryOptionImpliedVolatility.default <- function(type, value, underlying, strike, dividendYield, riskFreeRate,
-                                                  maturity, volatility, cashPayoff=1) {
-    val <- binaryOptionImpliedVolatilityEngine(type, value, underlying, strike, dividendYield,
-                                               riskFreeRate, maturity, volatility, cashPayoff)
+                                                  maturity, volatility, cashPayoff=1, dayCounter=0) {
+    val <- binaryOptionImpliedVolatilityEngine(type, value, underlying, strike, dividendYield, riskFreeRate,
+                                               if (inherits(maturity, "numeric")) maturity else NULL,
+                                               if (inherits(maturity, "Date")) maturity else NULL,
+                                               volatility, cashPayoff, dayCounter)
     class(val) <- c("BinaryOptionImpliedVolatility","ImpliedVolatility")
     val
 }
@@ -78,7 +87,7 @@ print.ImpliedVolatility <- function(x, digits=3, ...) {
 summary.ImpliedVolatility <- function(object, digits=3, ...) {
     impvol <- object[[1]]
     cat("Implied Volatility for", class(object)[1], "is", round(impvol, digits), "\n")
-    cat("with parameters\n")
-    print(unlist(object[[2]]))
+    #cat("with parameters\n")
+    #print(unlist(object[[2]]))
     invisible(object)
 }

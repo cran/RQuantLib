@@ -1,6 +1,6 @@
 ##  RQuantLib -- R interface to the QuantLib libraries
 ##
-##  Copyright (C) 2002 - 2016  Dirk Eddelbuettel <edd@debian.org>
+##  Copyright (C) 2002-2026  Dirk Eddelbuettel <edd@debian.org>
 ##
 ##  This file is part of RQuantLib.
 ##
@@ -19,76 +19,82 @@
 
 EuropeanOption <- function(type, underlying, strike, dividendYield,
                            riskFreeRate, maturity, volatility,
-                           discreteDividends = NULL, discreteDividendsTimeUntil = NULL) {
+                           discreteDividends = NULL, discreteDividendsTimeUntil = NULL,
+                           dayCounter = 0) {
     UseMethod("EuropeanOption")
 }
 
 EuropeanOption.default <- function(type, underlying, strike, dividendYield,
                                    riskFreeRate, maturity, volatility,
-                                   discreteDividends = NULL, discreteDividendsTimeUntil = NULL) {
+                                   discreteDividends = NULL, discreteDividendsTimeUntil = NULL,
+                                   dayCounter = 0) {
     type <- match.arg(type, c("call", "put"))
-    val <- europeanOptionEngine(type, underlying, strike, dividendYield,
-                                riskFreeRate, maturity, volatility,
-                                discreteDividends, discreteDividendsTimeUntil)
+    val <- europeanOptionEngine(type, underlying, strike, dividendYield, riskFreeRate,
+                                if (inherits(maturity, "numeric")) maturity else NULL,
+                                if (inherits(maturity, "Date")) maturity else NULL,
+                                volatility, discreteDividends, discreteDividendsTimeUntil, dayCounter)
     class(val) <- c("EuropeanOption", "Option")
     val
 }
 
 AmericanOption <- function(type, underlying, strike, dividendYield,
                            riskFreeRate, maturity, volatility,
-                           timeSteps=150, gridPoints=149,
-                           engine="BaroneAdesiWhaley",
-                           discreteDividends = NULL, discreteDividendsTimeUntil = NULL) {
+                           timeSteps=150, gridPoints=149, engine="BaroneAdesiWhaley",
+                           discreteDividends = NULL, discreteDividendsTimeUntil = NULL,
+                           dayCounter = 0) {
     UseMethod("AmericanOption")
 }
 
 AmericanOption.default <- function(type, underlying, strike, dividendYield,
                                    riskFreeRate, maturity, volatility,
-                                   timeSteps=150, gridPoints=149,
-                                   engine="BaroneAdesiWhaley",
-                                   discreteDividends = NULL, discreteDividendsTimeUntil = NULL) {
+                                   timeSteps=150, gridPoints=149, engine="BaroneAdesiWhaley",
+                                   discreteDividends = NULL, discreteDividendsTimeUntil = NULL,
+                                   dayCounter = 0) {
     type <- match.arg(type, c("call", "put"))
     engine <- match.arg(engine, c("BaroneAdesiWhaley", "CrankNicolson"))
-    val <- americanOptionEngine(type, underlying, strike, dividendYield,
-                                riskFreeRate, maturity, volatility,
-                                timeSteps, gridPoints, engine,
-                                discreteDividends, discreteDividendsTimeUntil)
+    val <- americanOptionEngine(type, underlying, strike, dividendYield, riskFreeRate,
+                                if (inherits(maturity, "numeric")) maturity else NULL,
+                                if (inherits(maturity, "Date")) maturity else NULL,
+                                volatility, timeSteps, gridPoints, engine,
+                                discreteDividends, discreteDividendsTimeUntil, dayCounter)
     class(val) <- c("AmericanOption","Option")
     val
 }
 
 BinaryOption <- function(binType, type, excType, underlying, strike, dividendYield,
-                         riskFreeRate, maturity, volatility,
-                         cashPayoff) {
+                         riskFreeRate, maturity, volatility, cashPayoff, dayCounter=0) {
     UseMethod("BinaryOption")
 }
 
 BinaryOption.default <- function(binType, type, excType, underlying, strike, dividendYield,
-                                 riskFreeRate, maturity, volatility,
-                                 cashPayoff) {
+                                 riskFreeRate, maturity, volatility, cashPayoff, dayCounter=0) {
     type <- match.arg(type, c("call", "put"))
     binType <- match.arg(binType, c("cash", "asset", "gap"))
     excType <- match.arg(excType, c("american", "european"))
     val <- binaryOptionEngine(binType, type, excType, underlying,
                               strike, dividendYield, riskFreeRate,
-                              maturity, volatility, cashPayoff)
+                              if (inherits(maturity, "numeric")) maturity else NULL,
+                              if (inherits(maturity, "Date")) maturity else NULL,
+                              volatility, cashPayoff, dayCounter)
     class(val) <- c("BinaryOption", "Option")
     val
 }
 
 BarrierOption <- function(barrType, type, underlying, strike,
                           dividendYield, riskFreeRate, maturity,
-                          volatility, barrier, rebate=0.0) {
+                          volatility, barrier, rebate=0.0, dayCounter=0) {
     UseMethod("BarrierOption")
 }
 
 BarrierOption.default <- function(barrType, type, underlying, strike,
                                   dividendYield, riskFreeRate, maturity,
-                                  volatility, barrier, rebate=0.0) {
+                                  volatility, barrier, rebate=0.0, dayCounter=0) {
     type <- match.arg(type, c("call", "put"))
     barrType <- match.arg(barrType, c("downin", "upin", "downout", "upout"))
-    val <- barrierOptionEngine(barrType, type, underlying, strike, dividendYield,
-                               riskFreeRate, maturity, volatility, barrier, rebate)
+    val <- barrierOptionEngine(barrType, type, underlying, strike, dividendYield, riskFreeRate,
+                               if (inherits(maturity, "numeric")) maturity else NULL,
+                               if (inherits(maturity, "Date")) maturity else NULL,
+                               volatility, barrier, rebate, dayCounter)
     class(val) <- c("BarrierOption", "Option")
     val
 }
@@ -111,7 +117,3 @@ summary.Option <- function(object, digits=4, ...) {
     print(unlist(object[["parameters"]]))
     invisible(object)
 }
-
-
-
-
