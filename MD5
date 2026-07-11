@@ -1,5 +1,5 @@
-b7dcef93212638901bc945e18575378a *ChangeLog
-bbe5b2aac5d3913325feb9c2b6009010 *DESCRIPTION
+700e89c4b4cd0007e4cb9fe0023665cc *ChangeLog
+8bf02b40eedc3809a1ac9c88bb386cc5 *DESCRIPTION
 9f69341f2d42b0946ac130e1e3e59a8f *NAMESPACE
 7cdb30b8289358d1a10c7ac5450f65eb *R/RcppExports.R
 8bae9e10a0e0a48dd0b91bb6a0bde18d *R/affine.R
@@ -21,15 +21,15 @@ f48a0decbbbedceb7dfb3b114017f5ec *R/implied.R
 cd95d1bdf925936fea0e4652d8d5b34a *R/zzz.R
 b550c98423ce37e2f03b3daae68997cb *README.md
 0b4e9a09b64bef80f5a626b72b29df56 *cleanup
-be1868100555a0d307769767b6d1e1e0 *configure
-25b3666492609da4785f228c252656d7 *configure.ac
-a1bb4ffc7a0f00c377ae6543575ae883 *data/tsQuotes.RData
-1e0ac485dcdc434f85725af29a43a0db *data/vcube.RData
+1ba96705e8589049e6714f249327c2a7 *configure
+6dcfe55eb3514357ede6e05c35fd145c *configure.ac
+052a87698378c6c91d55bc124d45ac25 *data/tsQuotes.RData
+3783ff18237d72fdadfeaba1f2209469 *data/vcube.RData
 fd060754d818864ca897476ff2b58f16 *demo/00Index
 158727f1e40f6b5ad10f228368dc47bb *demo/OptionSurfaces.R
 8887075c0be0b9a5ed5368d8b7b5333e *demo/ShinyDiscountCurves.R
 2adf2228c562c11831db1d7ee0480cc6 *inst/Boost_LICENSE.TXT
-911e6fdf49099b08bea0dcda89159651 *inst/NEWS.Rd
+67956931a0545827dd881f08b15f5c80 *inst/NEWS.Rd
 6ce07e1e9679d2c63ff4fe0bece5ad05 *inst/QuantLib_LICENSE.TXT
 f4b079613d0dee5843973b30e0b6aa77 *inst/include/RQuantLib.h
 f605ca62f473a6e55fe1c2e3f059a763 *inst/include/RQuantLib_RcppExports.h
@@ -63,7 +63,7 @@ cc1ccf7d9a4992ba836ff09e6d790908 *man/BermudanSwaption.Rd
 7d8351caa226d27cc8053c82ba940938 *man/CallableBond.Rd
 79c0d19531d8a191bea8cf0fa62c0559 *man/ConvertibleBond.Rd
 8608518fe8fd88a8b4bf0d77bbd98f70 *man/DiscountCurve.Rd
-1319167b7971cf6e0b6d313bdeabb73d *man/Enum.Rd
+1e3625fa16a5575aa8c236d813aecb65 *man/Enum.Rd
 974cabaa3e60ba9da6423baa73f4e4bf *man/EuropeanOption.Rd
 f3b2273829d760d14adf849a434633e3 *man/EuropeanOptionArrays.Rd
 cdc7a598916f6258cb63106cec8028a1 *man/EuropeanOptionImpliedVolatility.Rd
@@ -87,7 +87,7 @@ b132afe2925ac2a027e19002d40ed388 *man/vcube.Rd
 b64ab5f3be714e5ecc6a6cabbd01c97f *src/barrier_binary.cpp
 5b8f706bc0a4f3b8d864b1cd1d66e839 *src/bermudan.cpp
 6b0f60ea3d4fc76eb56df9a1c0ea85d3 *src/bonds.cpp
-fe0fe816e4c4bd4d4ec05a1cebb53a11 *src/calendars.cpp
+754f9ede08b0ed0972a0967091d0c645 *src/calendars.cpp
 0a9e2d427d5545a34d79befa152c073c *src/curves.cpp
 b467ede776a5f35074b1b13011686dbe *src/dates.cpp
 99eb924b6326ccef0f2d4e17b28e7790 *src/daycounter.cpp

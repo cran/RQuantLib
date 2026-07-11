@@ -1,8 +1,8 @@
 
 //  RQuantLib -- R interface to the QuantLib libraries
 //
-//  Copyright (C) 2002 - 2021  Dirk Eddelbuettel
-//  Copyright (C) 2010         Dirk Eddelbuettel and Khanh Nguyen
+//  Copyright (C) 2002-2026  Dirk Eddelbuettel
+//  Copyright (C) 2010       Dirk Eddelbuettel and Khanh Nguyen
 //
 //  RQuantLib is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -32,12 +32,10 @@ QuantLib::ext::shared_ptr<QuantLib::Calendar> getCalendar(const std::string &cal
     } else if (calstr == "Australia") {
         pcal.reset(new QuantLib::Australia());
 
-#if QL_HEX_VERSION >= 0x011900f0
     } else if (calstr == "Austria" || calstr == "Austria/Settlement") {
         pcal.reset(new QuantLib::Austria());
     } else if (calstr == "Austria/Exchange") {
         pcal.reset(new QuantLib::Austria(QuantLib::Austria::Exchange));
-#endif
 
     } else if (calstr == "Bespoke") {
         pcal.reset(new QuantLib::BespokeCalendar());
@@ -101,10 +99,19 @@ QuantLib::ext::shared_ptr<QuantLib::Calendar> getCalendar(const std::string &cal
     } else if (calstr == "Indonesia") {
         pcal.reset(new QuantLib::Indonesia());
 
+#if QL_HEX_VERSION <= 0x014201f0
     } else if (calstr == "Israel" || calstr == "Israel/Settlement") {
         pcal.reset(new QuantLib::Israel(QuantLib::Israel::Settlement));
     } else if (calstr == "Israel/TASE") {
         pcal.reset(new QuantLib::Israel(QuantLib::Israel::TASE));
+#else
+    } else if (calstr == "Israel" || calstr == "Israel/TASE") {
+        pcal.reset(new QuantLib::Israel(QuantLib::Israel::TASE));
+    } else if (calstr == "Israel/SHIR") {
+        pcal.reset(new QuantLib::Israel(QuantLib::Israel::SHIR));
+    } else if (calstr == "Israel/Telbor") {
+        pcal.reset(new QuantLib::Israel(QuantLib::Israel::Telbor));
+#endif
 
     } else if (calstr == "Italy" || calstr == "Italy/Settlement") {
         pcal.reset(new QuantLib::Italy(QuantLib::Italy::Settlement));
