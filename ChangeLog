@@ -1,3 +1,95 @@
+2026-10-13  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (Version, Date): Release 0.4.29
+	* configure.ac: Idem
+	* configure: Idem
+
+	* README.md: Swap GPL-2 URL from fsf.org to opensource.org as not
+	rate-limited, switch one URL to https
+	* man/AffineSwaption.Rd: Use https for URL
+	* man/BermudanSwaption.Rd: Idem
+	* man/DiscountCurve.Rd: Idem
+	* man/SabrSwaption.Rd: Idem
+	* man/ZeroCouponBond.Rd: Idem
+
+2026-10-08  Dirk Eddelbuettel  <edd@debian.org>
+
+	* src/calendars.cpp: Do not use Italy::Exchange with QL 1.44 or later
+	* src/sabr.cpp: Adjust MakeVanillaSwap() for QL 1.44 changes
+
+2026-07-26  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (Version, Date): Roll micro release and date
+
+2026-07-25  Dirk Eddelbuettel  <edd@debian.org>
+
+	* R/bond.R (matchMethod): New validation function
+	(matchParams): Use new validation function
+	(FittedBondCurve.default): Validate curve parameters
+
+2026-07-24  Maximilian Muecke  <muecke.maximilian@gmail.com>
+
+	* R/arrays.R (plotOptionSurface): Remove obsolete global variable
+	declarations
+
+2026-07-23  Maximilian Muecke  <muecke.maximilian@gmail.com>
+
+	* man/AffineSwaption.Rd: Correct several typos
+	* man/AsianOption.Rd: Idem
+	* man/BermudanSwaption.Rd: Idem
+	* man/Bond.Rd: Idem
+	* man/CallableBond.Rd: Idem
+	* man/ConvertibleBond.Rd: Idem
+	* man/DiscountCurve.Rd: Idem
+	* man/FittedBondCurve.Rd: Idem
+	* man/FixedRateBond.Rd: Idem
+	* man/FloatingRateBond.Rd: Idem
+	* man/ImpliedVolatility.Rd: Idem
+	* man/Option.Rd: Idem
+	* man/SabrSwaption.Rd: Idem
+	* man/Schedule.Rd: Idem
+	* man/ZeroCouponBond.Rd: Idem
+	* man/tsQuotes.Rd: Idem
+	* R/affine.R: Correct typo in a warning message
+	* R/bermudan.R: Idem
+	* R/discount.R: Correct typo in an error message
+	* src/utils.cpp: Idem
+	* R/datasets.R: Correct typo in documentation
+	* R/calendars.R, src/calendars.cpp: Add Poland market calendars for
+	QuantLib 1.36 or later
+
+2026-07-22  Maximilian Muecke  <muecke.maximilian@gmail.com>
+
+	* R/implied.R (AmericanOptionImpliedVolatility.default): Assign the
+	ImpliedVolatility class used by the registered print and summary methods
+	* R/affine.R (AffineSwaption.default): Correct default handling of the
+	payFixed parameter
+	* src/utils.cpp: Accept "Euribor1W" as an alias for "EuriborSW" in
+	buildIborIndex
+
+2026-07-21  Maximilian Muecke  <muecke.maximilian@gmail.com>
+
+	* src/utils.cpp: Correct Euribor2W and Euribor3W tenors when using
+	QuantLib 1.35 or later
+
+2026-07-20  Dirk Eddelbuettel  <edd@debian.org>
+
+	* configure.ac: Refresh version list triggering 'outdated' message;
+	add test for local compilation using added flags (currently unused)
+	* configure: Idem
+
+	* src/Makevars.in: Minor edits to comments
+	* src/Makevars.win: Idem
+
+2026-07-14  Dirk Eddelbuettel  <edd@debian.org>
+
+	* DESCRIPTION (Version, Date): Roll micro release and date
+
+	* R/calendars.R: Updated set of calendars
+	* src/calendars.cpp: Idem
+
+	* tests/tinytest.R: Removed some old and now-unneeded versioning
+
 2026-07-10  Dirk Eddelbuettel  <edd@debian.org>
 
 	* DESCRIPTION (Version, Date): Release 0.4.28

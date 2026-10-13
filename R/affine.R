@@ -52,9 +52,9 @@ AffineSwaption.default <- function(params,
         params$european=TRUE
         warning("affine swaption european flag not set defaulting to european")
     }
-    if(is.null(params$payFix)){
-        params$payFix=TRUE
-        warning("affine swaption payFix flag not set defaulting to pay fix swap")
+    if(is.null(params$payFixed)){
+        params$payFixed=TRUE
+        warning("affine swaption payFixed flag not set defaulting to pay fixed swap")
     }
 
     matYears=as.numeric(params$maturity-params$tradeDate)/365
@@ -94,7 +94,7 @@ AffineSwaption.default <- function(params,
     # remove if search was out of bounds
     expiry=expiry[expiry>0];tenor=tenor[tenor>0];vol=vol[vol>0]
     if(length(expiry)<5){
-        warning("Insufficent vols to fit affine model")
+        warning("Insufficient vols to fit affine model")
         return(NULL)
     }
     #Take 1st 5 which includes closest to initial date

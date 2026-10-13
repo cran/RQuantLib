@@ -10,7 +10,7 @@ AC_PREREQ([2.69])
 # Process this file with autoconf to produce a configure script.
 
 # Would like to extract R package version from R DESCRIPTION file
-AC_INIT([RQuantlib],[0.4.28],[edd@debian.org])
+AC_INIT([RQuantlib],[0.4.29],[edd@debian.org])
 
 # Set CXX and CXXFLAGS based on the R configuration (with thanks to KH)
 : ${R_HOME=`R RHOME`}
@@ -80,7 +80,7 @@ if test x"${QUANTLIB}" = x"yes" ; then
 	AC_MSG_WARN([RQuantLib requires QuantLib (>= 1.25).])
 	AC_MSG_ERROR([Please upgrade to a current version.])
 	;;
-    1.25.*|1.26*|1.27*|1.28*|1.29*|1.30.*|1.31.*|1.32.*|1.33.*|1.34.*)
+    1.25.*|1.26*|1.27*|1.28*|1.29*|1.30.*|1.31.*|1.32.*|1.33.*|1.34.*|1.35.*|1.36.*|1.37.*|1.38.*|1.39.*|1.40.*|1.41.*|1.42.*)
 	echo "checking for suitable QuantLib version... version ${pkg_version} is not the most recent one. Consider upgrading."
 	;;
     1.*)
@@ -88,8 +88,8 @@ if test x"${QUANTLIB}" = x"yes" ; then
 	;;
     esac
 
-    # now use all these
-    AC_SUBST([PKG_CXXFLAGS],["${PKG_CXXFLAGS} ${pkg_cxxflags} ${gxx_newer_than_45}"])
+    # now use both
+    AC_SUBST([PKG_CXXFLAGS],["${PKG_CXXFLAGS} ${pkg_cxxflags}"])
     AC_SUBST([PKG_LIBS],["${PKG_LIBS} $pkg_libs"])
 
 elif test "`uname`" = "Darwin" ; then
@@ -173,6 +173,16 @@ AC_DEFUN([QL_CHECK_BOOST],
      AC_REQUIRE([QL_CHECK_BOOST_VERSION])
 ])
 QL_CHECK_BOOST
+
+dnl # Check if building locally
+dnl AC_MSG_CHECKING([for .git directory])
+dnl if test -d "$srcdir/.git"; then
+dnl     AC_MSG_RESULT([yes, adding extra flags])
+dnl     #AC_SUBST([PKG_CXXFLAGS],["${PKG_CXXFLAGS} "-Wno-nonnull -Wno-maybe-uninitialized"])
+dnl else
+dnl     AC_MSG_RESULT([no])
+dnl     # Action if directory is missing
+dnl fi
 
 
 AC_SUBST(PKG_CXXFLAGS)

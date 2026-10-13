@@ -53,7 +53,7 @@ volMatrix)
 \value{
   \code{BermudanSwaption} , if there are sufficient swaption vols to fit an affine model,
   returns a list containing calibrated model
-  paramters (what parameters are returned depends on the model
+  parameters (what parameters are returned depends on the model
   selected) along with:
   \item{price}{Price of swaption in basis points (actual price
   equals \code{price} times notional divided by 10,000)}
@@ -78,7 +78,7 @@ volMatrix)
   For information about \code{QuantLib} see \url{https://www.quantlib.org/}.
 
   For information about \code{RQuantLib} see
-\url{http://dirk.eddelbuettel.com/code/rquantlib.html}.
+\url{https://dirk.eddelbuettel.com/code/rquantlib.html}.
 
 }
 \author{Dominick Samperi}

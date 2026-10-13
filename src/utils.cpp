@@ -483,12 +483,12 @@ QuantLib::DateGeneration::Rule getDateGenerationRule(const double n){
 qlext::shared_ptr<QuantLib::IborIndex> buildIborIndex(std::string type,
                                                       const QuantLib::Handle<QuantLib::YieldTermStructure>& iborStrc){
 #if QL_HEX_VERSION >= 0x013500c0
-    if (type == "EuriborSW") return qlext::make_shared<QuantLib::Euribor1W>(iborStrc);
+    if (type == "EuriborSW" || type == "Euribor1W") return qlext::make_shared<QuantLib::Euribor1W>(iborStrc);
     if (type == "Euribor1M") return qlext::make_shared<QuantLib::Euribor>(1*QuantLib::Months, iborStrc);
     if (type == "Euribor2M") return qlext::make_shared<QuantLib::Euribor>(2*QuantLib::Months, iborStrc);
-    if (type == "Euribor2W") return qlext::make_shared<QuantLib::Euribor>(2*QuantLib::Months, iborStrc);
+    if (type == "Euribor2W") return qlext::make_shared<QuantLib::Euribor>(2*QuantLib::Weeks, iborStrc);
     if (type == "Euribor3M") return qlext::make_shared<QuantLib::Euribor>(3*QuantLib::Months, iborStrc);
-    if (type == "Euribor3W") return qlext::make_shared<QuantLib::Euribor>(3*QuantLib::Months, iborStrc);
+    if (type == "Euribor3W") return qlext::make_shared<QuantLib::Euribor>(3*QuantLib::Weeks, iborStrc);
     if (type == "Euribor4M") return qlext::make_shared<QuantLib::Euribor>(4*QuantLib::Months, iborStrc);
     if (type == "Euribor5M") return qlext::make_shared<QuantLib::Euribor>(5*QuantLib::Months, iborStrc);
     if (type == "Euribor6M") return qlext::make_shared<QuantLib::Euribor>(6*QuantLib::Months, iborStrc);
@@ -499,7 +499,7 @@ qlext::shared_ptr<QuantLib::IborIndex> buildIborIndex(std::string type,
     if (type == "Euribor11M") return qlext::make_shared<QuantLib::Euribor>(11*QuantLib::Months, iborStrc);
     if (type == "Euribor1Y")  return qlext::make_shared<QuantLib::Euribor>(1*QuantLib::Years, iborStrc);
 #else
-    if (type == "EuriborSW") return qlext::make_shared<QuantLib::EuriborSW>(iborStrc);
+    if (type == "EuriborSW" || type == "Euribor1W") return qlext::make_shared<QuantLib::EuriborSW>(iborStrc);
     if (type == "Euribor1M") return qlext::make_shared<QuantLib::Euribor1M>(iborStrc);
     if (type == "Euribor2M") return qlext::make_shared<QuantLib::Euribor2M>(iborStrc);
     if (type == "Euribor2W") return qlext::make_shared<QuantLib::Euribor2W>(iborStrc);
@@ -687,7 +687,7 @@ QuantLib::Date getFutureDate(const QuantLib::Date today,
             return QuantLib::Date{today + length};
         #endif
     } else {
-        Rcpp::stop("Excactly one of 'maturity' or 'exDate' needs to be supplied and be non-null.");
+        Rcpp::stop("Exactly one of 'maturity' or 'exDate' needs to be supplied and be non-null.");
         return QuantLib::Date(); // not reached
     }
 }
